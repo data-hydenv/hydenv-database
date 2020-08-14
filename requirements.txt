@@ -1,2 +1,4 @@
 sqlalchemy
+geoalchemy2
 functions-framework
+fire
