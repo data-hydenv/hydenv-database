@@ -1,8 +1,3 @@
----
-layout: page
-title: database.py
-permalink: /database
----
 # database.py
 
 The database.py CLI can be used to install and manage new instances of the 
