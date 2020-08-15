@@ -1,6 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy import Integer, String, DateTime, Numeric
+from sqlalchemy.orm import relationship
 from geoalchemy2 import Geometry
 
 Base = declarative_base()
@@ -11,8 +12,8 @@ class Metadata(Base):
 
     # columns
     id = Column(Integer, primary_key=True)
-    hobo_id = Column(Integer, nullable=False)
-    location = Column(Geometry('POINT', srid=4326), nullable=True)
+    device_id = Column(Integer, nullable=False)
+    location = Column(Geometry('POINT', srid=4326), nullable=False)
     description = Column(String, nullable=False)
 
 
@@ -51,4 +52,3 @@ class RawData(Base):
     variable_id = Column(Integer, ForeignKey('variables.id'), primary_key=True)
     tstamp = Column(DateTime, primary_key=True)
     value = Column(Numeric, nullable=False)
-

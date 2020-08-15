@@ -8,6 +8,8 @@ class HydenvDatabase:
     Hydenv database tool\n
     You can use this tool to install and populate new instances of
     the hydenv database. Works for local, remote and cloud instances.
+    This is the admin tool that needs database creation privileges and 
+    is usually only run once.
     :param connection: The database URI following syntax:\n
         postgresql://<user>:<password>@<host>:<port>/<database>
     """
@@ -70,14 +72,22 @@ class HydenvDatabase:
         else:
             print(res)
 
-    def init(self):
+    def init(self, clean=False):
         """
         Create all tables\n
         It is highly recommended to run this command with a user connected 
         who has less privileges than postgres.
+        :param clean: If True, any existing table will be dropped
+            before creating the tables.
         """
         engine = create_engine(self.connection)
-        Base.metadata.create_all(engine)
+
+        # drop if existing
+        if clean:
+            Base.metadata.drop_all(bind=engine)
+        
+        # creata tables
+        Base.metadata.create_all(bind=engine)
         print('Done')
 
 
