@@ -1,5 +1,4 @@
 import os
-from functools import wraps
 import types
 import inspect
 import json
@@ -7,63 +6,8 @@ import json
 from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy import create_engine
 
-from tabulate import tabulate
-
 from hydenv import models
-from hydenv.util import env
-
-def check_overrides(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        self = args[0]
-        # check if skip_overrides is set
-        if not kwargs.get('skip_overrides', False):
-            model_name = args[1]
-            override_name = '%s_%s' % (func.__name__, model_name.lower())
-            if hasattr(self, override_name):
-                print(kwargs)
-                ov_func = getattr(self, override_name)
-                return ov_func(**{k:v for k,v in kwargs.items() if k != 'skip_overrides'})
-        
-        # if it hasn't return, run the core func
-        return func(*args, **{k:v for k,v in kwargs.items() if k != 'skip_overrides'})
-    return wrapper
-
-def stringify_output(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        self = args[0]
-        if hasattr(self, 'fmt'):
-            fmt = self.fmt
-        else:
-            fmt = 'json'
-        
-        # run the function
-        output = func(*args, **kwargs)
-
-        if not isinstance(output, (tuple, list)):
-            output = [output]
-
-        # handle output
-        out = []
-        for o in output:
-            if isinstance(o, models.Base):
-                d = dict()
-                for col in o.__table__.columns:
-                    d[col.name] = str(getattr(o, col.name))
-                out.append(d)
-            else:
-                out.append(str(o))
-        
-        if fmt == 'print':
-            return tabulate(out, headers='keys', tablefmt='psql')
-        elif fmt == 'json':
-            return json.dumps(out, indent=4)
-        elif fmt in ('html', 'rst', 'latex'):
-            return tabulate(out, headers='keys', tablefmt=fmt)
-        else:
-            return out
-    return wrapper
+from hydenv.util import env, check_overrides, stringify_output
 
 
 class HydenvMeasurements:
@@ -129,11 +73,10 @@ class HydenvMeasurements:
         model = Model(**kwargs)
 
         try:
-            session = self.session
-            session.add(model)
-            session.commit()
+            self.session.add(model)
+            self.session.commit()
         except Exception as e:
-            session.rollback()
+            self.session.rollback()
             raise e
 
         return model
@@ -152,8 +95,7 @@ class HydenvMeasurements:
         columns = Model.__table__.columns
 
         # build the query
-        session = self.session
-        query = session.query(Model)
+        query = self.session.query(Model)
 
         # add the kwargs
         for name, value in kwargs.items():
@@ -176,7 +118,7 @@ class HydenvMeasurements:
         :param id: The id of the updated object
         """
         # this will raise an exception if not exactly one instance is found
-        instance = self.read(model_name, return_query=True, id=id).one()
+        instance = HydenvMeasurements.read(self, model_name, return_query=True, id=id).one()
         print(instance)
         
         # update
@@ -184,21 +126,45 @@ class HydenvMeasurements:
             setattr(instance, name, value)
         
         try:
-            session = self.session
-            session.add(instance)
-            session.commit()
+            self.session.add(instance)
+            self.session.commit()
         except Exception as e:
-            session.rollback()
+            self.session.rollback()
             raise e
 
         return instance
 
     @check_overrides
-    def delete(self, model_name, **kwargs):
+    def delete(self, model_name, id=None, **kwargs):
         """
+        Delete an existing record.\n
+        You can either delete by id, to exactly control which records 
+        are deleted, or you can pass in any kind of filter statement
+        to delete all matching instances. In this case you have to 
+        omit the id parameter.
+        Caution: if you omit the id, but do not pass a filter condition,
+        **all** records will be deleted.
+        :param model_name: name of the model entity
+        :param skip_overrides: If True, override functions will not be called
+        :param id: The id of the updated object
         """
-        pass
+        if id is not None:
+            instance = HydenvMeasurements.read(self, model_name, return_query=True, id=id)
+            print(instance)
+            instances = [instance.one()]
+        else:
+            instances = HydenvMeasurements.read(self, model_name, **kwargs)
+        
+        # delete
+        try:
+            for inst in instances:
+                self.session.delete(inst)
+            self.session.commit()
+        except Exception as e:
+            self.session.rollback()
+            raise e
 
+        print('Deleted %d %s instances' % (len(instances), model_name))
 
 class HydenvMeasurementsCli(HydenvMeasurements):
     def __init__(self, fmt='json', connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"):
@@ -214,7 +180,6 @@ class HydenvMeasurementsCli(HydenvMeasurements):
         """
         super(HydenvMeasurementsCli, self).__init__(connection)
         self.fmt = fmt
-#    pass
 
 # attach the stringify decorator to all CRUD function
 for name, fn in inspect.getmembers(HydenvMeasurementsCli):
