@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 
-from hydenv.model import Base
+from hydenv.models import Base
 
 
 class HydenvDatabase:
@@ -28,9 +28,6 @@ class HydenvDatabase:
         :param skip_init: Skip init step to run with other user
         :raises AttributeError: if the password was not given
         """
-        if password == 'changeme':
-            raise AttributeError('Please specify a password like --password=pw')
-        
         # create the engine and create the user
         engine = create_engine(self.connection)
 
@@ -38,6 +35,8 @@ class HydenvDatabase:
         with engine.connect() as con:
             res = con.execute("SELECT true FROM pg_roles WHERE rolname='{usr}'".format(usr=role)).scalar()
             if res is not True:
+                if password == 'changeme':
+                    raise AttributeError('Please specify a password like --password=pw')
                 con.execute("CREATE USER {usr} WITH PASSWORD '{pw}'".format(usr=role, pw=password))
         
         # create the SQL and commit
