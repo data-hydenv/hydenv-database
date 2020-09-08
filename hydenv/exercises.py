@@ -4,6 +4,8 @@ import subprocess
 from threading import Timer
 import webbrowser
 
+from hydenv.util import env
+
 BACKEND = os.path.abspath(os.path.join(os.path.dirname(__file__), 'backend.py'))
 
 class HydenvExercises:
@@ -17,8 +19,8 @@ class HydenvExercises:
         defaults to 'local', to run on localhost. Can be overwritten by a
         remote API server.
     """
-    def __init__(self, connection="postgresql://postgres:postgres@localhost:5432/postgres", backend='local'):
-        self.connection = connection
+    def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}", backend='local'):
+        self.connection = env.build_connection(connection=connection)
 
         # backend settings
         self.backend_use_debug = False        
@@ -39,6 +41,7 @@ class HydenvExercises:
             res = requests.get(self.backend + 'ping')
             if res.status_code != 200:
                 raise requests.ConnectionError()
+            print('Backend instance already running')
         except requests.ConnectionError:
             self._run_backend_server()
 

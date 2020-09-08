@@ -18,22 +18,8 @@ class HydenvMeasurements:
         postgresql://<user>:<password>@<host>:<port>/<database>
     """
     def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"):
-        # check for replacements
-        fargs = env.read_file()
-        args = dict()
-        if '{usr}' in connection:
-            args['usr'] = os.environ.get('POSTGRES_USER', fargs.get('POSTGRES_USER', 'hydenv'))
-        if '{pw}' in connection:
-            args['pw'] = os.environ.get('POSTGRES_PASSWORD', fargs.get('POSTGRES_PASSWORD'))
-        if '{host}' in connection:
-            args['host'] = os.environ.get('POSTGRES_HOST', fargs.get('POSTGRES_HOST', 'localhost'))
-        if '{port}' in connection:
-            args['port'] = os.environ.get('POSTGRES_PORT', fargs.get('POSTGRES_PORT', 5432))
-        if '{dbname}' in connection:
-            args['dbname'] = os.environ.get('POSTGRES_DBNAME', fargs.get('POSTGRES_DBNAME', 'hydenv'))
-        
         # substitute and save
-        self.__connection = connection.format(**args)
+        self.__connection = env.build_connection(connection=connection)
         self.__SessionCls = sessionmaker(bind=create_engine(self.__connection))
         self.session = self.__SessionCls()
 

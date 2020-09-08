@@ -31,3 +31,24 @@ def read_file() -> dict:
 def expose(**kwargs):
     for k,v in kwargs.items():
         os.environ[k] = v
+
+
+def build_connection(connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}") -> str:
+    # check for replacements
+    fargs = read_file()
+    args = dict()
+    if '{usr}' in connection:
+        args['usr'] = os.environ.get('POSTGRES_USER', fargs.get('POSTGRES_USER', 'hydenv'))
+    if '{pw}' in connection:
+        args['pw'] = os.environ.get('POSTGRES_PASSWORD', fargs.get('POSTGRES_PASSWORD'))
+    if '{host}' in connection:
+        args['host'] = os.environ.get('POSTGRES_HOST', fargs.get('POSTGRES_HOST', 'localhost'))
+    if '{port}' in connection:
+        args['port'] = os.environ.get('POSTGRES_PORT', fargs.get('POSTGRES_PORT', 5432))
+    if '{dbname}' in connection:
+        args['dbname'] = os.environ.get('POSTGRES_DBNAME', fargs.get('POSTGRES_DBNAME', 'hydenv'))
+        
+    # substitute and return
+    return connection.format(**args)
+
+
