@@ -1,7 +1,8 @@
 import os
 import requests
 import subprocess
-import threading
+from threading import Timer
+import webbrowser
 
 BACKEND = os.path.abspath(os.path.join(os.path.dirname(__file__), 'backend.py'))
 
@@ -25,7 +26,7 @@ class HydenvExercises:
         self._backend_thread = None
 
         if backend == 'local':
-            self.backend = 'http://localhost:8080/'
+            self.backend = 'http://localhost:5000/'
             self.backend_use_debug = True
         else:
             self.backend = backend
@@ -35,23 +36,32 @@ class HydenvExercises:
         Check if the backend is already running.
         """
         try:
-            res = requests.get(self.backend + 'run?ping=true')
+            res = requests.get(self.backend + 'ping')
             if res.status_code != 200:
                 raise requests.ConnectionError()
         except requests.ConnectionError:
-            self._run_functions_framework()
+            self._run_backend_server()
 
-    def _run_functions_framework(self):
+    def _run_backend_server(self):
         """
         On local machines, we need to start the functions-framework in a 
         subprocess.
         """
         print('Starting backend server: %s' % self.backend)
-        cmds = ['functions-framework', '--target=run', '--source=%s' % BACKEND ]
+        
+        # add the database connection to evironment variables
+
+        # build command
+        cmds = ['python', BACKEND, '--db_uri=%s' % self.connection]
         if self.backend_use_debug:
             cmds.append('--debug')
-        self._backend_proc = subprocess.POpen(cmds)
+        
+        # execute
         print('Running\nOpen a new terminal to start learning')
+        t = Timer(0.3, webbrowser.open_new_tab, args=[self.backend + 'ping'])
+        t.start()
+        self._backend_proc = subprocess.call(cmds)
+        
 
     def run_sql(self, sql: str, safe=True):
         """

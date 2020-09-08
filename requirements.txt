@@ -1,5 +1,6 @@
 sqlalchemy
 geoalchemy2
-functions-framework
+flask
+flask-cors
 fire
 tabulate
