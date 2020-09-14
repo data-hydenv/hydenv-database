@@ -23,22 +23,29 @@ class HydenvExercises:
         self.connection = env.build_connection(connection=connection)
 
         # backend settings
-        self.backend_use_debug = False        
+        self.backend_use_debug = False
+        self.allow_external = False     
         self._backend_proc = None
         self._backend_thread = None
 
         if backend == 'local':
             self.backend = 'http://localhost:5000/'
             self.backend_use_debug = True
+        elif backend == 'extern' or backend == 'external':
+            self.backend = 'http://localhost:5000/'
+            self.backend_use_debug = False
+            self.allow_external = True
         else:
             self.backend = backend
+        print(self.backend)
 
     def start(self):
         """
         Check if the backend is already running.
         """
+        print(self.backend)
         try:
-            res = requests.get(self.backend + 'ping')
+            res = requests.get(self.backend + 'api/v1/ping')
             if res.status_code != 200:
                 raise requests.ConnectionError()
             print('Backend instance already running')
@@ -58,10 +65,13 @@ class HydenvExercises:
         cmds = ['python', BACKEND, '--db_uri=%s' % self.connection]
         if self.backend_use_debug:
             cmds.append('--debug')
+        if self.allow_external:
+            cmds.extend(['--host', '0.0.0.0'])
+#            subprocess.call(['iptables', '-t', 'nat', '-A', 'PREROUTING', '-p', 'tcp', '--dport', '80', '-j', 'REDIRECT', '--to-port', '8080'])
         
         # execute
         print('Running\nOpen a new terminal to start learning')
-        t = Timer(0.3, webbrowser.open_new_tab, args=[self.backend + 'ping'])
+        t = Timer(0.3, webbrowser.open_new_tab, args=[self.backend + 'api/v1/ping'])
         t.start()
         self._backend_proc = subprocess.call(cmds)
         
