@@ -1,0 +1,13 @@
+.content-area.main {
+    padding: 0;
+    overflow-y: auto;
+
+    .wrapper {
+        max-width: 992px;
+        margin: auto;
+
+        @media (max-width: 991px) {
+            padding: 1rem;
+        }
+    }
+}

@@ -1,0 +1,37 @@
+<clr-tabs>
+    
+    <clr-tab *ngIf="res">
+        <button clrTabLink>Data</button>
+        <clr-tab-content>
+            <clr-datagrid>
+                <clr-dg-column *ngFor="let col of resultColumns">{{ col }}</clr-dg-column>
+
+                <clr-dg-row *ngFor="let row of res.data">
+                    <clr-dg-cell *ngFor="let col of resultColumns">{{ row[col] }}</clr-dg-cell>
+                </clr-dg-row>
+            </clr-datagrid>
+        </clr-tab-content>    
+    </clr-tab>
+
+    <clr-tab *ngIf="res">
+        <button clrTabLink>Performance</button>
+        <clr-tab-content>
+            <clr-datagrid>
+                <clr-dg-column>Measure</clr-dg-column>
+                <clr-dg-column>Value</clr-dg-column>
+
+                <clr-dg-row>
+                    <clr-dg-cell>Execution Time</clr-dg-cell>
+                    <clr-dg-cell>{{ res.perf.executionTime }}</clr-dg-cell>
+                </clr-dg-row>
+
+                <clr-dg-row>
+                    <clr-dg-cell>Backend Time</clr-dg-cell>
+                    <clr-dg-cell>{{ res.perf.backendTime }}</clr-dg-cell>
+                </clr-dg-row>
+
+            </clr-datagrid>
+        </clr-tab-content>
+    </clr-tab>
+
+</clr-tabs>

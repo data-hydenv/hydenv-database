@@ -1,0 +1,25 @@
+<clr-modal [(clrModalOpen)]="active" [clrModalSize]="'lg'" *ngIf="active">
+    <div class="modal-body">
+        <p>
+            <span class="spinner spinner-inverse" *ngIf="pending"></span>
+        </p>
+        <div *ngIf="triggerFinished" class="success">
+            <clr-icon shape="check" size=72></clr-icon>
+            <span>Success! Backend found - we start is a second.</span>
+        </div>
+        <div *ngIf="triggerOptions">
+            <clr-tabs>
+                <clr-tab>
+                    <button clrTabLink id="local">Local</button>
+                    <clr-tab-content>
+                        <p><i>Description how to bind locally</i></p>
+                    </clr-tab-content>
+                </clr-tab>
+            </clr-tabs>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-primary" (click)="retry()">Retry</button>
+    </div>
+</clr-modal>
