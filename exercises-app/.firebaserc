@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "data-course-261609": {
+      "hosting": {
+        "exercises-app": [
+          "data-course-261609"
+        ]
+      }
+    }
+  }
+}
