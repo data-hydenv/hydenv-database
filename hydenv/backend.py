@@ -1,9 +1,12 @@
 import os
+import json
 from datetime import datetime as dt
 
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from sqlalchemy import create_engine
+
+from hydenv.util.json import sqlencoder
 
 app = Flask(__name__)
 CORS(app)
@@ -44,13 +47,13 @@ def execute():
                 'params': data,
                 'error': True,
                 'data': [dict(errorMessage=str(e))]
-            })
+            }, )
         t3 = dt.now()
 
     return jsonify({
         'message': 'Run successful',
         'params': data,
-        'data': [dict(r) for r in res],
+        'data': [{k: sqlencoder(v) for k,v in r.items()} for r in res],
         'perf': dict(
             backendTime=(t3 - t2).total_seconds(), 
             executionTime=(t3 - t1).total_seconds()
