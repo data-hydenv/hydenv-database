@@ -1,0 +1,11 @@
+<ng-container *ngIf="body">
+
+  <ng-container *ngIf="body.type === 'html'">
+    <div [innerHTML]="content"></div>
+  </ng-container>
+
+  <ng-container *ngIf="body.type === 'text'">
+    <p>{{ content }}</p>
+  </ng-container>
+
+</ng-container>

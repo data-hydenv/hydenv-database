@@ -1,1 +1,12 @@
-<p>exercise-page works!</p>
+<ng-container *ngIf="exercise; else notFound">
+
+  <app-exercise-body [body]="exercise.body"></app-exercise-body>
+
+  <pre>{{ exercise | json }}</pre>
+</ng-container>
+
+<ng-template #notFound>
+  <p>
+    <i>The requested resource could not be loaded. No idea why.</i>
+  </p>
+</ng-template>
