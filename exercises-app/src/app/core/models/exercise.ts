@@ -15,4 +15,5 @@ export interface Exercise {
     name: string;
     body: ExerciseBody;
     solution: ExerciseSolution;
+    hint?: string;
 }

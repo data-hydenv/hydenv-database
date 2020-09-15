@@ -1,7 +1,11 @@
 import { Component, OnInit, Input } from '@angular/core';
+
+
 import { Exercise } from '../../models/exercise';
 import { ExerciseService } from '../../exercise.service';
 import { SqlResult } from '../../models/sql-result';
+
+import { isEqual } from 'lodash';
 
 @Component({
   selector: 'app-exercise-compare',
@@ -19,6 +23,7 @@ export class ExerciseCompareComponent implements OnInit {
   // component logic
   solutionCorrect = false;
   showSolution = false;
+  showHint = false;
 
   constructor(private exerciseService: ExerciseService) { }
 
@@ -47,6 +52,13 @@ export class ExerciseCompareComponent implements OnInit {
   /**
    * Compare the user result to the solution.
    */
-  private compare(): void {}
+  private compare(): void {
+    if (isEqual(this.userResult.data, this.solution.data)) {
+      this.solutionCorrect = true;
+      this.showSolution = true;
+    } else {
+      this.solutionCorrect = false;
+    }
+  }
 
 }

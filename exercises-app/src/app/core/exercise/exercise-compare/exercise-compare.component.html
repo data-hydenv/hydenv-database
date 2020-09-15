@@ -1,1 +1,60 @@
-<app-sql-input (result)></app-sql-input>
+<app-sql-input (result)="onUserInput($event)"></app-sql-input>
+
+<ng-container *ngIf="solution && solutionCorrect;">
+  <div class="clr-row">
+    <div class="clr-col-4">
+      <clr-icon shape="check" size="72"></clr-icon>
+    </div>
+    <div class="clr-col-8">
+      <p>Your solution is correct.</p>
+    </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="solution && !solutionCorrect">
+  <div class="clr-row">
+    <div class="clr-col-4">
+      <clr-icon shape="times" size=72></clr-icon>
+    </div>
+    <div class="clr-col-8">
+      <div class="clr-row">
+        <div class="clr-col-12">
+          <p>Your solution is not yet quite correct</p>
+        </div>
+        <div class="clr-col-6">
+          <clr-toggle-container *ngIf="exercise.hint"><clr-toggle-wrapper>
+            <input type="checkbox" clrToggle [(ngModel)]="showHint">
+            <label>show hint</label>
+          </clr-toggle-wrapper></clr-toggle-container>
+        </div>
+        <div class="clr-col-6">
+          <clr-toggle-container><clr-toggle-wrapper>
+            <input type="checkbox" clrToggle [(ngModel)]="showSolution">
+            <label>show solution</label>
+          </clr-toggle-wrapper></clr-toggle-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="showHint">
+  <h3>Hint</h3>
+  <p [innerHTML]="exercise.hint"></p>
+</ng-container>
+
+<ng-container *ngIf="showSolution">
+  <h3>Solution query</h3>
+  <pre><code [highlight]="exercise.solution.content"></code></pre>
+</ng-container>
+
+<ng-container *ngIf="userResult">
+  <h3>Your Solution</h3>
+  <app-sql-result [result]="userResult"></app-sql-result>
+</ng-container>
+
+
+
+<ng-container *ngIf="solution && solutionCorrect">
+  <h3>Sample Solution</h3>
+  <app-sql-result [result]="solution"></app-sql-result>
+</ng-container>
