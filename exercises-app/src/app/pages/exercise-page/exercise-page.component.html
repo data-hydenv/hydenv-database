@@ -1,8 +1,7 @@
 <ng-container *ngIf="exercise; else notFound">
-
+  <h1>{{ exercise.name }}</h1>
   <app-exercise-body [body]="exercise.body"></app-exercise-body>
 
-  <pre>{{ exercise | json }}</pre>
 </ng-container>
 
 <ng-template #notFound>
