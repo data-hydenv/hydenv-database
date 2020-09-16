@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
 import { SqlResult } from '../../models/sql-result';
 import { ExerciseService } from '../../exercise.service';
 
@@ -11,11 +11,14 @@ export class SqlInputComponent implements OnInit {
   @Output() result = new EventEmitter<SqlResult>();
 
   // input reference
-  sql: string;
+  @Input() sql: string;
+  defaultSql: string;
+  @Output() sqlChange = new EventEmitter<string>();
 
   constructor(private exerciseService: ExerciseService) { }
 
   ngOnInit(): void {
+    this.defaultSql = this.sql;
   }
 
   onExecute(): void {
@@ -24,6 +27,10 @@ export class SqlInputComponent implements OnInit {
     }).catch(error => {
       console.log(error);
     });
+  }
+
+  onChange(newSql: string): void {
+    this.sql = newSql;
   }
 
 }

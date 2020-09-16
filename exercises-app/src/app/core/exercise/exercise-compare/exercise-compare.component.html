@@ -44,7 +44,7 @@
 
 <ng-container *ngIf="showSolution">
   <h3>Solution query</h3>
-  <pre><code [highlight]="exercise.solution.content"></code></pre>
+  <pre><code [innerHTML]="exercise.solution.content"></code></pre>
 </ng-container>
 
 <ng-container *ngIf="userResult">

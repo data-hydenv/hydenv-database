@@ -23,10 +23,11 @@
     "@clr/angular": "4.0.1",
     "@clr/icons": "4.0.1",
     "@clr/ui": "4.0.1",
+    "@ngstack/code-editor": "^2.1.0",
     "@webcomponents/webcomponentsjs": "^2.0.0",
     "firebase": "^7.13.1",
+    "highlight.js": "^10.2.0",
     "lodash": "^4.17.20",
-    "ngx-highlightjs": "^4.1.1",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"

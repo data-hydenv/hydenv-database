@@ -9,8 +9,6 @@ import { SqlResult } from 'src/app/core/models/sql-result';
   styleUrls: ['./console-page.component.scss']
 })
 export class ConsolePageComponent implements OnInit {
-  sql = 'SELECT count(*) as amount FROM metadata';
-
   // result object
   result: SqlResult;
 
@@ -19,15 +17,8 @@ export class ConsolePageComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  onExecute(): void {
-    this.exercise.executeSql(this.sql).then(
-      data => {
-        console.log(data);
-        this.result = data;
-      }
-    ).catch(
-      error => console.log(error)
-    );
+  onExecute(res: SqlResult): void {
+    this.result = res;
   }
 
 }

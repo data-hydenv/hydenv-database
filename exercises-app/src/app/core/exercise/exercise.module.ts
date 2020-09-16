@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 import { ClarityModule } from '@clr/angular';
-import { FormsModule } from '@angular/forms';
-import { HighlightModule } from 'ngx-highlightjs';
+import { CodeEditorModule } from '@ngstack/code-editor';
 
 import { ExerciseBodyComponent } from './exercise-body/exercise-body.component';
 import { ExerciseCompareComponent } from './exercise-compare/exercise-compare.component';
@@ -22,8 +22,8 @@ import { SqlResultModule } from '../sql-result/sql-result.module';
     CommonModule,
     ClarityModule,
     FormsModule,
+    CodeEditorModule.forChild(),
     SqlResultModule,
-    HighlightModule,
   ],
   exports: [
     ExerciseBodyComponent,

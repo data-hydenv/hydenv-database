@@ -1,2 +1,2 @@
-<textarea clrTextarea [(ngModel)]="sql"></textarea>
+<ngs-code-editor theme="vs-dark" [codeModel]="{language: 'sql', value: defaultSql}" (valueChanged)="onChange($event)"></ngs-code-editor>
 <button class="btn btn-outline-success btn-block" (click)="onExecute()">Execute</button>
