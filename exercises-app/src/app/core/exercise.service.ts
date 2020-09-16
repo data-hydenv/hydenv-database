@@ -5,6 +5,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 
 import { SettingsService } from './settings.service';
 import { Exercise } from './models/exercise';
+import { Track } from './models/track';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +36,22 @@ export class ExerciseService {
     return new Promise(resolve => {
       this.firestore.collection('exercises').doc(id).get().subscribe({
         next: doc => resolve(doc.data() as Exercise)
+      });
+    });
+  }
+
+  getTrack(id: string): Promise<Track> {
+    return new Promise(resolve => {
+      this.firestore.collection('tracks').doc(id).get().subscribe({
+        next: doc => resolve(doc.data() as Track)
+      });
+    });
+  }
+
+  getTrackIds(): Promise<string[]> {
+    return new Promise(resolve => {
+      this.firestore.collection('tracks').snapshotChanges().subscribe({
+        next: refs => resolve(refs.map(ref => ref.payload.doc.id))
       });
     });
   }
