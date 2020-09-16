@@ -48,6 +48,18 @@ export class ExerciseService {
     });
   }
 
+  getTracks(): Promise<Track[]> {
+    return new Promise(resolve => {
+      const tracks: Track[] = [];
+      this.firestore.collection('tracks').get().subscribe({
+        next: docs => {
+          docs.forEach(d => tracks.push(d.data() as Track));
+          resolve(tracks);
+        }
+      });
+    });
+  }
+
   getTrackIds(): Promise<string[]> {
     return new Promise(resolve => {
       this.firestore.collection('tracks').snapshotChanges().subscribe({

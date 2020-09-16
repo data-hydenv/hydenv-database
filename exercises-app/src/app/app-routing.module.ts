@@ -26,6 +26,11 @@ const routes: Routes = [
     loadChildren: () => import('./pages/exercise-page/exercise-page.module').then(m => m.ExercisePageModule)
   },
   {
+    path: 'tracks',
+    component: FullWidthLayoutComponent,
+    loadChildren: () => import('./pages/tracks-page/tracks-page.module').then(m => m.TracksPageModule)
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
