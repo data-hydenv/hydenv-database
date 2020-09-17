@@ -6,6 +6,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { SettingsService } from './settings.service';
 import { Exercise } from './models/exercise';
 import { Track } from './models/track';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,10 +14,30 @@ import { Track } from './models/track';
 export class ExerciseService {
   backendUrl: string;
 
+  // distribute track information to the application
+  tracksCache: Track[] = [];
+  tracks = new BehaviorSubject<Track[]>(this.tracksCache);
+
   constructor(private settings: SettingsService, private http: HttpClient, private firestore: AngularFirestore) {
+    this.subscriptions();
+  }
+
+  private subscriptions(): void {
+    // subscribe to the current backend URL
     this.settings.backend.subscribe({
       next: url => this.backendUrl = url
     });
+
+    // subscribe to changes of the tracks collection in Firestore
+    this.firestore.collection<Track>('tracks').snapshotChanges().subscribe({
+      next: (refs) => {
+        this.tracksCache = refs.map(ref => {
+          return {id: ref.payload.doc.id, ...ref.payload.doc.data()};
+        });
+        this.tracks.next(this.tracksCache);
+      }
+    });
+
   }
 
   /**
@@ -40,31 +61,9 @@ export class ExerciseService {
     });
   }
 
-  getTrack(id: string): Promise<Track> {
-    return new Promise(resolve => {
-      this.firestore.collection('tracks').doc(id).get().subscribe({
-        next: doc => resolve(doc.data() as Track)
-      });
-    });
-  }
-
-  getTracks(): Promise<Track[]> {
-    return new Promise(resolve => {
-      const tracks: Track[] = [];
-      this.firestore.collection('tracks').get().subscribe({
-        next: docs => {
-          docs.forEach(d => tracks.push(d.data() as Track));
-          resolve(tracks);
-        }
-      });
-    });
-  }
-
   getTrackIds(): Promise<string[]> {
     return new Promise(resolve => {
-      this.firestore.collection('tracks').snapshotChanges().subscribe({
-        next: refs => resolve(refs.map(ref => ref.payload.doc.id))
-      });
+      resolve(this.tracksCache.map(t => t.id));
     });
   }
 }
