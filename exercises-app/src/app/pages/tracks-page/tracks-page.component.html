@@ -2,18 +2,8 @@
 
   <ng-container *ngFor="let track of tracks">
 
-    <div class="clr-row-4">
-      <div class="card">
-        <div class="card-header">{{ track.name }}</div>
-        <div class="card-block">
-          <p class="card-text" [innerHTML]="track.description"></p>
-
-        </div>
-        <div class="card-footer">
-          <button type="button" class="btn btn-sm btn-link">Exercises</button>
-          <button type="button" class="btn btn-sm btn-link" [routerLink]="['/', 'e', track.exercises[0].id]">Start</button>
-        </div>
-      </div>
+    <div class="clr-col-4">
+      <app-track-card [track]="track"></app-track-card>
     </div>
 
   </ng-container>

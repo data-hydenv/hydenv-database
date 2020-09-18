@@ -1,0 +1,29 @@
+<div class="card">
+  <div class="card-header">{{ track.name }}</div>
+
+  <ng-container *ngIf="!showExercises; else exercises">
+    <div class="card-img">
+      <clr-icon shape="bank" size="72" *ngIf="!track.options.image"></clr-icon>
+      <ng-container *ngIf="track.options.image">
+        <clr-icon *ngIf="track.options.image.type === 'icon'" [attr.shape]="track.options.image.src" size="72"></clr-icon>
+        <img *ngIf="track.options.image.type !== 'icon'" [src]="track.options.image.src">
+      </ng-container>
+    </div>
+    <div class="card-block">
+      <p class="card-text" [innerHTML]="track.description"></p>
+    </div>
+  </ng-container>
+
+  <div class="card-footer">
+    <button type="button" class="btn btn-sm btn-link" *ngIf="!showExercises" (click)="showExercises = true">Exercises</button>
+    <button type="button" class="btn btn-sm btn-link" *ngIf="showExercises" (click)="showExercises = false">Hide</button>
+    <button type="button" class="btn btn-sm btn-link" [routerLink]="['/', 'e', track.exercises[0].id]">Start</button>
+  </div>
+
+</div>
+
+<ng-template #exercises>
+  <div class="card-block">
+    <app-exercise-list [track]="track"></app-exercise-list>
+  </div>
+</ng-template>

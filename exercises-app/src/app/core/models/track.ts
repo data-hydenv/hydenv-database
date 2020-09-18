@@ -8,7 +8,7 @@ export interface TrackOptions {
   login?: boolean;
   paidBackend?: boolean;
   storeResults: boolean;
-  icon?: string;
+  image?: {type: 'icon' | 'http' | 'img', src: string};
 }
 
 export interface Track {

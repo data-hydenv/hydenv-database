@@ -1,0 +1,18 @@
+<clr-datagrid>
+
+  <clr-dg-column>Exercise</clr-dg-column>
+  <clr-dg-column>Mandatory</clr-dg-column>
+  <clr-dg-column>Action</clr-dg-column>
+
+  <clr-dg-row *ngFor="let e of exercises">
+    <clr-dg-cell>{{ e.id }}</clr-dg-cell>
+    <clr-dg-cell>
+      <clr-icon [attr.shape]="e.mandatory ? 'check' : 'times'"></clr-icon>
+    </clr-dg-cell>
+    <clr-dg-cell>
+      <a class="btn btn-sm btn-link" [routerLink]="['/', 'e', e.id]">Start</a>
+    </clr-dg-cell>
+  </clr-dg-row>
+
+
+</clr-datagrid>
