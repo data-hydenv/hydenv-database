@@ -17,10 +17,23 @@ class HydenvDatabase:
     :param connection: The database URI following syntax:\n
         postgresql://<user>:<password>@<host>:<port>/<database>
     """
-    def __init__(self, connection="postgresql://postgres:postgres@localhost:5432/postgres"):
-        self.connection = connection
+    def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"):
+        self.__connection = env.build_connection(connection=connection)
+        self.engine = create_engine(self.__connection)
 
-    def install(self, db_name='hydenv', role='hydenv', password='changeme', skip_init=False, env='export'):
+    def save(self, usr='hydenv', pw='hydenv', host='localhost', port='5432', dbname='hydenv'):
+        """
+        Store the connection information to a file.\n
+        Be careful, this function will strore the password to a file in home directory.
+        :param usr: PostgreSQL user role
+        :param pw: User role password
+        :param host: PostgreSQL databse host
+        :param port: port of the PostgreSQL daemon
+        :param dbname: Database name for Hydenv
+        """
+        env.store_file(usr=usr, pw=pw, host=host, port=port, dbname=dbname)
+
+    def install(self, db_name='hydenv', role='hydenv', password='hydenv', skip_init=False):
         """
         Install the database\n
         The connection passed needs to have granted privileges to create
@@ -39,11 +52,8 @@ class HydenvDatabase:
             - file will write them to an .env file.
         :raises AttributeError: if the password was not given
         """
-        # create the engine and create the user
-        engine = create_engine(self.connection)
-
         # check if the user exists
-        with engine.connect() as con:
+        with self.engine.connect() as con:
             res = con.execute("SELECT true FROM pg_roles WHERE rolname='{usr}'".format(usr=role)).scalar()
             if res is not True:
                 if password == 'changeme':
@@ -51,39 +61,39 @@ class HydenvDatabase:
                 con.execute("CREATE USER {usr} WITH PASSWORD '{pw}'".format(usr=role, pw=password))
         
         # create the SQL and commit
-        with engine.connect() as con:
+        with self.engine.connect() as con:
             con.execute('commit')
             con.execute('CREATE DATABASE %s' % db_name)
 
         # grant 
-        with engine.connect() as con:
+        with self.engine.connect() as con:
             con.execute('commit')
             con.execute('GRANT ALL PRIVILEGES ON DATABASE "{db}" TO {usr}'.format(db=db_name, usr=role))
         
         # build the connection to the new database
-        chunks = self.connection.split('/')
+        chunks = self.__connection.split('/')
         uri = ''.join([chunks[0], '//', chunks[2], '/', db_name])
         engine = create_engine(uri)
 
         # connect and install postgis
-        with engine.connect() as con:
+        with self.engine.connect() as con:
             con.execute('CREATE EXTENSION postgis;')
             res = con.execute('Select PostGis_Full_Version();').scalar()
             
         # rebuild the connection
-        host_port = self.connection.split('@')[1].split('/')[0]
+        host_port = self.__connection.split('@')[1].split('/')[0]
         host, port = host_port.split(':')
-        self.connection = 'postgresql://{usr}:{pw}@{host}:{port}/{db}'.format(
+        self.__connection = 'postgresql://{usr}:{pw}@{host}:{port}/{db}'.format(
             usr=role, pw=password, host=host,port=port, db=db_name
         )
         # expose conn if 
         self.__expose_con(usr=role, pw=password, host=host, port=port, dbname=db_name)
         
         if skip_init:
+            return res
+        else:
             print(res)
             self.init()
-        else:
-            return res
 
     def init(self, clean=False):
         """
@@ -93,14 +103,12 @@ class HydenvDatabase:
         :param clean: If True, any existing table will be dropped
             before creating the tables.
         """
-        engine = create_engine(self.connection)
-
         # drop if existing
         if clean:
-            Base.metadata.drop_all(bind=engine)
+            Base.metadata.drop_all(bind=self.engine)
         
         # creata tables
-        Base.metadata.create_all(bind=engine)
+        Base.metadata.create_all(bind=self.engine)
         print('Done')
 
     def __expose_con(self, action, **kwargs):
