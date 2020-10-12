@@ -14,12 +14,12 @@ class Metadata(Base):
     id = Column(Integer, primary_key=True)
     device_id = Column(Integer, nullable=False)
     sensor_id = Column(Integer, ForeignKey('sensors.id'))
-    semester_id = Column(Integer, ForeignKey('semester_id'))
+    term_id = Column(Integer, ForeignKey('terms.id'))
     location = Column(Geometry('POINT', srid=4326), nullable=False)
     description = Column(String, nullable=False)
 
     # relationships
-    semester = relationship('Semester', back_populates='metadata')
+    term = relationship('Term', back_populates='data')
 
 
 class Variable(Base):
@@ -38,8 +38,8 @@ class Sensor(Base):
     name = Column(String(), nullable=False)
 
 
-class Semester(Base):
-    __tablename__ = 'semester'
+class Term(Base):
+    __tablename__ = 'terms'
 
     # columns
     id = Column(Integer, primary_key=True)
@@ -49,7 +49,7 @@ class Semester(Base):
     end_date = Column(DateTime, nullable=False)
 
     # relationships
-    metadata = relationship('Metadata', back_populates='semester')
+    data = relationship('Metadata', back_populates='term')
 
     def __str__(self):
         return self.short
