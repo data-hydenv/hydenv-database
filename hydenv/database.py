@@ -2,8 +2,9 @@ import os
 import sys 
 
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-from hydenv.models import Base
+from hydenv.models import Base, Term, Variable
 from hydenv.util import env
 
 
@@ -20,6 +21,8 @@ class HydenvDatabase:
     def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"):
         self.__connection = env.build_connection(connection=connection)
         self.engine = create_engine(self.__connection)
+        Session = sessionmaker(self.engine)
+        self.session = Session()
 
     def save(self, usr='hydenv', pw='hydenv', host='localhost', port='5432', dbname='hydenv'):
         """
@@ -109,6 +112,12 @@ class HydenvDatabase:
         
         # creata tables
         Base.metadata.create_all(bind=self.engine)
+
+        # import default Terms
+        if clean:
+            Term.defaults(session=self.session)
+            Variable.defaults(session=self.session)
+        
         print('Done')
 
     def __expose_con(self, action, **kwargs):

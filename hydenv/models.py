@@ -1,11 +1,29 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, ForeignKey, Table
 from sqlalchemy import Integer, String, DateTime, Numeric
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Session
 from geoalchemy2 import Geometry
 
-Base = declarative_base()
+from datetime import datetime as dt
 
+
+class Base(object):
+    # overwrite the default values
+    __prepopulate__ = []
+
+    @classmethod
+    def defaults(cls, session: Session):
+        instances = [cls(**d) for d in cls.__prepopulate__]
+
+        try:
+            session.add_all(instances)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            print('Populating defaults errored\n%s' % str(e))
+
+
+Base = declarative_base(cls=Base)
 
 class Metadata(Base):
     __tablename__ = 'metadata'
@@ -24,6 +42,10 @@ class Metadata(Base):
 
 class Variable(Base):
     __tablename__ = 'variables'
+    __prepopulate__ = [
+        dict(name='temperature', unit='deg. Celsius'),
+        dict(name='light', unit='intensity', comment='Ambient light intensity (can be converted to lux).')
+    ]
 
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False, unique=True)
@@ -50,6 +72,23 @@ class Term(Base):
 
     # relationships
     data = relationship('Metadata', back_populates='term')
+
+    @classmethod
+    def defaults(cls, session: Session):
+        """
+        Load some default values
+        """
+        # build the default values
+        cls.__prepopulate__ = []
+        for y in range(16, 40):
+            y2 = y + 1
+            cls.__prepopulate__.extend([
+                dict(short='WT%d' % y, full_name='Winterterm 20%d/20%d' % (y, y2), start_date=dt(2000 + y, 10, 1), end_date=dt(2000 + y2, 3, 31)),
+                dict(short='ST%d' % y2, full_name='Summerterm 20%d' % y2, start_date=dt(2000 + y2, 4, 1), end_date=dt(2000 + y2, 9, 30)),
+            ])
+        
+        # super into Base class
+        super(Term, cls).defaults(session=session)
 
     def __str__(self):
         return self.short
