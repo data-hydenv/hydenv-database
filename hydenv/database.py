@@ -1,5 +1,6 @@
 import os
-import sys 
+import sys
+import json
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -126,6 +127,57 @@ class HydenvDatabase:
             Variable.defaults(session=self.session)
         
         print('Done')
+
+    def execute(self, sql, safe=True):
+        pass
+
+    def explain(self, sql: str, path=None, fmt='json', full=False) -> dict:
+        """
+        """
+        # build analyse query
+        if not sql.lower().startswith('explain'):
+            sql = "EXPLAIN (ANALYSE, FORMAT %s) %s" % (fmt, sql)
+        
+        # execute the query
+        with self.engine.connect() as con:
+            result = con.execute(sql)
+        
+        # extract info
+        d = result.fetchall()
+        while not isinstance(d, dict) or len(d) == 1:
+            d = d[0]
+        
+        # build the query plan object
+        explain = dict(
+            Planning=d.get('Planning Time'), 
+            Execution=d.get('Execution Time')
+        )
+        plan = d['Plan']
+
+        # TODO maybe I need this somewhere else -> move into util?
+        def parse_node(nodes):
+            if isinstance(nodes, dict):
+                newnode = {
+                    'action': nodes['Node Type'],
+                    'time': nodes['Actual Total Time'] - nodes['Actual Startup Time'],
+                    'cost': nodes['Actual Total Cost'] - nodes['Actual Startup Cost']
+                }
+                if 'Plans' in nodes:
+                    newnode['plans'] = parse_node(nodes['Plans'])
+                return newnode
+            elif isinstance(nodes, list):
+                return [parse_node(node) for node in nodes]
+        
+        # parse all nodes
+        explain['short'] = parse_node(plan)
+        if full:
+            explain['full'] = plan
+        
+        if path is None:
+            return explain
+        else:
+            with open(path, 'w') as f:
+                json.dump(explain, f, indent=4)    
 
     def __expose_con(self, action, **kwargs):
         if action.lower() == 'suppress':
