@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, ForeignKey, Table
+from sqlalchemy import Column, ForeignKey, UniqueConstraint
 from sqlalchemy import Integer, String, DateTime, Numeric, Boolean
 from sqlalchemy.orm import relationship, Session
 from geoalchemy2 import Geometry
@@ -39,7 +39,7 @@ class Metadata(Base):
 
     # columns
     id = Column(Integer, primary_key=True)
-    device_id = Column(Integer, nullable=False)
+    device_id = Column(String, nullable=False)
     sensor_id = Column(Integer, ForeignKey('sensors.id'))
     term_id = Column(Integer, ForeignKey('terms.id'))
     location = Column(Geometry('POINT', srid=4326), nullable=False)
@@ -131,6 +131,9 @@ class Data(Base):
 
 class RawData(Base):
     __tablename__ = 'raw_data'
+#    __table_args__ = (
+#        UniqueConstraint('meta_id', 'variable_id', 'tstamp', name='uq_raw_data')
+#    )
 
     meta_id = Column(Integer, ForeignKey('metadata.id'), primary_key=True)
     variable_id = Column(Integer, ForeignKey('variables.id'), primary_key=True)

@@ -1,12 +1,12 @@
 import pandas as pd
 import os
+import ntpath
 import re
-import time
 from string import ascii_lowercase
 from random import choice
 from sqlalchemy import create_engine
 from datetime import datetime as dt
-from progressbar import ProgressBar, UnknownLength
+from progressbar import ProgressBar
 
 from hydenv.util import env
 from hydenv.measurements import HydenvMeasurements
@@ -104,10 +104,14 @@ class HydenvHoboImporter:
 		
 		# load the file
 		txtfmt = filename.endswith('.txt')
-		data = read_file(filename, txtfmt=txtfmt)
+		try:
+			data = read_file(filename, txtfmt=txtfmt)
+		except Exception as e:
+			print("Parsing file '%s' was not successfull.\nDo not edit the files by hand!\nError: %s " % (filename, str(e)))
+			return
 
-		# get the hobo id
-		hobo_id = os.path.split(filename)[-1].split('.')[0]
+#		# get the hobo id
+#		hobo_id = os.path.split(filename)[-1].split('.')[0]
 
 		# search the metadata
 		cli = HydenvMeasurements(connection=self.__connection)
@@ -132,8 +136,8 @@ class HydenvHoboImporter:
 
 		# upload to temporary table
 		temp.to_sql(name, engine, index=False)
-		engine.execute('INSERT INTO raw_data (meta_id, variable_id, tstamp, value) SELECT meta_id, variable_id, tstamp, value FROM %s ON CONFLICT (meta_id, tstamp) DO NOTHING' % name)
-		engine.execute('UPDATE TABLE raw_data r SET value=t.value FROM %s t WHERE r.meta_id=t.meta_id AND r.tstamp=t.tstamp' % name)
+		engine.execute('INSERT INTO raw_data (meta_id, variable_id, tstamp, value) SELECT meta_id, variable_id, tstamp, value FROM %s ON CONFLICT (meta_id, variable_id, tstamp) DO NOTHING' % name)
+		engine.execute('UPDATE raw_data r SET value=t.value FROM %s t WHERE r.meta_id=t.meta_id AND r.tstamp=t.tstamp' % name)
 
 		# delete the temp table
 		engine.execute("DROP TABLE %s" % name)
@@ -150,27 +154,35 @@ class HydenvHoboImporter:
 		:param match: Regular expression to match all data files
 		:param term: If applicable, add the term for the data like: WS17
 		"""
-		flist = [f for f in os.listdir(path) if re.match(match, f)]
+		flist = [os.path.join(path, f) for f in os.listdir(path) if re.match(match, f)]
 		
 		# load the term if any
 		cli = HydenvMeasurements(self.__connection)
 		if term is not None:
 			semester = cli.read('Term', return_query=True, short=term).first()
+			if semester is None:
+				raise AttributeError("Term '%s' not found." % term)
+			else: 
+				term_id = semester.id
 		else: 
-			semester = None
+			term_id = None
 
 		# build a progressbar
 		if not quiet:
 			bar = ProgressBar(max_value=len(flist), redirect_stdout=True)
-
+		
 		# load all files
 		for i, fname in enumerate(flist):
-			device_id = os.path.splitext(fname)[1].split('.')[1]
-			meta = cli.read('Metadata', return_query=True, device_id=device_id, term_id=semester).first()
+			try:
+				device_id = ntpath.split(fname)[-1].split('.')[0]
+				meta = cli.read('Metadata', return_query=True, device_id=device_id, term_id=term_id).first()
+			except:
+				print("File '%s' cannot be processed." % fname)
+				continue
 			
 			# if there is no metadata, skip
 			if meta is None:
-				print('File %s references HOBO ID=%d, which is not found.' % (fname, device_id))
+				print('File %s references HOBO ID=%s, which is not found.' % (fname, device_id))
 			else:
 				# upload
 				self.upload(filename=fname, meta_id=meta.id)
