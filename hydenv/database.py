@@ -24,7 +24,7 @@ class HydenvDatabase:
         Session = sessionmaker(self.engine)
         self.session = Session()
 
-    def save(self, usr='hydenv', pw='hydenv', host='localhost', port='5432', dbname='hydenv'):
+    def save(self, user='hydenv', password='hydenv', host='localhost', port='5432', dbname='hydenv'):
         """
         Store the connection information to a file.\n
         Be careful, this function will strore the password to a file in home directory.
@@ -34,7 +34,7 @@ class HydenvDatabase:
         :param port: port of the PostgreSQL daemon
         :param dbname: Database name for Hydenv
         """
-        env.store_file(usr=usr, pw=pw, host=host, port=port, dbname=dbname)
+        env.store_file(usr=user, pw=password, host=host, port=port, dbname=dbname)
 
     def connections(self):
         """
@@ -43,7 +43,7 @@ class HydenvDatabase:
         """
         return env.read_file()
 
-    def install(self, db_name='hydenv', role='hydenv', password='hydenv', skip_init=False):
+    def install(self, db_name='hydenv', user='hydenv', password='hydenv', skip_init=False):
         """
         Install the database\n
         The connection passed needs to have granted privileges to create
