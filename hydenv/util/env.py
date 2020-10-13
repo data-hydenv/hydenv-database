@@ -40,7 +40,7 @@ def build_connection(connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"
     if '{usr}' in connection:
         args['usr'] = os.environ.get('POSTGRES_USER', fargs.get('POSTGRES_USER', 'hydenv'))
     if '{pw}' in connection:
-        args['pw'] = os.environ.get('POSTGRES_PASSWORD', fargs.get('POSTGRES_PASSWORD'))
+        args['pw'] = os.environ.get('POSTGRES_PASSWORD', fargs.get('POSTGRES_PASSWORD', 'hydenv'))
     if '{host}' in connection:
         args['host'] = os.environ.get('POSTGRES_HOST', fargs.get('POSTGRES_HOST', 'localhost'))
     if '{port}' in connection:

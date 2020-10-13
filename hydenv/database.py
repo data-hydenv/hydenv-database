@@ -36,6 +36,13 @@ class HydenvDatabase:
         """
         env.store_file(usr=usr, pw=pw, host=host, port=port, dbname=dbname)
 
+    def connections(self):
+        """
+        Shows the stored connection information on this machine. 
+        Note, this will contain the cleartext password if set.
+        """
+        return env.read_file()
+
     def install(self, db_name='hydenv', role='hydenv', password='hydenv', skip_init=False):
         """
         Install the database\n
@@ -76,7 +83,7 @@ class HydenvDatabase:
         # build the connection to the new database
         chunks = self.__connection.split('/')
         uri = ''.join([chunks[0], '//', chunks[2], '/', db_name])
-        engine = create_engine(uri)
+        self.engine = create_engine(uri)
 
         # connect and install postgis
         with self.engine.connect() as con:
@@ -90,7 +97,7 @@ class HydenvDatabase:
             usr=role, pw=password, host=host,port=port, db=db_name
         )
         # expose conn if 
-        self.__expose_con(usr=role, pw=password, host=host, port=port, dbname=db_name)
+        self.__expose_con('file', usr=role, pw=password, host=host, port=port, dbname=db_name)
         
         if skip_init:
             return res
