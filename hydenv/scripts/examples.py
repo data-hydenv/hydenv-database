@@ -148,10 +148,12 @@ class HydenvExamplesCli(HydenvExamples):
         """
         Import HOBO data.\n
         This high level script downloads all neccessary resources for the HOBO 
-        measureing campaigns and uploads them to the specified 
-        :param terms:
-        :param data_path:
-        :param only:
+        measureing campaigns and uploads them to the specified database.
+        You can limit the metadata by terms (like WT17, WT18 etc.) and upload only
+        'metadata' or 'data'. Default is to upload both.
+        :param terms: Either 'all' (default) or a specific term short name (like WT18) to use
+        :param data_path: Either 'download' (default) or a local path to the data
+        :param only: If set, only the given entities will be uploaded.
         """
         super(HydenvExamplesCli, self).hobo(terms=terms, data_path=data_path, only=only, quiet=False)
 
