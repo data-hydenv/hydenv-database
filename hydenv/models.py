@@ -1,6 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, ForeignKey, Table
-from sqlalchemy import Integer, String, DateTime, Numeric
+from sqlalchemy import Integer, String, DateTime, Numeric, Boolean
 from sqlalchemy.orm import relationship, Session
 from geoalchemy2 import Geometry
 
@@ -22,8 +22,17 @@ class Base(object):
             session.rollback()
             print('Populating defaults errored\n%s' % str(e))
 
-
+# augment the sqlalchemy Base class with defaults classmethod
 Base = declarative_base(cls=Base)
+
+# ---------------------------------------------------------------------
+# Database Models
+# ---------------------------------------------------------------------
+class DetailAssociation(Base):
+    __tablename__ = 'nm_metadata_details'
+
+    meta_id = Column(Integer, ForeignKey('metadata.id'), primary_key=True)
+    detail_id = Column(Integer, ForeignKey('details.id'), primary_key=True)
 
 class Metadata(Base):
     __tablename__ = 'metadata'
@@ -38,6 +47,13 @@ class Metadata(Base):
 
     # relationships
     term = relationship('Term', back_populates='data')
+    details = relationship('Detail', secondary='nm_metadata_details', back_populates='meta')
+
+    def get_details(self):
+        details = dict()
+        for assoc in self.details:
+            assoc.detail.to_dict(add_to=details)
+        return details
 
 
 class Variable(Base):
@@ -120,3 +136,40 @@ class RawData(Base):
     variable_id = Column(Integer, ForeignKey('variables.id'), primary_key=True)
     tstamp = Column(DateTime, primary_key=True)
     value = Column(Numeric, nullable=False)
+
+
+class Detail(Base):
+    __tablename__ = 'details'
+
+    # columns
+    id = Column(Integer, primary_key=True)
+    key = Column(String, nullable=False)
+    str_value = Column(String, nullable=True)
+    int_value = Column(Integer, nullable=True)
+    float_value = Column(Numeric, nullable=True)
+    bool_value = Column(Boolean, nullable=True)
+
+    # relationships
+    meta = relationship('Metadata', secondary='nm_metadata_details', back_populates='details')
+
+    def __init__(self, key, value):
+        self.key = key
+        if isinstance(value, str):
+            self.str_value = value
+        elif isinstance(value, int):
+            self.int_value = value
+        elif isinstance(value, float):
+            self.float_value = value
+        elif isinstance(value, bool):
+            self.bool_value = value
+        else:
+            self.str_value = str(value)
+
+    def to_dict(self, add_to=None):
+        if add_to is None:
+            add_to = dict()
+        for _t in ['str', 'int', 'float', 'bool']:
+            value = getattr(self, '%s_value' % _t)
+            if value is not None:
+                add_to[self.key] = value
+        return add_to
