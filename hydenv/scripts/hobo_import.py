@@ -187,7 +187,7 @@ class HydenvHoboImporter:
 				# upload
 				self.upload(filename=fname, meta_id=meta.id)
 			if not quiet:
-				bar.update(i)			
+				bar.update(i + 1)			
 
 
 class HydenvHoboImporterCli(HydenvHoboImporter):
