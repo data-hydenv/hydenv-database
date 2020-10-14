@@ -9,17 +9,49 @@
         </div>
         <div *ngIf="triggerOptions">
             <clr-tabs>
-                <clr-tab>
+
+              <clr-tab>
                     <button clrTabLink id="local">Local</button>
                     <clr-tab-content>
-                        <p><i>Description how to bind locally</i></p>
+                        <p>No backend was found. You need the <i>hydenv</i> CLI running.</p>
+                        <p>
+                          The CLI will issue all SQL queries to the PostgreSQL server connected in the CLI.
+                          This way, you can solve exercises locally or connect to a cloud instance if any was
+                          provided to you.
+                        </p>
+                        <p>Open a command prompt. If you have saved a connection before:</p>
+                        <code><pre>python -m hydenv exercises start</pre></code>
+                        <p>In case you need to specify the PostgreSQL server, run:</p>
+                        <code><pre>python -m hydenv exercises start --connection=postgresql://user:password@host:port/dbname</pre></code>
                     </clr-tab-content>
+                </clr-tab>
+
+                <clr-tab>
+                  <button clrTabLink>Remote</button>
+                  <clr-tab-content>
+                    <clr-alert [clrAlertClosable]="false" clrAlertType="warning">
+                      <clr-alert-item>
+                        <span class="alert-text">
+                          This feature is experimental and be used at your own risk.
+                          It can cause costs.
+                        </span>
+                      </clr-alert-item>
+                    </clr-alert>
+                    <p>
+                      To directly connct to a remote backend, you need that hosted.
+                      Hosting causes costs and has to be paid. If you didn't set this up yourself,
+                      you need to run the backend locally.
+                    </p>
+                    <p>Otherwise type the backend url in below</p>
+                    <input clrInput type="text" #backendUrl>
+                  </clr-tab-content>
                 </clr-tab>
             </clr-tabs>
         </div>
     </div>
 
     <div class="modal-footer">
-        <button class="btn btn-primary" (click)="retry()">Retry</button>
+        <button class="btn btn-primary" *ngIf="backendUrl && backendUrl.value" (click)="onChangeBackend(backendUrl.value);retry()"></button>
+        <button class="btn btn-primary" (click)="onChangeBackend();retry()">Retry</button>
     </div>
 </clr-modal>

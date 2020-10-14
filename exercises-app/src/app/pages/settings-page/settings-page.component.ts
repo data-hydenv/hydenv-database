@@ -10,7 +10,10 @@ import { Subscription } from 'rxjs';
 })
 export class SettingsPageComponent implements OnInit, OnDestroy {
   backendUrl: string;
+  backendStatus = 'offline';
+
   backendUrlSubscription: Subscription;
+  backendStatusSubscription: Subscription;
 
   constructor(private settings: SettingsService) { }
 
@@ -18,10 +21,14 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
     this.backendUrlSubscription = this.settings.backend.subscribe({
       next: url => this.backendUrl = url
     });
+    this.backendStatusSubscription = this.settings.isConnected.subscribe({
+      next: connected => this.backendStatus = connected ? 'online' : 'offline'
+    });
   }
 
   ngOnDestroy(): void {
     this.backendUrlSubscription.unsubscribe();
+    this.backendStatusSubscription.unsubscribe();
   }
 
 }
