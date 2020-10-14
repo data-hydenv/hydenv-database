@@ -15,9 +15,16 @@
         <a routerLink="/console" class="nav-link nav-icon" aria-label="console">
             <clr-icon shape="terminal"></clr-icon>
         </a>
-        <a routerLink="/settings" class="nav-link nav-icon" aria-label="settings">
+        <clr-dropdown>
+          <button class="nav-icon" clrDropdownTrigger aria-label="toggle settings menu">
             <clr-icon shape="cog"></clr-icon>
-        </a>
+            <clr-icon shape="caret down"></clr-icon>
+          </button>
+          <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
+            <a routerLink="/settings" clrDropdownItem>Settings</a>
+            <a clrDropdownItem [disabled]="true">Login</a>
+          </clr-dropdown-menu>
+        </clr-dropdown>
     </div>
 
 </clr-header>
