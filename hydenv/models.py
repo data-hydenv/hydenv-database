@@ -47,13 +47,31 @@ class Metadata(Base):
 
     # relationships
     term = relationship('Term', back_populates='data')
-    details = relationship('Detail', secondary='nm_metadata_details', back_populates='meta')
+    details = relationship('Detail', secondary='nm_metadata_details', back_populates='meta', cascade='all,delete')
+
+    def __init__(self, **kwargs):
+        # extract the column names of this model
+        column_names = [col.name for col in Metadata.__table__.columns]
+
+        # split the input into core and details
+        in_names = {k: v for k, v in kwargs.items() if k in column_names}
+        out_names = {k: v for k, v in kwargs.items() if k not in column_names}
+        
+        # run Base class __init__ method
+        super(Metadata, self).__init__(**in_names)
+
+        # add details
+        self.set_details(out_names)
 
     def get_details(self):
         details = dict()
-        for assoc in self.details:
-            assoc.detail.to_dict(add_to=details)
+        for detail in self.details:
+            detail.to_dict(add_to=details)
         return details
+
+    def set_details(self, details: dict):
+        for k,v in details.items():
+            self.details.append(Detail(k, v))
 
 
 class Variable(Base):

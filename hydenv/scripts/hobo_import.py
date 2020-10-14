@@ -5,11 +5,13 @@ import re
 from string import ascii_lowercase
 from random import choice
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 from datetime import datetime as dt
 from progressbar import ProgressBar
 
 from hydenv.util import env
 from hydenv.measurements import HydenvMeasurements
+from hydenv.models import Metadata
 
 
 def read_file(fname, txtfmt=False):
@@ -42,6 +44,9 @@ class HydenvHoboImporter:
 	def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"):
         # substitute and save
 		self.__connection = env.build_connection(connection=connection)
+		self.engine = create_engine(self.__connection)
+		Session = sessionmaker(bind=self.engine)
+		self.session = Session()
 
 	def metadata(self, url: str, term: str = None, if_exists='append'):
 		"""
@@ -64,9 +69,12 @@ class HydenvHoboImporter:
 		# download
 		df = pd.read_csv(url)
 
-		imp = df[['hobo_id', 'description']].copy()
-		imp['location'] = df[['longitude', 'latitude']].apply(lambda r: 'SRID=4326;POINT (%s %s)' % (r[0], r[1]), axis=1)
-		imp.columns = ['device_id', 'description', 'location']
+#		imp = df[['hobo_id', 'description']].copy()
+		df['location'] = df[['longitude', 'latitude']].apply(lambda r: 'SRID=4326;POINT (%s %s)' % (r[0], r[1]), axis=1)
+		df.drop(['longitude', 'latitude'], axis=1, inplace=True)
+		df.dropna(axis=1, how='all', inplace=True)
+#		imp.columns = ['device_id', 'description', 'location']
+		df.rename({'hobo_id': 'device_id'}, axis=1, inplace=True)
 
 		# check if the sensor 'hobo' exists
 		cli = HydenvMeasurements(self.__connection)
@@ -79,16 +87,27 @@ class HydenvHoboImporter:
 		
 		# if semester is given, add
 		if semester is not None:
-			imp['term_id'] = semester.id
+			df['term_id'] = semester.id
 		
 		# add sensor info
-		imp['sensor_id'] = hobo.id
+		df['sensor_id'] = hobo.id
 
 		# build an engine
-		engine = create_engine(self.__connection)
+#		engine = create_engine(self.__connection)
 
 		# upload
-		imp.to_sql('metadata', engine, if_exists=if_exists, index=False)
+		#imp.to_sql('metadata', engine, if_exists=if_exists, index=False)
+#		metas = []
+#		for d in df.to_dict('records'):
+#			meta = Metadata(**d)
+#			meta.set_details({k:v for k,v in d.items() if k not in ignores})
+#			metas.append(meta)
+		try:
+			self.session.add_all([Metadata(**d) for d in df.to_dict('records')])
+			self.session.commit()
+		except Exception as e:
+			self.session.rollback()
+			raise e
 
 	def upload(self, filename: str, meta_id: int, variable=None):
 		"""
