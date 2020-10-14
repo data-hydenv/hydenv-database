@@ -1,5 +1,5 @@
 <clr-tabs>
-    
+
     <clr-tab *ngIf="res">
         <button clrTabLink>Data</button>
         <clr-tab-content>
@@ -10,7 +10,16 @@
                     <clr-dg-cell *ngFor="let col of resultColumns">{{ row[col] }}</clr-dg-cell>
                 </clr-dg-row>
             </clr-datagrid>
-        </clr-tab-content>    
+        </clr-tab-content>
+    </clr-tab>
+
+    <clr-tab *ngIf="res && res.explain">
+      <button clrTabLink>Analyse</button>
+      <clr-tab-content>
+        <code>
+          <pre [innerHTML]="res.explain"></pre>
+        </code>
+      </clr-tab-content>
     </clr-tab>
 
     <clr-tab *ngIf="res">

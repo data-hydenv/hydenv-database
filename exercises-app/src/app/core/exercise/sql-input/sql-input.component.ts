@@ -15,6 +15,9 @@ export class SqlInputComponent implements OnInit {
   defaultSql: string;
   @Output() sqlChange = new EventEmitter<string>();
 
+  // explain handler
+  addExplain = false;
+
   constructor(private exerciseService: ExerciseService) { }
 
   ngOnInit(): void {
@@ -22,7 +25,8 @@ export class SqlInputComponent implements OnInit {
   }
 
   onExecute(): void {
-    this.exerciseService.executeSql(this.sql).then((data: SqlResult) => {
+    let explain = this.addExplain ? 'text' : null;
+    this.exerciseService.executeSql(this.sql, explain).then((data: SqlResult) => {
       this.result.emit(data);
     }).catch(error => {
       console.log(error);

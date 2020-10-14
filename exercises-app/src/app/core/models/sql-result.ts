@@ -7,4 +7,5 @@ export interface SqlResult {
         backendTime?: number;
         executionTime?: number;
     };
+    explain?: string | any;
 }
