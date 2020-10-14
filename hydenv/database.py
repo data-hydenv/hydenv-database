@@ -128,9 +128,27 @@ class HydenvDatabase:
         
         print('Done')
 
-    def execute(self, sql, safe=True):
+    def execute(self, sql: str, safe=True, json=False):
         """
+        Execute any SQL query.\n
+        Note: Do not expose this function in untrusted environments.
+        :param sql: SQL query to run
+        :param safe: If True (default), only a single SELECT is allowed
+        :param json: If given, a list of dicts is returned, containing all column names
         """
+        if safe:
+            if not sql.lower().strip().startswith('select'):
+                raise AttributeError('[SAFE MODE] only SELECT queries are allowed.')
+            sql = sql.split(';')[0]
+        
+        with self.engine.connect() as con:
+            result = con.execute(sql)
+        
+        if json:
+            return [{k:v for k,v in row.items()} for row in result]
+        else:
+            return result.fetchall()
+        
 
     def explain(self, sql: str, path=None, fmt='json', full=False, suppress_rollback=False) -> dict:
         """
@@ -143,6 +161,11 @@ class HydenvDatabase:
         attached as 'Full' key to the dictionary.
         :param sql: SQL query to analyse.
         :param path: If a file path is given, the output will be saved to that file
+        :param fmt: One of ['json', 'text', 'xml', 'yaml']. Text is only suitable for command
+            line output. XML and Yaml are suitable for file output. JSON can be used for 
+            all outputs and is most sophisticated.
+        :param full: If set to True, The plain ANALYSE output will be added to output.
+            Only works with JSON output.
         """
         # check if sql is a file:
         if os.path.exists(sql):
