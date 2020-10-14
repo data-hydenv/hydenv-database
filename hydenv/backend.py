@@ -27,7 +27,7 @@ def execute():
     # get SQL query
     safe = data.get('safe', True)
     sql = data.get('sql')
-    explain = bool(data.get('explain', False))
+    explain = data.get('explain', False)
     if sql is None:
         return jsonify({'message': 'No SQL query given.'}), 404
     
@@ -61,8 +61,13 @@ def execute():
 
     # run explain if needed
     if explain:
+        # get the format
+        if explain not in ['text', 'json', 'xml', 'yaml']:
+            fmt = 'text'
+        else:
+            fmt = explain
         try:
-            exp_text = cli.explain(sql=sql, fmt='text')
+            exp_text = cli.explain(sql=sql, fmt=fmt)
         except Exception as e:
             exp_text = str(e)
         response['explain'] = exp_text
