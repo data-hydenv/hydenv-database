@@ -129,24 +129,56 @@ class HydenvDatabase:
         print('Done')
 
     def execute(self, sql, safe=True):
-        pass
+        """
+        """
 
-    def explain(self, sql: str, path=None, fmt='json', full=False) -> dict:
+    def explain(self, sql: str, path=None, fmt='json', full=False, suppress_rollback=False) -> dict:
         """
+        Analyse an sql query.\n
+        You can pass any SQL query to run a perf test on the query planner.
+        The output will be a dictionary containing the Planning and Execution 
+        time for the whole query. The key 'Short' will contain a nested 
+        brief summary of all steps' execution time and cost.
+        If full is set to True, The raw query Planner ANALYSE output will be 
+        attached as 'Full' key to the dictionary.
+        :param sql: SQL query to analyse.
+        :param path: If a file path is given, the output will be saved to that file
         """
+        # check if sql is a file:
+        if os.path.exists(sql):
+            with open(sql, 'r') as f:
+                sql = f.read()
+        
         # build analyse query
         if not sql.lower().startswith('explain'):
-            sql = "EXPLAIN (ANALYSE, FORMAT %s) %s" % (fmt, sql)
+            sql = "EXPLAIN (ANALYSE, FORMAT %s) %s;" % (fmt, sql)
+        
         
         # execute the query
         with self.engine.connect() as con:
+            # begin transaction if needed
+            if not suppress_rollback:
+                con.execute('BEGIN;')
+            
+            # run the query
             result = con.execute(sql)
+            d = result.fetchall()
+
+            # rollback transaction if needed
+            if not suppress_rollback:
+                con.execute('ROLLBACK;')
+                
+        # handle other output than JSON
+        if fmt.lower() in ('xml', 'yaml'):
+            return d[0][0]
+        elif fmt.lower() == 'text':
+            return '\n'.join([_[0] for _ in d])
         
-        # extract info
-        d = result.fetchall()
+        # extract info 
         while not isinstance(d, dict) or len(d) == 1:
             d = d[0]
-        
+
+
         # build the query plan object
         explain = dict(
             Planning=d.get('Planning Time'), 
@@ -157,21 +189,24 @@ class HydenvDatabase:
         # TODO maybe I need this somewhere else -> move into util?
         def parse_node(nodes):
             if isinstance(nodes, dict):
-                newnode = {
-                    'action': nodes['Node Type'],
-                    'time': nodes['Actual Total Time'] - nodes['Actual Startup Time'],
-                    'cost': nodes['Actual Total Cost'] - nodes['Actual Startup Cost']
-                }
+                newnode = {'action': nodes['Node Type']}
+                if 'Actual Total Time' in nodes and 'Actual Startup Time' in nodes:
+                    newnode['time'] = nodes['Actual Total Time'] - nodes['Actual Startup Time']
+                if 'Total Cost' in nodes and 'Startup Cost' in nodes:
+                    newnode['cost'] = nodes['Total Cost'] - nodes['Startup Cost']
+
                 if 'Plans' in nodes:
                     newnode['plans'] = parse_node(nodes['Plans'])
                 return newnode
             elif isinstance(nodes, list):
                 return [parse_node(node) for node in nodes]
+            else:
+                return nodes
         
         # parse all nodes
-        explain['short'] = parse_node(plan)
+        explain['Short'] = parse_node(plan)
         if full:
-            explain['full'] = plan
+            explain['Full'] = plan
         
         if path is None:
             return explain

@@ -43,7 +43,7 @@ class Metadata(Base):
     sensor_id = Column(Integer, ForeignKey('sensors.id'))
     term_id = Column(Integer, ForeignKey('terms.id'))
     location = Column(Geometry('POINT', srid=4326), nullable=False)
-    description = Column(String, nullable=False)
+    description = Column(String, nullable=True)
 
     # relationships
     term = relationship('Term', back_populates='data')
