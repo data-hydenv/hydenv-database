@@ -17,7 +17,7 @@
   <div class="card-footer">
     <button type="button" class="btn btn-sm btn-link" *ngIf="!showExercises" (click)="showExercises = true">Exercises</button>
     <button type="button" class="btn btn-sm btn-link" *ngIf="showExercises" (click)="showExercises = false">Hide</button>
-    <button type="button" class="btn btn-sm btn-link" [routerLink]="['/', 'e', track.exercises[0].id]">Start</button>
+    <button type="button" class="btn btn-sm btn-link" (click)="onStartTrack()" [disabled]="activeTrackId && activeTrackId === track.id">Start</button>
   </div>
 
 </div>

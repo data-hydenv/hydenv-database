@@ -18,6 +18,7 @@ export class ExerciseService {
   // distribute track information to the application
   private tracksCache: Track[] = [];
   tracks = new BehaviorSubject<Track[]>(this.tracksCache);
+  activeTrack = new BehaviorSubject<Track>(null);
 
   // distribute exercise information to the application
   private exerciseCache: Exercise[] = [];
