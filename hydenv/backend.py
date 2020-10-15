@@ -2,7 +2,7 @@ import os
 import json
 from datetime import datetime as dt
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from sqlalchemy import create_engine
 
@@ -11,6 +11,17 @@ from hydenv.database import HydenvDatabase
 
 app = Flask(__name__)
 CORS(app)
+
+
+@app.route('/<path:path>', methods=['GET'])
+def static_files(path: str):
+    if path.endswith('js'):
+        return send_from_directory('./exercises-app/', path, mimetype='application/javascript')
+    return send_from_directory('./exercises-app/', path)
+
+@app.route('/')
+def index():
+    return send_from_directory('./', 'index.html')
 
 @app.route('/api/v1/ping', methods=['GET'])
 def ping():

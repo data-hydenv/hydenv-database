@@ -71,7 +71,8 @@ class HydenvExercises:
         
         # execute
         print('Running\nOpen a new terminal to start learning')
-        t = Timer(0.3, webbrowser.open_new_tab, args=[self.backend + 'api/v1/ping'])
+#        t = Timer(0.5, webbrowser.open_new_tab, args=[self.backend + 'api/v1/ping'])
+        t = Timer(0.8, webbrowser.open_new_tab, args=[self.backend + 'index.html'])
         t.start()
         self._backend_proc = subprocess.call(cmds)
         
