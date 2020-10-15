@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { SettingsService } from 'src/app/core/settings.service';
+import { ExerciseService } from 'src/app/core/exercise.service';
+import { Track } from 'src/app/core/models/track';
 
 @Component({
   selector: 'app-header',
@@ -9,14 +11,25 @@ import { SettingsService } from 'src/app/core/settings.service';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  // backend status
   backendConnected = false;
   backendConnectSubscription: Subscription;
 
-  constructor(private settings: SettingsService) { }
+  // active track information
+  activeTrack: Track;
+  activeTrackSubscription: Subscription;
+
+  constructor(private settings: SettingsService, private exerciseService: ExerciseService) { }
 
   ngOnInit(): void {
+    // subscribe to backend status
     this.backendConnectSubscription = this.settings.isConnected.subscribe({
       next: status => this.backendConnected = status
+    });
+
+    // subscribe to active Track
+    this.activeTrackSubscription = this.exerciseService.activeTrack.subscribe({
+      next: track => this.activeTrack = track
     });
   }
 

@@ -9,6 +9,14 @@
 
     <div class="header-nav" [clr-nav-level]="1">
         <a routerLink="/tracks" routerLinkActive="active" class="nav-link nav-text">Tracks</a>
+        <clr-dropdown *ngIf="activeTrack">
+          <button class="nav-link nav-text" clrDropdownTrigger aria-label="toggle current track">
+            {{ activeTrack.name.length > 40 ? activeTrack[:37] + '...' : activeTrack.name }}
+          </button>
+          <clr-dropdown-menu *clrifOpen>
+            <a clrDropdownItem>First Exercise</a>
+          </clr-dropdown-menu>
+        </clr-dropdown>
     </div>
 
     <div class="header-actions">
