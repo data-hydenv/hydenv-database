@@ -5,6 +5,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import * as localforage from 'localforage';
 
 import { SettingsService } from './settings.service';
+import { TrackProgressService } from './track-progress.service';
 import { Exercise } from './models/exercise';
 import { Track } from './models/track';
 import { BehaviorSubject } from 'rxjs';
@@ -28,7 +29,7 @@ export class ExerciseService {
   localVersions: {tracks: number, exercises: number};
   remoteVersions: {tracks: number, exercises: number};
 
-  constructor(private settings: SettingsService, private http: HttpClient, private firestore: AngularFirestore) {
+  constructor(private settings: SettingsService, private http: HttpClient, private firestore: AngularFirestore, private progressService: TrackProgressService) {
     // handle subscriptions
     this.subscriptions();
 
@@ -180,5 +181,57 @@ export class ExerciseService {
     return new Promise(resolve => {
       resolve(this.tracksCache.map(t => t.id));
     });
+  }
+
+  /**
+   * Return the next exercise for the given exercise ID.
+   * This will return  the next chronological exercise, even if it was
+   * already solved.
+   * Returns the exercise, -1 if it was the last and null if the id was not found.
+   * @param id Exercise.id of the current exercise
+   */
+  public getNextExercise(id: string): Exercise | null | -1 {
+    const track = this.activeTrack.getValue();
+    if (track) {
+      const exercises = track.exercises.sort((a, b) => b.order - a.order);
+      const thisIndex = exercises.findIndex(e => e.id === id);
+      // if id is not in current track, return null
+      if (thisIndex === -1) {
+        return null;
+      }
+
+      // check if there is a next exercise
+      if (thisIndex + 1 === exercises.length) {
+        return -1;
+      } else {
+        const nextId = exercises[thisIndex + 1].id;
+        const exercise = this.exerciseCache.find(e => e.id === nextId);
+        return exercise ? exercise : null;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Return the next unsolved exercise for the given exercise ID.
+   * This function will not return solved exercises.
+   * @param id Exercise.id of the current exercise
+   */
+  public getNextUnsolvedExercise(id: string): Exercise | null |-1 {
+    // get the next
+    let nextExercise = this.getNextExercise(id);
+
+    // search for unsolved
+    while (nextExercise !== -1) {
+      if (nextExercise && this.progressService.isSolved(nextExercise.id)) {
+        return nextExercise;
+      } else {
+        nextExercise = this.getNextExercise(nextExercise.id);
+      }
+    }
+
+    // while will search until an Exercise or -1 is returned
+    // thus, if this code is reached, the requested Exercise was the last unsolved
+    return -1;
   }
 }
