@@ -12,7 +12,11 @@
     </div>
 
     <div class="header-actions">
-        <a routerLink="/console" class="nav-link nav-icon" aria-label="console">
+      <a class="nav-link nav-icon tooltip tooltip-md tooltip-bottom-left" href="javascript://" (click)="onConnect()" aria-label="connection status">
+        <clr-icon [attr.shape]="backendConnected ? 'link' : 'unlink'"></clr-icon>
+        <span class="tooltip-content">The backend server is: <code>'{{ backendConnected ? 'online' : 'offline' }}'</code></span>
+      </a>
+        <a routerLink="/console" routerLinkActive="active" class="nav-link nav-icon" aria-label="console">
             <clr-icon shape="terminal"></clr-icon>
         </a>
         <clr-dropdown>

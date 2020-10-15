@@ -43,7 +43,7 @@
                       you need to run the backend locally.
                     </p>
                     <p>Otherwise type the backend url in below</p>
-                    <input clrInput type="text" #backendUrl>
+                    <input clrInput type="text" [(ngModel)]="backendUrl">
                   </clr-tab-content>
                 </clr-tab>
             </clr-tabs>
@@ -51,7 +51,7 @@
     </div>
 
     <div class="modal-footer">
-        <button class="btn btn-primary" *ngIf="backendUrl && backendUrl.value" (click)="onChangeBackend(backendUrl.value);retry()"></button>
-        <button class="btn btn-primary" (click)="onChangeBackend();retry()">Retry</button>
+        <button class="btn btn-primary" *ngIf="backendUrl && backendUrl !== ''" (click)="onChangeBackend(backendUrl);retry()">Connect</button>
+        <button class="btn btn-primary" *ngIf="!backendUrl || backendUrl == ''" (click)="onChangeBackend();retry()">Retry</button>
     </div>
 </clr-modal>

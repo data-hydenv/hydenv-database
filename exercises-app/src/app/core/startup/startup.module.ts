@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+
 import { ClarityModule } from '@clr/angular';
 
 import { StartupComponent } from './startup.component';
@@ -10,6 +12,7 @@ import { StartupComponent } from './startup.component';
   imports: [
     CommonModule,
     ClarityModule,
+    FormsModule
   ],
   exports: [StartupComponent]
 })

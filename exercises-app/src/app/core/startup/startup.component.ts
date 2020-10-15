@@ -8,26 +8,52 @@ import { SettingsService } from '../settings.service';
 })
 export class StartupComponent implements OnInit {
   // component logic
-  active = true;
+  active = false;
   pending = true;
 
   // content triggers
   triggerFinished = false;
   triggerOptions = false;
 
+  // save the collaping timeout
+  collapseTimeoutId: number;
+
+  // elements
+  backendUrl: string;
+
 
   constructor(private settings: SettingsService) { }
 
   ngOnInit(): void {
-    this.settings.backend.subscribe({
-      next: url => {
-        if (url) {
-          this.findBackend();
-        } else {
-          this.retry();
-        }
+    // subscribe to backend url
+    // this.settings.backend.subscribe({
+    //   next: url => {
+    //     if (url) {
+    //       this.findBackend();
+    //     } else {
+    //       this.retry();
+    //     }
+    //   }
+    // });
+
+    // listen to requests
+    this.settings.connectRequested.subscribe({
+      next: () => {
+        // stop ongoing collapsing
+        this.stopCollapsing();
+
+        // reset and try to connect
+        this.resetComponent();
+        this.findBackend();
       }
     });
+  }
+
+  resetComponent(): void {
+    this.active = true;
+    this.pending = true;
+    this.triggerFinished = false;
+    this.triggerOptions = false;
   }
 
   onChangeBackend(address?: string): void {
@@ -59,7 +85,14 @@ export class StartupComponent implements OnInit {
     this.pending = false;
     this.triggerOptions = false;
     this.triggerFinished = true;
-    setTimeout(() => this.active = false, 800);
+    this.collapseTimeoutId = setTimeout(() => this.active = false, 800);
+  }
+
+  public stopCollapsing(): void {
+    if (this.collapseTimeoutId) {
+      clearTimeout(this.collapseTimeoutId);
+      this.collapseTimeoutId = null;
+    }
   }
 
 }
