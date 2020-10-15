@@ -28,7 +28,7 @@ export class TrackProgressService {
    */
   public update(exerciseId: string, wasCorrect: boolean): void {
     // check if the assignment has already an entry
-    let assignIdx = this.progressCache.findIndex(a => a.exerciseId === exerciseId);
+    const assignIdx = this.progressCache.findIndex(a => a.exerciseId === exerciseId);
     const current = new Date();
 
     // check if there is already an entry
@@ -45,11 +45,19 @@ export class TrackProgressService {
       assign.tries.push(current);
 
       // overwrite
-      this.progressCache[assignIdx] = assign
+      this.progressCache[assignIdx] = assign;
     }
 
     // finally save
     this.save();
+  }
+
+  /**
+   * Checks id the given exercise is already solved.
+   */
+  public isSolved(exerciseId: string): boolean {
+    const assign = this.progressCache.find(a => a.exerciseId === exerciseId);
+    return assign && assign.correct;
   }
 
   private loadFromStorage(): Promise<void> {
