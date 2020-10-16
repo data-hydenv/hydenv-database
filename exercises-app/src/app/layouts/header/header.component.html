@@ -9,7 +9,7 @@
 
     <div class="header-nav" [clr-nav-level]="1">
         <a routerLink="/tracks" routerLinkActive="active" class="nav-link nav-text">Tracks</a>
-        <a  *ngIf="activeTrack" class="nav-link nav-text tooltip tooltip-lg tooltip-bottom-right" [routerLink]="['/', 't', activeTrack.id]">
+        <a  *ngIf="activeTrack" class="nav-link nav-text tooltip tooltip-lg tooltip-bottom-right" [routerLink]="['/', 't', activeTrack.id]" routerLinkActive="active">
           {{ activeTrack.name.length > 40 ? activeTrack.name.slice(0, 37) + '...' : activeTrack.name }}
           <span class="tooltip-content">Track: {{ activeTrack.name }}</span>
         </a>
