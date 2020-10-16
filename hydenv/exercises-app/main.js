@@ -23,6 +23,17 @@ webpackEmptyAsyncContext.id = "./$$_lazy_route_resource lazy recursive";
 
 /***/ }),
 
+/***/ "./package.json":
+/*!**********************!*\
+  !*** ./package.json ***!
+  \**********************/
+/*! exports provided: name, version, scripts, private, dependencies, devDependencies, default */
+/***/ (function(module) {
+
+module.exports = JSON.parse("{\"name\":\"exercises-app\",\"version\":\"0.1.0\",\"scripts\":{\"ng\":\"ng\",\"start\":\"ng serve\",\"build\":\"ng build\",\"test\":\"ng test\",\"lint\":\"ng lint\",\"e2e\":\"ng e2e\"},\"private\":true,\"dependencies\":{\"@angular/animations\":\"~10.0.2\",\"@angular/common\":\"~10.0.2\",\"@angular/compiler\":\"~10.0.2\",\"@angular/core\":\"~10.0.2\",\"@angular/fire\":\"^6.0.2\",\"@angular/forms\":\"~10.0.2\",\"@angular/platform-browser\":\"~10.0.2\",\"@angular/platform-browser-dynamic\":\"~10.0.2\",\"@angular/router\":\"~10.0.2\",\"@clr/angular\":\"4.0.1\",\"@clr/icons\":\"4.0.1\",\"@clr/ui\":\"4.0.1\",\"@ngstack/code-editor\":\"^2.1.0\",\"@webcomponents/webcomponentsjs\":\"^2.0.0\",\"firebase\":\"^7.13.1\",\"firebase-admin\":\"^9.2.0\",\"highlight.js\":\"^10.2.0\",\"localforage\":\"^1.9.0\",\"lodash\":\"^4.17.20\",\"rxjs\":\"~6.5.5\",\"tslib\":\"^2.0.0\",\"zone.js\":\"~0.10.3\"},\"devDependencies\":{\"@angular-devkit/architect\":\">= 0.900 < 0.1100\",\"@angular-devkit/build-angular\":\"~0.1000.1\",\"@angular/cli\":\"~10.0.1\",\"@angular/compiler-cli\":\"~10.0.2\",\"@types/jasmine\":\"~3.5.0\",\"@types/jasminewd2\":\"~2.0.3\",\"@types/lodash\":\"^4.14.161\",\"@types/node\":\"^12.12.68\",\"codelyzer\":\"^6.0.0-next.1\",\"firebase-tools\":\"^8.0.0\",\"fuzzy\":\"^0.1.3\",\"inquirer\":\"^6.2.2\",\"inquirer-autocomplete-prompt\":\"^1.0.1\",\"jasmine-core\":\"~3.5.0\",\"jasmine-spec-reporter\":\"~5.0.0\",\"karma\":\"~5.0.0\",\"karma-chrome-launcher\":\"~3.1.0\",\"karma-coverage-istanbul-reporter\":\"~3.0.2\",\"karma-jasmine\":\"~3.3.0\",\"karma-jasmine-html-reporter\":\"^1.5.0\",\"open\":\"^7.0.3\",\"protractor\":\"~7.0.0\",\"ts-node\":\"^8.3.0\",\"tslint\":\"~6.1.0\",\"typescript\":\"~3.9.5\"}}");
+
+/***/ }),
+
 /***/ "./src/app/app-routing.module.ts":
 /*!***************************************!*\
   !*** ./src/app/app-routing.module.ts ***!
@@ -47,12 +58,12 @@ const routes = [
     {
         path: 'home',
         component: _layouts_full_width_layout_full_width_layout_component__WEBPACK_IMPORTED_MODULE_3__["FullWidthLayoutComponent"],
-        loadChildren: () => Promise.all(/*! import() | pages-home-page-home-page-module */[__webpack_require__.e("default~pages-console-page-console-page-module~pages-exercise-page-exercise-page-module~pages-home-p~8fad2ad7"), __webpack_require__.e("pages-home-page-home-page-module")]).then(__webpack_require__.bind(null, /*! ./pages/home-page/home-page.module */ "./src/app/pages/home-page/home-page.module.ts")).then(m => m.HomePageModule)
+        loadChildren: () => __webpack_require__.e(/*! import() | pages-home-page-home-page-module */ "pages-home-page-home-page-module").then(__webpack_require__.bind(null, /*! ./pages/home-page/home-page.module */ "./src/app/pages/home-page/home-page.module.ts")).then(m => m.HomePageModule)
     },
     {
         path: 'console',
         component: _layouts_page_layout_page_layout_component__WEBPACK_IMPORTED_MODULE_2__["PageLayoutComponent"],
-        loadChildren: () => Promise.all(/*! import() | pages-console-page-console-page-module */[__webpack_require__.e("default~pages-console-page-console-page-module~pages-exercise-page-exercise-page-module~pages-home-p~8fad2ad7"), __webpack_require__.e("default~pages-console-page-console-page-module~pages-exercise-page-exercise-page-module"), __webpack_require__.e("pages-console-page-console-page-module")]).then(__webpack_require__.bind(null, /*! ./pages/console-page/console-page.module */ "./src/app/pages/console-page/console-page.module.ts")).then(m => m.ConsolePageModule)
+        loadChildren: () => Promise.all(/*! import() | pages-console-page-console-page-module */[__webpack_require__.e("default~pages-console-page-console-page-module~pages-exercise-page-exercise-page-module"), __webpack_require__.e("pages-console-page-console-page-module")]).then(__webpack_require__.bind(null, /*! ./pages/console-page/console-page.module */ "./src/app/pages/console-page/console-page.module.ts")).then(m => m.ConsolePageModule)
     },
     {
         path: 'settings',
@@ -62,12 +73,17 @@ const routes = [
     {
         path: 'e',
         component: _layouts_page_layout_page_layout_component__WEBPACK_IMPORTED_MODULE_2__["PageLayoutComponent"],
-        loadChildren: () => Promise.all(/*! import() | pages-exercise-page-exercise-page-module */[__webpack_require__.e("default~pages-console-page-console-page-module~pages-exercise-page-exercise-page-module~pages-home-p~8fad2ad7"), __webpack_require__.e("default~pages-console-page-console-page-module~pages-exercise-page-exercise-page-module"), __webpack_require__.e("pages-exercise-page-exercise-page-module")]).then(__webpack_require__.bind(null, /*! ./pages/exercise-page/exercise-page.module */ "./src/app/pages/exercise-page/exercise-page.module.ts")).then(m => m.ExercisePageModule)
+        loadChildren: () => Promise.all(/*! import() | pages-exercise-page-exercise-page-module */[__webpack_require__.e("default~pages-console-page-console-page-module~pages-exercise-page-exercise-page-module"), __webpack_require__.e("pages-exercise-page-exercise-page-module")]).then(__webpack_require__.bind(null, /*! ./pages/exercise-page/exercise-page.module */ "./src/app/pages/exercise-page/exercise-page.module.ts")).then(m => m.ExercisePageModule)
     },
     {
         path: 'tracks',
         component: _layouts_full_width_layout_full_width_layout_component__WEBPACK_IMPORTED_MODULE_3__["FullWidthLayoutComponent"],
-        loadChildren: () => Promise.all(/*! import() | pages-tracks-page-tracks-page-module */[__webpack_require__.e("default~pages-console-page-console-page-module~pages-exercise-page-exercise-page-module~pages-home-p~8fad2ad7"), __webpack_require__.e("pages-tracks-page-tracks-page-module")]).then(__webpack_require__.bind(null, /*! ./pages/tracks-page/tracks-page.module */ "./src/app/pages/tracks-page/tracks-page.module.ts")).then(m => m.TracksPageModule)
+        loadChildren: () => Promise.all(/*! import() | pages-tracks-page-tracks-page-module */[__webpack_require__.e("common"), __webpack_require__.e("pages-tracks-page-tracks-page-module")]).then(__webpack_require__.bind(null, /*! ./pages/tracks-page/tracks-page.module */ "./src/app/pages/tracks-page/tracks-page.module.ts")).then(m => m.TracksPageModule)
+    },
+    {
+        path: 't',
+        component: _layouts_page_layout_page_layout_component__WEBPACK_IMPORTED_MODULE_2__["PageLayoutComponent"],
+        loadChildren: () => Promise.all(/*! import() | pages-track-page-track-page-module */[__webpack_require__.e("common"), __webpack_require__.e("pages-track-page-track-page-module")]).then(__webpack_require__.bind(null, /*! ./pages/track-page/track-page.module */ "./src/app/pages/track-page/track-page.module.ts")).then(m => m.TrackPageModule)
     },
     {
         path: '',
@@ -215,6 +231,294 @@ AppModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_1__["ɵɵdefineInjector
 
 /***/ }),
 
+/***/ "./src/app/core/exercise.service.ts":
+/*!******************************************!*\
+  !*** ./src/app/core/exercise.service.ts ***!
+  \******************************************/
+/*! exports provided: ExerciseService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "ExerciseService", function() { return ExerciseService; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var localforage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! localforage */ "./node_modules/localforage/dist/localforage.js");
+/* harmony import */ var localforage__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(localforage__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm2015/index.js");
+/* harmony import */ var _settings_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./settings.service */ "./src/app/core/settings.service.ts");
+/* harmony import */ var _angular_common_http__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @angular/common/http */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/http.js");
+/* harmony import */ var _angular_fire_firestore__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/fire/firestore */ "./node_modules/@angular/fire/__ivy_ngcc__/fesm2015/angular-fire-firestore.js");
+/* harmony import */ var _track_progress_service__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./track-progress.service */ "./src/app/core/track-progress.service.ts");
+
+
+
+
+
+
+
+
+class ExerciseService {
+    constructor(settings, http, firestore, progressService) {
+        this.settings = settings;
+        this.http = http;
+        this.firestore = firestore;
+        this.progressService = progressService;
+        // the service needs a moment to sync the local files
+        this.syncFinished = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](false);
+        // distribute track information to the application
+        this.tracksCache = [];
+        this.tracks = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](this.tracksCache);
+        this.activeTrack = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](null);
+        // distribute exercise information to the application
+        this.exerciseCache = [];
+        this.exercises = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](this.exerciseCache);
+        // handle subscriptions
+        this.subscriptions();
+        // and check sync status
+        this.checkSyncStatus();
+    }
+    /**
+     * Subscribe to Firestore and check if a sync is necessary.
+     * Subscribe to tracks and exercises only if out of sync.
+     */
+    checkSyncStatus() {
+        // reset sync status
+        this.syncFinished.next(false);
+        // first get local version
+        localforage__WEBPACK_IMPORTED_MODULE_1__["getItem"]('versions').then((v) => {
+            if (v) {
+                this.localVersions = v;
+            }
+            else {
+                // set a negative version to force sync
+                this.localVersions = { tracks: -1, exercises: -1 };
+            }
+        }).then(() => {
+            // subscribe to firebase version
+            this.firestore.collection('config').doc('sync').valueChanges().subscribe({
+                next: (v) => {
+                    // store the versions
+                    this.remoteVersions = v;
+                    // check the version
+                    let trackFinished = false;
+                    let exFinished = false;
+                    if (this.localVersions.tracks < this.remoteVersions.tracks) {
+                        this.syncTracks().then(() => {
+                            trackFinished = true;
+                            if (trackFinished && exFinished) {
+                                this.syncFinished.next(true);
+                            }
+                        });
+                    }
+                    else {
+                        this.loadLocalTracks().then(() => {
+                            trackFinished = true;
+                            if (trackFinished && exFinished) {
+                                this.syncFinished.next(true);
+                            }
+                        });
+                    }
+                    if (this.localVersions.exercises < this.remoteVersions.exercises) {
+                        this.syncExercises().then(() => {
+                            exFinished = true;
+                            if (trackFinished && exFinished) {
+                                this.syncFinished.next(true);
+                            }
+                        });
+                    }
+                    else {
+                        this.loadLocalExercises().then(() => {
+                            exFinished = true;
+                            if (trackFinished && exFinished) {
+                                this.syncFinished.next(true);
+                            }
+                        });
+                    }
+                    // mark the sync as finished
+                    this.syncFinished.next(true);
+                }
+            });
+        });
+    }
+    /**
+     * Load the current set of tracks from local storage
+     */
+    loadLocalTracks() {
+        return localforage__WEBPACK_IMPORTED_MODULE_1__["getItem"]('tracks').then((t) => {
+            this.tracksCache = t;
+            this.tracks.next(this.tracksCache);
+        });
+    }
+    /**
+     * Load the current set of exercises from local storage
+     */
+    loadLocalExercises() {
+        return localforage__WEBPACK_IMPORTED_MODULE_1__["getItem"]('exercises').then((e) => {
+            this.exerciseCache = e;
+            this.exercises.next(this.exerciseCache);
+        });
+    }
+    /**
+     * There is version mismatch between the local and remote version
+     * of the tracks. Sync and update the local version number.
+     */
+    syncTracks() {
+        return new Promise(resolve => {
+            this.firestore.collection('tracks').snapshotChanges().subscribe({
+                next: refs => {
+                    this.tracksCache = refs.map(ref => {
+                        return Object.assign({ id: ref.payload.doc.id }, ref.payload.doc.data());
+                    });
+                    // save to storage
+                    localforage__WEBPACK_IMPORTED_MODULE_1__["setItem"]('tracks', this.tracksCache).then(() => {
+                        // publish new tracks
+                        this.tracks.next(this.tracksCache);
+                        // set new version
+                        localforage__WEBPACK_IMPORTED_MODULE_1__["setItem"]('versions', Object.assign(Object.assign({}, this.localVersions), { tracks: this.remoteVersions.tracks }))
+                            .then(() => resolve());
+                    });
+                }
+            });
+        });
+    }
+    /**
+     * THere is a version mismatch between the local and reomte version
+     * of the exercises. Sync and update the local version number.
+     */
+    syncExercises() {
+        return new Promise(resolve => {
+            this.firestore.collection('exercises').snapshotChanges().subscribe({
+                next: refs => {
+                    this.exerciseCache = refs.map(ref => {
+                        return Object.assign({ id: ref.payload.doc.id }, ref.payload.doc.data());
+                    });
+                    // save to storage
+                    localforage__WEBPACK_IMPORTED_MODULE_1__["setItem"]('exercises', this.exerciseCache).then(() => {
+                        // publish new exercises
+                        this.exercises.next(this.exerciseCache);
+                        // set the new exercise version
+                        localforage__WEBPACK_IMPORTED_MODULE_1__["setItem"]('versions', Object.assign(Object.assign({}, this.localVersions), { exercises: this.remoteVersions.exercises }))
+                            .then(() => resolve());
+                    });
+                }
+            });
+        });
+    }
+    subscriptions() {
+        // subscribe to the current backend URL
+        this.settings.backend.subscribe({
+            next: url => this.backendUrl = url
+        });
+    }
+    /**
+     * Execute a given SQL query against the database backend.
+     * @param query - SQL query.
+     */
+    executeSql(query, explain) {
+        const opt = { params: { sql: query } };
+        // TODO: for now, only text output EXPLAINs are included
+        if (explain) {
+            opt.params.explain = explain;
+        }
+        return new Promise((resolve, reject) => {
+            this.http.get(this.backendUrl + 'execute', opt).subscribe({
+                next: res => resolve(res),
+                error: error => reject(error)
+            });
+        });
+    }
+    getExerciseById(id) {
+        return new Promise((resolve, reject) => {
+            const exercise = this.exerciseCache.find(e => e.id === id);
+            if (exercise) {
+                resolve(exercise);
+            }
+            else {
+                reject();
+            }
+        });
+    }
+    /**
+     * Return a copy of the requested Track
+     * @param trackId ID of the requested Track
+     */
+    getTrackById(trackId) {
+        const track = this.tracksCache.find(t => t.id === trackId);
+        if (track) {
+            return JSON.parse(JSON.stringify(track));
+        }
+        else {
+            console.log(`Track ID='${trackId}' not found.`);
+            return null;
+        }
+    }
+    getTrackIds() {
+        return new Promise(resolve => {
+            resolve(this.tracksCache.map(t => t.id));
+        });
+    }
+    /**
+     * Return the next exercise for the given exercise ID.
+     * This will return  the next chronological exercise, even if it was
+     * already solved.
+     * Returns the exercise, -1 if it was the last and null if the id was not found.
+     * @param id Exercise.id of the current exercise
+     */
+    getNextExercise(id) {
+        const track = this.activeTrack.getValue();
+        if (track) {
+            const exercises = track.exercises.sort((a, b) => b.order - a.order);
+            const thisIndex = exercises.findIndex(e => e.id === id);
+            // if id is not in current track, return null
+            if (thisIndex === -1) {
+                return null;
+            }
+            // check if there is a next exercise
+            if (thisIndex + 1 === exercises.length) {
+                return -1;
+            }
+            else {
+                const nextId = exercises[thisIndex + 1].id;
+                const exercise = this.exerciseCache.find(e => e.id === nextId);
+                return exercise ? exercise : null;
+            }
+        }
+        return null;
+    }
+    /**
+     * Return the next unsolved exercise for the given exercise ID.
+     * This function will not return solved exercises.
+     * @param id Exercise.id of the current exercise
+     */
+    getNextUnsolvedExercise(id) {
+        // get the next
+        let nextExercise = this.getNextExercise(id);
+        // search for unsolved
+        while (nextExercise !== -1) {
+            if (nextExercise && this.progressService.isSolved(nextExercise.id)) {
+                return nextExercise;
+            }
+            else {
+                nextExercise = this.getNextExercise(nextExercise.id);
+            }
+        }
+        // while will search until an Exercise or -1 is returned
+        // thus, if this code is reached, the requested Exercise was the last unsolved
+        return -1;
+    }
+}
+ExerciseService.ɵfac = function ExerciseService_Factory(t) { return new (t || ExerciseService)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_settings_service__WEBPACK_IMPORTED_MODULE_3__["SettingsService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_common_http__WEBPACK_IMPORTED_MODULE_4__["HttpClient"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_angular_fire_firestore__WEBPACK_IMPORTED_MODULE_5__["AngularFirestore"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵinject"](_track_progress_service__WEBPACK_IMPORTED_MODULE_6__["TrackProgressService"])); };
+ExerciseService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: ExerciseService, factory: ExerciseService.ɵfac, providedIn: 'root' });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](ExerciseService, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
+        args: [{
+                providedIn: 'root'
+            }]
+    }], function () { return [{ type: _settings_service__WEBPACK_IMPORTED_MODULE_3__["SettingsService"] }, { type: _angular_common_http__WEBPACK_IMPORTED_MODULE_4__["HttpClient"] }, { type: _angular_fire_firestore__WEBPACK_IMPORTED_MODULE_5__["AngularFirestore"] }, { type: _track_progress_service__WEBPACK_IMPORTED_MODULE_6__["TrackProgressService"] }]; }, null); })();
+
+
+/***/ }),
+
 /***/ "./src/app/core/settings.service.ts":
 /*!******************************************!*\
   !*** ./src/app/core/settings.service.ts ***!
@@ -263,7 +567,7 @@ class SettingsService {
      * Starts the connection autocheck
      */
     startCheckConnection() {
-        this.checkTimoutId = setTimeout(this.checkBackendConnection.bind(this), 5000);
+        this.checkTimoutId = window.setTimeout(this.checkBackendConnection.bind(this), 5000);
     }
     /**
      * Stops the connection autocheck
@@ -516,7 +820,7 @@ class StartupComponent {
         this.pending = false;
         this.triggerOptions = false;
         this.triggerFinished = true;
-        this.collapseTimeoutId = setTimeout(() => this.active = false, 800);
+        this.collapseTimeoutId = window.setTimeout(() => this.active = false, 800);
     }
     stopCollapsing() {
         if (this.collapseTimeoutId) {
@@ -591,6 +895,101 @@ StartupModule.ɵinj = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInje
 
 /***/ }),
 
+/***/ "./src/app/core/track-progress.service.ts":
+/*!************************************************!*\
+  !*** ./src/app/core/track-progress.service.ts ***!
+  \************************************************/
+/*! exports provided: TrackProgressService */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TrackProgressService", function() { return TrackProgressService; });
+/* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
+/* harmony import */ var localforage__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! localforage */ "./node_modules/localforage/dist/localforage.js");
+/* harmony import */ var localforage__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(localforage__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/_esm2015/index.js");
+
+
+
+
+class TrackProgressService {
+    constructor() {
+        // progress data
+        this.progressCache = [];
+        this.progress = new rxjs__WEBPACK_IMPORTED_MODULE_2__["BehaviorSubject"](this.progressCache);
+        // load
+        this.loadFromStorage().then(() => {
+            this.progress.next(this.progressCache);
+        });
+    }
+    /**
+     * Update one of the exercises. After updating, the progress Cache
+     * is saved to localstorage.
+     * @param exerciseId string - id of the exercise the assignment is for
+     * @param wasCorrect boolean - indicate if the result was correct.
+     */
+    update(exerciseId, wasCorrect) {
+        // check if the assignment has already an entry
+        const assignIdx = this.progressCache.findIndex(a => a.exerciseId === exerciseId);
+        const current = new Date();
+        // check if there is already an entry
+        if (assignIdx === -1) {
+            const assign = { exerciseId: exerciseId, date: current, correct: wasCorrect, tries: [current] };
+            // add a new entry
+            this.progressCache.push(assign);
+        }
+        else {
+            // update
+            const assign = Object.assign({}, this.progressCache[assignIdx]);
+            assign.date = current;
+            assign.correct = wasCorrect;
+            assign.tries.push(current);
+            // overwrite
+            this.progressCache[assignIdx] = assign;
+        }
+        // finally save
+        this.save();
+    }
+    /**
+     * Checks id the given exercise is already solved.
+     */
+    isSolved(exerciseId) {
+        const assign = this.progressCache.find(a => a.exerciseId === exerciseId);
+        return assign && assign.correct;
+    }
+    loadFromStorage() {
+        return new Promise(resolve => {
+            // check if there are assignments in the local storage
+            localforage__WEBPACK_IMPORTED_MODULE_1__["getItem"]('assignments').then((assign) => {
+                if (assign) {
+                    this.progressCache = assign;
+                }
+                else {
+                    this.progressCache = [];
+                }
+            }).then(() => resolve());
+        });
+    }
+    save() {
+        return new Promise(resolve => {
+            // save the current cache to localstorage
+            localforage__WEBPACK_IMPORTED_MODULE_1__["setItem"]('assignments', this.progressCache).then(() => resolve());
+        });
+    }
+}
+TrackProgressService.ɵfac = function TrackProgressService_Factory(t) { return new (t || TrackProgressService)(); };
+TrackProgressService.ɵprov = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineInjectable"]({ token: TrackProgressService, factory: TrackProgressService.ɵfac, providedIn: 'root' });
+/*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](TrackProgressService, [{
+        type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Injectable"],
+        args: [{
+                providedIn: 'root'
+            }]
+    }], function () { return []; }, null); })();
+
+
+/***/ }),
+
 /***/ "./src/app/layouts/full-width-layout/full-width-layout.component.ts":
 /*!**************************************************************************!*\
   !*** ./src/app/layouts/full-width-layout/full-width-layout.component.ts ***!
@@ -649,35 +1048,74 @@ FullWidthLayoutComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵ�
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "HeaderComponent", function() { return HeaderComponent; });
 /* harmony import */ var _angular_core__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @angular/core */ "./node_modules/@angular/core/__ivy_ngcc__/fesm2015/core.js");
-/* harmony import */ var src_app_core_settings_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/app/core/settings.service */ "./src/app/core/settings.service.ts");
-/* harmony import */ var _clr_angular__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @clr/angular */ "./node_modules/@clr/angular/__ivy_ngcc__/fesm2015/clr-angular.js");
-/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+/* harmony import */ var src_environments_environment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! src/environments/environment */ "./src/environments/environment.ts");
+/* harmony import */ var src_app_core_settings_service__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! src/app/core/settings.service */ "./src/app/core/settings.service.ts");
+/* harmony import */ var src_app_core_exercise_service__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! src/app/core/exercise.service */ "./src/app/core/exercise.service.ts");
+/* harmony import */ var _clr_angular__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @clr/angular */ "./node_modules/@clr/angular/__ivy_ngcc__/fesm2015/clr-angular.js");
+/* harmony import */ var _angular_router__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! @angular/router */ "./node_modules/@angular/router/__ivy_ngcc__/fesm2015/router.js");
+/* harmony import */ var _angular_common__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! @angular/common */ "./node_modules/@angular/common/__ivy_ngcc__/fesm2015/common.js");
 
 
 
 
 
-function HeaderComponent_clr_dropdown_menu_22_Template(rf, ctx) { if (rf & 1) {
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "clr-dropdown-menu", 16);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "a", 17);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "Settings");
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "a", 18);
-    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, "Login");
+
+
+
+const _c0 = function (a2) { return ["/", "t", a2]; };
+function HeaderComponent_a_9_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "a", 17);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "span", 10);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
 } if (rf & 2) {
+    const ctx_r0 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("routerLink", _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵpureFunction1"](3, _c0, ctx_r0.activeTrack.id));
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"](" ", ctx_r0.activeTrack.name.length > 40 ? ctx_r0.activeTrack.name.slice(0, 37) + "..." : ctx_r0.activeTrack.name, " ");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("Track: ", ctx_r0.activeTrack.name, "");
+} }
+function HeaderComponent_clr_dropdown_menu_23_Template(rf, ctx) { if (rf & 1) {
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "clr-dropdown-menu", 18);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "a", 19);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](2, "Settings");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](3, "a", 20);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](4, "Login");
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](5, "a", 20);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](6);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+} if (rf & 2) {
+    const ctx_r1 = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵnextContext"]();
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
     _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](2);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("disabled", true);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](1);
+    _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("Version ", ctx_r1.version, "");
 } }
 class HeaderComponent {
-    constructor(settings) {
+    constructor(settings, exerciseService) {
         this.settings = settings;
+        this.exerciseService = exerciseService;
+        // backend status
         this.backendConnected = false;
+        // version
+        this.version = src_environments_environment__WEBPACK_IMPORTED_MODULE_1__["environment"].version;
     }
     ngOnInit() {
+        // subscribe to backend status
         this.backendConnectSubscription = this.settings.isConnected.subscribe({
             next: status => this.backendConnected = status
+        });
+        // subscribe to active Track
+        this.activeTrackSubscription = this.exerciseService.activeTrack.subscribe({
+            next: track => this.activeTrack = track
         });
     }
     onConnect() {
@@ -687,8 +1125,8 @@ class HeaderComponent {
         this.backendConnectSubscription.unsubscribe();
     }
 }
-HeaderComponent.ɵfac = function HeaderComponent_Factory(t) { return new (t || HeaderComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_core_settings_service__WEBPACK_IMPORTED_MODULE_1__["SettingsService"])); };
-HeaderComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: HeaderComponent, selectors: [["app-header"]], decls: 23, vars: 3, consts: [[1, "header-6"], [1, "branding"], ["routerLink", "/", 1, "nav-link"], ["src", "assets/logo.png"], [1, "title"], [1, "header-nav", 3, "clr-nav-level"], ["routerLink", "/tracks", "routerLinkActive", "active", 1, "nav-link", "nav-text"], [1, "header-actions"], ["href", "javascript://", "aria-label", "connection status", 1, "nav-link", "nav-icon", "tooltip", "tooltip-md", "tooltip-bottom-left", 3, "click"], [1, "tooltip-content"], ["routerLink", "/console", "routerLinkActive", "active", "aria-label", "console", 1, "nav-link", "nav-icon"], ["shape", "terminal"], ["clrDropdownTrigger", "", "aria-label", "toggle settings menu", 1, "nav-icon"], ["shape", "cog"], ["shape", "caret down"], ["clrPosition", "bottom-right", 4, "clrIfOpen"], ["clrPosition", "bottom-right"], ["routerLink", "/settings", "clrDropdownItem", ""], ["clrDropdownItem", "", 3, "disabled"]], template: function HeaderComponent_Template(rf, ctx) { if (rf & 1) {
+HeaderComponent.ɵfac = function HeaderComponent_Factory(t) { return new (t || HeaderComponent)(_angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_core_settings_service__WEBPACK_IMPORTED_MODULE_2__["SettingsService"]), _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdirectiveInject"](src_app_core_exercise_service__WEBPACK_IMPORTED_MODULE_3__["ExerciseService"])); };
+HeaderComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineComponent"]({ type: HeaderComponent, selectors: [["app-header"]], decls: 24, vars: 4, consts: [[1, "header-6"], [1, "branding"], ["routerLink", "/", 1, "nav-link"], ["src", "assets/logo.png"], [1, "title"], [1, "header-nav", 3, "clr-nav-level"], ["routerLink", "/tracks", "routerLinkActive", "active", 1, "nav-link", "nav-text"], ["class", "nav-link nav-text tooltip tooltip-lg tooltip-bottom-right", "routerLinkActive", "active", 3, "routerLink", 4, "ngIf"], [1, "header-actions"], ["href", "javascript://", "aria-label", "connection status", 1, "nav-link", "nav-icon", "tooltip", "tooltip-md", "tooltip-bottom-left", 3, "click"], [1, "tooltip-content"], ["routerLink", "/console", "routerLinkActive", "active", "aria-label", "console", 1, "nav-link", "nav-icon"], ["shape", "terminal"], ["clrDropdownTrigger", "", "aria-label", "toggle settings menu", 1, "nav-icon"], ["shape", "cog"], ["shape", "caret down"], ["clrPosition", "bottom-right", 4, "clrIfOpen"], ["routerLinkActive", "active", 1, "nav-link", "nav-text", "tooltip", "tooltip-lg", "tooltip-bottom-right", 3, "routerLink"], ["clrPosition", "bottom-right"], ["routerLink", "/settings", "clrDropdownItem", ""], ["clrDropdownItem", "", 3, "disabled"]], template: function HeaderComponent_Template(rf, ctx) { if (rf & 1) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](0, "clr-header", 0);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](1, "div", 1);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](2, "a", 2);
@@ -702,38 +1140,41 @@ HeaderComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCo
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](7, "a", 6);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](8, "Tracks");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](9, HeaderComponent_a_9_Template, 4, 5, "a", 7);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](9, "div", 7);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "a", 8);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HeaderComponent_Template_a_click_10_listener() { return ctx.onConnect(); });
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](11, "clr-icon");
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](12, "span", 9);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](13, "The backend server is: ");
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](14, "code");
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](15);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](10, "div", 8);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](11, "a", 9);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵlistener"]("click", function HeaderComponent_Template_a_click_11_listener() { return ctx.onConnect(); });
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](12, "clr-icon");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](13, "span", 10);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](14, "The backend server is: ");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](15, "code");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtext"](16);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](16, "a", 10);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](17, "clr-icon", 11);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](17, "a", 11);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](18, "clr-icon", 12);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](18, "clr-dropdown");
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "button", 12);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](20, "clr-icon", 13);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](19, "clr-dropdown");
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementStart"](20, "button", 13);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](21, "clr-icon", 14);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelement"](22, "clr-icon", 15);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](22, HeaderComponent_clr_dropdown_menu_22_Template, 5, 1, "clr-dropdown-menu", 15);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtemplate"](23, HeaderComponent_clr_dropdown_menu_23_Template, 7, 3, "clr-dropdown-menu", 16);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵelementEnd"]();
     } if (rf & 2) {
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](6);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("clr-nav-level", 1);
-        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](5);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵproperty"]("ngIf", ctx.activeTrack);
+        _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](3);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵattribute"]("shape", ctx.backendConnected ? "link" : "unlink");
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵadvance"](4);
         _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵtextInterpolate1"]("'", ctx.backendConnected ? "online" : "offline", "'");
-    } }, directives: [_clr_angular__WEBPACK_IMPORTED_MODULE_2__["ClrHeader"], _clr_angular__WEBPACK_IMPORTED_MODULE_2__["NavDetectionOompaLoompa"], _angular_router__WEBPACK_IMPORTED_MODULE_3__["RouterLinkWithHref"], _clr_angular__WEBPACK_IMPORTED_MODULE_2__["ClrNavLevel"], _angular_router__WEBPACK_IMPORTED_MODULE_3__["RouterLinkActive"], _clr_angular__WEBPACK_IMPORTED_MODULE_2__["ClrIconCustomTag"], _clr_angular__WEBPACK_IMPORTED_MODULE_2__["ClrDropdown"], _clr_angular__WEBPACK_IMPORTED_MODULE_2__["ClrDropdownTrigger"], _clr_angular__WEBPACK_IMPORTED_MODULE_2__["ClrIfOpen"], _clr_angular__WEBPACK_IMPORTED_MODULE_2__["ClrDropdownMenu"], _clr_angular__WEBPACK_IMPORTED_MODULE_2__["ClrDropdownItem"]], styles: [".branding[_ngcontent-%COMP%]   img[_ngcontent-%COMP%] {\n  max-height: 50px;\n  height: auto;\n  width: auto;\n}\n.branding[_ngcontent-%COMP%]   span.title[_ngcontent-%COMP%] {\n  margin-left: 0.6rem;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvbGF5b3V0cy9oZWFkZXIvaGVhZGVyLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUNFO0VBQ0UsZ0JBQUE7RUFDQSxZQUFBO0VBQ0EsV0FBQTtBQUFKO0FBR0U7RUFDRSxtQkFBQTtBQURKIiwiZmlsZSI6InNyYy9hcHAvbGF5b3V0cy9oZWFkZXIvaGVhZGVyLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmJyYW5kaW5nIHtcclxuICBpbWcge1xyXG4gICAgbWF4LWhlaWdodDogNTBweDtcclxuICAgIGhlaWdodDogYXV0bztcclxuICAgIHdpZHRoOiBhdXRvO1xyXG4gIH1cclxuXHJcbiAgc3Bhbi50aXRsZSB7XHJcbiAgICBtYXJnaW4tbGVmdDogMC42cmVtO1xyXG4gIH1cclxufVxyXG4iXX0= */"] });
+    } }, directives: [_clr_angular__WEBPACK_IMPORTED_MODULE_4__["ClrHeader"], _clr_angular__WEBPACK_IMPORTED_MODULE_4__["NavDetectionOompaLoompa"], _angular_router__WEBPACK_IMPORTED_MODULE_5__["RouterLinkWithHref"], _clr_angular__WEBPACK_IMPORTED_MODULE_4__["ClrNavLevel"], _angular_router__WEBPACK_IMPORTED_MODULE_5__["RouterLinkActive"], _angular_common__WEBPACK_IMPORTED_MODULE_6__["NgIf"], _clr_angular__WEBPACK_IMPORTED_MODULE_4__["ClrIconCustomTag"], _clr_angular__WEBPACK_IMPORTED_MODULE_4__["ClrDropdown"], _clr_angular__WEBPACK_IMPORTED_MODULE_4__["ClrDropdownTrigger"], _clr_angular__WEBPACK_IMPORTED_MODULE_4__["ClrIfOpen"], _clr_angular__WEBPACK_IMPORTED_MODULE_4__["ClrDropdownMenu"], _clr_angular__WEBPACK_IMPORTED_MODULE_4__["ClrDropdownItem"]], styles: [".branding[_ngcontent-%COMP%]   img[_ngcontent-%COMP%] {\n  max-height: 50px;\n  height: auto;\n  width: auto;\n}\n.branding[_ngcontent-%COMP%]   span.title[_ngcontent-%COMP%] {\n  margin-left: 0.6rem;\n}\n/*# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbInNyYy9hcHAvbGF5b3V0cy9oZWFkZXIvaGVhZGVyLmNvbXBvbmVudC5zY3NzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUNFO0VBQ0UsZ0JBQUE7RUFDQSxZQUFBO0VBQ0EsV0FBQTtBQUFKO0FBR0U7RUFDRSxtQkFBQTtBQURKIiwiZmlsZSI6InNyYy9hcHAvbGF5b3V0cy9oZWFkZXIvaGVhZGVyLmNvbXBvbmVudC5zY3NzIiwic291cmNlc0NvbnRlbnQiOlsiLmJyYW5kaW5nIHtcclxuICBpbWcge1xyXG4gICAgbWF4LWhlaWdodDogNTBweDtcclxuICAgIGhlaWdodDogYXV0bztcclxuICAgIHdpZHRoOiBhdXRvO1xyXG4gIH1cclxuXHJcbiAgc3Bhbi50aXRsZSB7XHJcbiAgICBtYXJnaW4tbGVmdDogMC42cmVtO1xyXG4gIH1cclxufVxyXG4iXX0= */"] });
 /*@__PURE__*/ (function () { _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵsetClassMetadata"](HeaderComponent, [{
         type: _angular_core__WEBPACK_IMPORTED_MODULE_0__["Component"],
         args: [{
@@ -741,7 +1182,7 @@ HeaderComponent.ɵcmp = _angular_core__WEBPACK_IMPORTED_MODULE_0__["ɵɵdefineCo
                 templateUrl: './header.component.html',
                 styleUrls: ['./header.component.scss']
             }]
-    }], function () { return [{ type: src_app_core_settings_service__WEBPACK_IMPORTED_MODULE_1__["SettingsService"] }]; }, null); })();
+    }], function () { return [{ type: src_app_core_settings_service__WEBPACK_IMPORTED_MODULE_2__["SettingsService"] }, { type: src_app_core_exercise_service__WEBPACK_IMPORTED_MODULE_3__["ExerciseService"] }]; }, null); })();
 
 
 /***/ }),
@@ -881,7 +1322,8 @@ const environment = {
         messagingSenderId: "26810996853",
         appId: "1:26810996853:web:68eaf158951b103202003c",
         measurementId: "G-63LD6L8LCX"
-    }
+    },
+    version: __webpack_require__(/*! ../../package.json */ "./package.json").version
 };
 /*
  * For easier debugging in development mode, you can import the following file
@@ -928,7 +1370,7 @@ _angular_platform_browser__WEBPACK_IMPORTED_MODULE_3__["platformBrowser"]().boot
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! E:\lectures\datamanagement\hydenv-database\exercises-app\src\main.ts */"./src/main.ts");
+module.exports = __webpack_require__(/*! D:\hydrocode\hydenv-database\exercises-app\src\main.ts */"./src/main.ts");
 
 
 /***/ })

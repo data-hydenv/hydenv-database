@@ -580,10 +580,10 @@ module.exports = content.locals || {};
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! E:\lectures\datamanagement\hydenv-database\exercises-app\node_modules\@clr\icons\clr-icons.min.css */"./node_modules/@clr/icons/clr-icons.min.css");
-__webpack_require__(/*! E:\lectures\datamanagement\hydenv-database\exercises-app\node_modules\@clr\ui\clr-ui-dark.min.css */"./node_modules/@clr/ui/clr-ui-dark.min.css");
-__webpack_require__(/*! E:\lectures\datamanagement\hydenv-database\exercises-app\node_modules\highlight.js\styles\vs2015.css */"./node_modules/highlight.js/styles/vs2015.css");
-module.exports = __webpack_require__(/*! E:\lectures\datamanagement\hydenv-database\exercises-app\src\styles.scss */"./src/styles.scss");
+__webpack_require__(/*! D:\hydrocode\hydenv-database\exercises-app\node_modules\@clr\icons\clr-icons.min.css */"./node_modules/@clr/icons/clr-icons.min.css");
+__webpack_require__(/*! D:\hydrocode\hydenv-database\exercises-app\node_modules\@clr\ui\clr-ui-dark.min.css */"./node_modules/@clr/ui/clr-ui-dark.min.css");
+__webpack_require__(/*! D:\hydrocode\hydenv-database\exercises-app\node_modules\highlight.js\styles\vs2015.css */"./node_modules/highlight.js/styles/vs2015.css");
+module.exports = __webpack_require__(/*! D:\hydrocode\hydenv-database\exercises-app\src\styles.scss */"./src/styles.scss");
 
 
 /***/ })
