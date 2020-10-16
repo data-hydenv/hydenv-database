@@ -5,6 +5,8 @@ import { SettingsService } from 'src/app/core/settings.service';
 import { ExerciseService } from 'src/app/core/exercise.service';
 import { Track } from 'src/app/core/models/track';
 
+import { environment } from 'src/environments/environment';
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -18,6 +20,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   // active track information
   activeTrack: Track;
   activeTrackSubscription: Subscription;
+
+  // version
+  version = environment.version;
 
   constructor(private settings: SettingsService, private exerciseService: ExerciseService) { }
 

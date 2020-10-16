@@ -31,6 +31,7 @@
           <clr-dropdown-menu *clrIfOpen clrPosition="bottom-right">
             <a routerLink="/settings" clrDropdownItem>Settings</a>
             <a clrDropdownItem [disabled]="true">Login</a>
+            <a clrDropdownItem [disabled]="true">Version {{ version }}</a>
           </clr-dropdown-menu>
         </clr-dropdown>
     </div>
