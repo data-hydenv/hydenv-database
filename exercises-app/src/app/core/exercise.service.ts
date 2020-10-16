@@ -31,7 +31,12 @@ export class ExerciseService {
   localVersions: {tracks: number, exercises: number};
   remoteVersions: {tracks: number, exercises: number};
 
-  constructor(private settings: SettingsService, private http: HttpClient, private firestore: AngularFirestore, private progressService: TrackProgressService) {
+  constructor(
+    private settings: SettingsService,
+    private http: HttpClient,
+    private firestore: AngularFirestore,
+    private progressService: TrackProgressService
+  ) {
     // handle subscriptions
     this.subscriptions();
 
@@ -64,15 +69,29 @@ export class ExerciseService {
           this.remoteVersions = v;
 
           // check the version
+          let trackFinished = false;
+          let exFinished = false;
           if (this.localVersions.tracks < this.remoteVersions.tracks) {
-            this.syncTracks();
+            this.syncTracks().then(() => {
+              trackFinished = true;
+              if (trackFinished && exFinished) {this.syncFinished.next(true); }
+            });
           } else {
-            this.loadLocalTracks();
+            this.loadLocalTracks().then(() => {
+              trackFinished = true;
+              if (trackFinished && exFinished) {this.syncFinished.next(true); }
+            });
           }
           if (this.localVersions.exercises < this.remoteVersions.exercises) {
-            this.syncExercises();
+            this.syncExercises().then(() => {
+              exFinished = true;
+              if (trackFinished && exFinished) {this.syncFinished.next(true); }
+            });
           } else {
-            this.loadLocalExercises();
+            this.loadLocalExercises().then(() => {
+              exFinished = true;
+              if (trackFinished && exFinished) {this.syncFinished.next(true); }
+            });
           }
 
           // mark the sync as finished
@@ -82,11 +101,13 @@ export class ExerciseService {
     });
   }
 
+
+
   /**
    * Load the current set of tracks from local storage
    */
-  private loadLocalTracks(): void {
-    localforage.getItem('tracks').then((t: Track[]) => {
+  private loadLocalTracks(): Promise<void> {
+    return localforage.getItem('tracks').then((t: Track[]) => {
       this.tracksCache = t;
       this.tracks.next(this.tracksCache);
     });
@@ -95,8 +116,8 @@ export class ExerciseService {
   /**
    * Load the current set of exercises from local storage
    */
-  private loadLocalExercises(): void {
-    localforage.getItem('exercises').then((e: Exercise[]) => {
+  private loadLocalExercises(): Promise<void> {
+    return localforage.getItem('exercises').then((e: Exercise[]) => {
       this.exerciseCache = e;
       this.exercises.next(this.exerciseCache);
     });
@@ -106,45 +127,52 @@ export class ExerciseService {
    * There is version mismatch between the local and remote version
    * of the tracks. Sync and update the local version number.
    */
-  private syncTracks(): void {
-    this.firestore.collection<Track>('tracks').snapshotChanges().subscribe({
-      next: refs => {
-        this.tracksCache = refs.map(ref => {
-          return {id: ref.payload.doc.id, ...ref.payload.doc.data()};
-        });
+  private syncTracks(): Promise<void> {
+    return new Promise(resolve => {
+      this.firestore.collection<Track>('tracks').snapshotChanges().subscribe({
+        next: refs => {
+          this.tracksCache = refs.map(ref => {
+            return {id: ref.payload.doc.id, ...ref.payload.doc.data()};
+          });
 
-        // save to storage
-        localforage.setItem('tracks', this.tracksCache).then(() => {
-          // publish new tracks
-          this.tracks.next(this.tracksCache);
+          // save to storage
+          localforage.setItem('tracks', this.tracksCache).then(() => {
+            // publish new tracks
+            this.tracks.next(this.tracksCache);
 
-          // set new version
-          localforage.setItem('versions', {...this.localVersions, tracks: this.remoteVersions.tracks});
-        });
-      }
+            // set new version
+            localforage.setItem('versions', {...this.localVersions, tracks: this.remoteVersions.tracks})
+            .then(() => resolve());
+          });
+        }
+      });
     });
+
   }
 
   /**
    * THere is a version mismatch between the local and reomte version
    * of the exercises. Sync and update the local version number.
    */
-  private syncExercises(): void {
-    this.firestore.collection<Exercise>('exercises').snapshotChanges().subscribe({
-      next: refs => {
-        this.exerciseCache = refs.map(ref => {
-          return {id: ref.payload.doc.id, ...ref.payload.doc.data()};
-        });
+  private syncExercises(): Promise<void> {
+    return new Promise(resolve => {
+      this.firestore.collection<Exercise>('exercises').snapshotChanges().subscribe({
+        next: refs => {
+          this.exerciseCache = refs.map(ref => {
+            return {id: ref.payload.doc.id, ...ref.payload.doc.data()};
+          });
 
-        // save to storage
-        localforage.setItem('exercises', this.exerciseCache).then(() => {
-          // publish new exercises
-          this.exercises.next(this.exerciseCache);
+          // save to storage
+          localforage.setItem('exercises', this.exerciseCache).then(() => {
+            // publish new exercises
+            this.exercises.next(this.exerciseCache);
 
-          // set the new exercise version
-          localforage.setItem('versions', {...this.localVersions, exercises: this.remoteVersions.exercises});
-        });
-      }
+            // set the new exercise version
+            localforage.setItem('versions', {...this.localVersions, exercises: this.remoteVersions.exercises})
+              .then(() => resolve());
+          });
+        }
+      });
     });
   }
 
@@ -163,7 +191,7 @@ export class ExerciseService {
     const opt = {params: {sql: query}};
     // TODO: for now, only text output EXPLAINs are included
     if (explain) {
-      opt.params['explain'] = explain;
+      (opt.params as any).explain = explain;
     }
 
     return new Promise((resolve, reject) => {
