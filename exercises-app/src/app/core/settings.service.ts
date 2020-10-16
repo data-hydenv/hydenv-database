@@ -40,7 +40,7 @@ export class SettingsService {
    * Starts the connection autocheck
    */
   public startCheckConnection(): void {
-    this.checkTimoutId = setTimeout(this.checkBackendConnection.bind(this), 5000);
+    this.checkTimoutId = window.setTimeout(this.checkBackendConnection.bind(this), 5000);
   }
 
   /**

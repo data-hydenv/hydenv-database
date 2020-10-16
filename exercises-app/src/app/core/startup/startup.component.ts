@@ -85,7 +85,7 @@ export class StartupComponent implements OnInit {
     this.pending = false;
     this.triggerOptions = false;
     this.triggerFinished = true;
-    this.collapseTimeoutId = setTimeout(() => this.active = false, 800);
+    this.collapseTimeoutId = window.setTimeout(() => this.active = false, 800);
   }
 
   public stopCollapsing(): void {
