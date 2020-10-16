@@ -31,6 +31,11 @@ const routes: Routes = [
     loadChildren: () => import('./pages/tracks-page/tracks-page.module').then(m => m.TracksPageModule)
   },
   {
+    path: 't',
+    component: PageLayoutComponent,
+    loadChildren: () => import('./pages/track-page/track-page.module').then(m => m.TrackPageModule)
+  },
+  {
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'

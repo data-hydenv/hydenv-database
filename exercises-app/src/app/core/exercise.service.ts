@@ -14,6 +14,8 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class ExerciseService {
+  // the service needs a moment to sync the local files
+  syncFinished = new BehaviorSubject<boolean>(false);
   backendUrl: string;
 
   // distribute track information to the application
@@ -42,6 +44,9 @@ export class ExerciseService {
    * Subscribe to tracks and exercises only if out of sync.
    */
   private checkSyncStatus(): void {
+    // reset sync status
+    this.syncFinished.next(false);
+
     // first get local version
     localforage.getItem('versions').then((v: {tracks: number, exercises: number}) => {
       if (v) {
@@ -69,6 +74,9 @@ export class ExerciseService {
           } else {
             this.loadLocalExercises();
           }
+
+          // mark the sync as finished
+          this.syncFinished.next(true);
         }
       });
     });
@@ -175,6 +183,20 @@ export class ExerciseService {
         reject();
       }
     });
+  }
+
+  /**
+   * Return a copy of the requested Track
+   * @param trackId ID of the requested Track
+   */
+  public getTrackById(trackId: string): Track {
+    const track = this.tracksCache.find(t => t.id === trackId);
+    if (track) {
+      return JSON.parse(JSON.stringify(track));
+    } else {
+      console.log(`Track ID='${trackId}' not found.`);
+      return null;
+    }
   }
 
   getTrackIds(): Promise<string[]> {

@@ -1,0 +1,11 @@
+<ng-container *ngIf="track; else noTrack">
+  <h1>{{ track.name }}</h1>
+  <pre>{{ track |json }}</pre>
+
+  <h2>Exercises</h2>
+  <app-exercise-list [track]="track"></app-exercise-list>
+</ng-container>
+
+<ng-template #noTrack>
+  <i>No track info found.</i>
+</ng-template>
