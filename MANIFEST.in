@@ -1,5 +1,5 @@
-README.md
-LICENSE
-VERSION
-requirements.txt
-exercise-app/*
+include README.md
+include LICENSE
+include VERSION
+include requirements.txt
+include hydenv/exercise-app/*
