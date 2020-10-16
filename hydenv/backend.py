@@ -16,8 +16,8 @@ CORS(app)
 @app.route('/<path:path>', methods=['GET'])
 def static_files(path: str):
     if path.endswith('js'):
-        return send_from_directory('./exercises-app/', path, mimetype='application/javascript')
-    return send_from_directory('./exercises-app/', path)
+        return send_from_directory('./exercises-js/', path, mimetype='application/javascript')
+    return send_from_directory('./exercises-js/', path)
 
 @app.route('/')
 def index():
