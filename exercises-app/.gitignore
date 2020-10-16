@@ -44,3 +44,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# do not upload GCP service-accounts and SSH keys
+service-accounts

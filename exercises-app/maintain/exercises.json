@@ -1,0 +1,40 @@
+[
+  {
+    "id": "Ydw6xp14NiHexPZz3nmD",
+    "name": "Count records",
+    "body": {
+      "content": "<p>To get a very basic overview of a table's content, you can simply count all records contained in the table and name the result <i>amount</i>.</p><p>How many records are in the <strong>metadata</strong> table?</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT count(*) as amount FROM metadata;",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Lgggxqz9on2zmfr3dzwx",
+    "name": "Get Sensors",
+    "body": {
+      "content": "<p>There might be a lot of different data in the database. Luckily, the type of the used <i>sensor</i> can be stored as well.</p><p>Load <strong>all available</strong> information from the database, to learn about sensor types.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM sensors;",
+      "type": "sql"
+    },
+    "hint": "<p>The name of the needed table is <code>sensors<code>.</p>"
+  },
+  {
+    "id": "Xqbc9bq5j9yunyhvlitk",
+    "name": "Count HOBO",
+    "body": {
+      "content": "<p>There might be a lot of different data in the database. Luckily, the type of the used <i>sensor</i> can be stored as well.</p><p>Load <strong>all available</strong> information from the database, to learn about sensor types.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT count(*) as hobos FROM metadata WHERE sensor_id = (SELECT id FROM sensors WHERE name = 'hobo');",
+      "type": "sql"
+    },
+    "hint": "<p>Instead of a subquery like <code>(SELECT ... FROM sensor)</code> you can simply note down the sensor ID from the last exercise and type it in literally.</p>"
+  }
+]
