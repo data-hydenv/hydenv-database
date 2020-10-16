@@ -23,6 +23,16 @@ export class TrackPageComponent implements OnInit {
   constructor(private route: ActivatedRoute, private exerciseService: ExerciseService) { }
 
   ngOnInit(): void {
+    // subscribe to sync status of exercises
+    this.syncSubscription = this.exerciseService.syncFinished.subscribe({
+      next: isFinished => {
+        this.isSynced = isFinished;
+        if (this.isSynced && this.trackId) {
+          this.track = this.exerciseService.getTrackById(this.trackId);
+        }
+      }
+    });
+
     // subscribe to changes in the URL parameter
     this.route.paramMap.subscribe({
       next: (params: ParamMap) => {
@@ -32,14 +42,5 @@ export class TrackPageComponent implements OnInit {
         }
       }
     });
-
-    this.syncSubscription = this.exerciseService.syncFinished.subscribe({
-      next: isFinished => {
-        this.isSynced = isFinished;
-        if (this.isSynced && this.trackId) {
-          this.track = this.exerciseService.getTrackById(this.trackId);
-        }
-      }
-    })
   }
 }

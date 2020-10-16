@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { TrackPageComponent } from './track-page.component';
 import { RouterModule } from '@angular/router';
 import { ExerciseListModule } from '../../core/exercise-list/exercise-list.module';
+import { ClarityModule } from '@clr/angular';
 
 
 
@@ -10,6 +11,7 @@ import { ExerciseListModule } from '../../core/exercise-list/exercise-list.modul
   declarations: [TrackPageComponent],
   imports: [
     CommonModule,
+    ClarityModule,
     RouterModule.forChild([
       {path: ':trackId', component: TrackPageComponent}
     ]),

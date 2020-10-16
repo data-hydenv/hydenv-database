@@ -1,9 +1,49 @@
 <ng-container *ngIf="track; else noTrack">
+  <div style="float: right;">
+    <clr-dropdown>
+      <button clrDropdownTrigger>
+        <clr-icon shape="menu"></clr-icon>
+      </button>
+      <clr-dropdown-menu clrPosition="bottom-right">
+        <a clrDropdownItem [disabled]="true">Edit</a>
+        <a clrDropdownItem [disabled]="true">Login</a>
+      </clr-dropdown-menu>
+    </clr-dropdown>
+  </div>
   <h1>{{ track.name }}</h1>
-  <pre>{{ track |json }}</pre>
+  <div>
+    <div *ngIf="track.admins">
+      Lecturers:
+      <a *ngFor="let admin of track.admins" href="https://github.com/{{admin}}" target="_blank"
+        class="tooltip tooltip-md tooltip-bottom-right">
+        <span class="label label-light-blue clickable">
+          {{ admin }}
+        </span>
+        <span class="tooltip-content">Visit {{admin}} on Github.</span>
+      </a>
+    </div>
+  </div>
 
-  <h2>Exercises</h2>
-  <app-exercise-list [track]="track"></app-exercise-list>
+  <div class="card">
+    <div class="card-header">
+      Description
+    </div>
+    <div class="card-block">
+      <div class="card-text" [innerHTML]="track.description"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      Exercises
+    </div>
+    <div class="card-block">
+      <app-exercise-list [track]="track"></app-exercise-list>
+    </div>
+  </div>
+
+  <!--<pre>{{ track |json }}</pre>-->
+
 </ng-container>
 
 <ng-template #noTrack>
