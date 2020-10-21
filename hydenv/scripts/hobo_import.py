@@ -28,6 +28,11 @@ def read_file(fname, txtfmt=False):
 		df.dropna(inplace=True)
 		df.columns = ['tstamp', 'temperature', 'light']
 
+	# make sure temperature and light are floats
+	df.temperature = df.temperature.astype(float)
+	df.light = df.light.astype(float)
+
+	# drop na
 	df.dropna(how='any', axis=0, inplace=True)
 	
 	return df
