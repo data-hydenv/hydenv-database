@@ -26,10 +26,10 @@ from hydenv.util import env
 from hydenv.scripts.hobo_import import HydenvHoboImporter
 
 
-class HydenvExamples:
+class HydenvHoboExamples:
     r"""
-    Example Loader.\n
-    Loads example files from Github (or other sources) and loads them into the
+    Hobo Example Loader.\n
+    Loads HOBO example data from Github (or other sources) and loads them into the
     given database. The database has to be installed and initialized before. 
     Do that by hand or use the two CLI commands:
         python -m hydenv database install  --connection=postgresql://postgres:<adminpassword>@localhost:5432/postgres
@@ -57,7 +57,7 @@ class HydenvExamples:
             'WT20': "hobo/2020/"
         }
     
-    def hobo(self, terms='all', data_path='download', only=None, quiet=True):
+    def run(self, terms='all', data_path='download', only=None, quiet=True):
         if only is None or only == 'metadata':
             # Get the metadata
             if not quiet:
@@ -92,7 +92,6 @@ class HydenvExamples:
         if not quiet:
                 print('Done.')
         
-    
     def _upload_hobo(self, terms='all', quiet=True):
         # if all years, are requested, build the list
         if terms == 'all':
@@ -142,22 +141,3 @@ class HydenvExamples:
         for term in terms:
             p = os.path.join(path, self.__hobo_data_map[term])
             cli.folder(path=p, term=term, quiet=quiet)
-
-class HydenvExamplesCli(HydenvExamples):
-    def hobo(self, terms='all', only=None, data_path='download'):
-        """
-        Import HOBO data.\n
-        This high level script downloads all neccessary resources for the HOBO 
-        measureing campaigns and uploads them to the specified database.
-        You can limit the metadata by terms (like WT17, WT18 etc.) and upload only
-        'metadata' or 'data'. Default is to upload both.
-        :param terms: Either 'all' (default) or a specific term short name (like WT18) to use
-        :param data_path: Either 'download' (default) or a local path to the data
-        :param only: If set, only the given entities will be uploaded.
-        """
-        super(HydenvExamplesCli, self).hobo(terms=terms, data_path=data_path, only=only, quiet=False)
-
-
-if __name__=='__main__':
-    import fire
-    fire.Fire(HydenvExamplesCli)

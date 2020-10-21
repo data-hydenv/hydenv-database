@@ -4,7 +4,7 @@ from hydenv.exercises import HydenvExercises
 from hydenv.backend import run as backend_run
 
 from hydenv.scripts.hobo_import import HydenvHoboImporterCli
-from hydenv.scripts.examples import HydenvExamplesCli
+from hydenv.examples.examples import HydenvExamples
 
 
 import fire
@@ -15,6 +15,6 @@ fire.Fire({
     'exercise': HydenvExercises,
     'backend': backend_run,
     'hobo': HydenvHoboImporterCli,
-    'example': HydenvExamplesCli,
-    'examples': HydenvExamplesCli
+    'example': HydenvExamples,
+    'examples': HydenvExamples
 })
