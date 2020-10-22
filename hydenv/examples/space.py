@@ -48,6 +48,9 @@ class HydenvSpaceExamples:
         # convert datum to UTC 
         df['datum'] = pd.to_datetime(df.datum, utc=True)
 
+        # rename index to 'id'
+        df.index.name = 'id'
+        
         if not quiet:
             print('Uploading Space Missions example data...')
             bar = progressbar.ProgressBar(max_value=len(df), redirect_stdout=True)
