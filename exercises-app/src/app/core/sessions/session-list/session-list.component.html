@@ -1,0 +1,55 @@
+<clr-datagrid>
+
+    <clr-dg-column>Session</clr-dg-column>
+    <clr-dg-column>Exercises</clr-dg-column>
+    <clr-dg-column>Progress</clr-dg-column>
+
+    <clr-dg-row *ngFor="let session of track.sessions" [clrDgItem]="session">
+        <clr-dg-cell>{{ session.name }}</clr-dg-cell>
+        <clr-dg-cell>{{ session.exercises.length }}</clr-dg-cell>
+        <clr-dg-cell>
+            <ng-container *ngIf="sessionProgress[session.name]">
+                <ng-container *ngIf="sessionProgress[session.name] === session.exercises.length; else notFinished">
+                    <clr-icon shape="check"></clr-icon>
+                </ng-container>
+                <ng-template #notFinished>
+                    {{ sessionProgress[session.name] }} / {{ session.exercises.length }}
+                </ng-template>    
+            </ng-container>
+            <ng-container *ngIf="!sessionProgress[session.name]">
+                0 / {{ session.exercises.length }}
+            </ng-container>
+        </clr-dg-cell>
+    </clr-dg-row>
+
+    <clr-dg-detail *clrIfDetail="let detail">
+        <clr-dg-detail-header>{{ detail.name }}</clr-dg-detail-header>
+        <clr-dg-detail-body>
+            <p [innerHTML]="detail.description"></p>
+
+            <clr-datagrid>
+                <clr-dg-column>ID</clr-dg-column>
+                <clr-dg-column>Mandatory</clr-dg-column>
+                <clr-dg-column>Done</clr-dg-column>
+                <clr-dg-column></clr-dg-column>
+
+                <clr-dg-row *ngFor="let exercise of detail.exercises">
+                    <clr-dg-cell>{{ exercise.id }}</clr-dg-cell>
+                    <clr-dg-cell>
+                        <clr-icon [attr.shape]="exercise.mandatory ? 'check' : 'times'"></clr-icon>
+                    </clr-dg-cell>
+                    <clr-dg-cell>
+                        <clr-icon [attr.shape]="exerciseProgress[exercise.id] ? 'check' : 'times'"></clr-icon>
+                    </clr-dg-cell>
+                    <clr-dg-cell>
+                        <button class="btn btn-link" [routerLink]="['/', 'e', exercise.id]">
+                            {{ exerciseProgress[exercise.id] ? 'Restart' : 'Start' }}
+                        </button>
+                    </clr-dg-cell>
+                </clr-dg-row>
+            </clr-datagrid>
+
+        </clr-dg-detail-body>
+    </clr-dg-detail>
+
+</clr-datagrid>
