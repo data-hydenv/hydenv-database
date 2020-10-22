@@ -60,6 +60,21 @@ export class TrackProgressService {
     return assign && assign.correct;
   }
 
+  /**
+   * Checksthe given exercise. Other than `isSolved`, it returns
+   * False if the exercise is tried, but unsolved and `null` if
+   * there is no registered solving attempt.
+   * @param exerciseId Id of the exercise to be checked
+   */
+  public solveStatus(exerciseId: string): boolean | null {
+    const assign = this.progressCache.find(a => a.exerciseId === exerciseId);
+    if (assign) {
+      return assign.correct;
+    } else {
+      return null;
+    }
+  }
+
   private loadFromStorage(): Promise<void> {
     return new Promise(resolve => {
       // check if there are assignments in the local storage
