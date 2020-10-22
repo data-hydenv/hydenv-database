@@ -194,3 +194,18 @@ class Detail(Base):
             if value is not None:
                 add_to[self.key] = value
         return add_to
+
+
+# -----------------------------------------------------------
+# Some extra models
+# -----------------------------------------------------------
+class SpaceRaw(Base):
+    __tablename__ = 'space_raw'
+
+    id = Column(Integer, primary_key=True)
+    company_name = Column(String(65))
+    location = Column(String)
+    datum = Column(DateTime)
+    detail = Column(String)
+    status_rocket = Column(String)
+    status_mission = Column(String)

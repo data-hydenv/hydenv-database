@@ -1,4 +1,5 @@
 from hydenv.examples.hobo import HydenvHoboExamples
+from hydenv.examples.space import HydenvSpaceExamples
 
 
 class HydenvExamples:
@@ -30,6 +31,21 @@ class HydenvExamples:
         """
         cli = HydenvHoboExamples(connection=self.__connection)
         return cli.run(terms=terms, data_path=data_path, only=only, quiet=self.quiet)
+
+    def space(self, normalize=False):
+        """
+        Import Space Missions example data.\n
+        This high level script downloads a database of all space Mission from 
+        1957 until early 2020. The raw, de-normalized dataset is installed along 
+        with the hydenv database and used in lecture to introduce SQL and normalization.
+        The final normalized structure can be added using the normalize flag.
+        :param normalize: If set, the data will be normalized before uplaod.
+        """
+        cli = HydenvSpaceExamples(connection=self.__connection)
+        if normalize:
+            raise NotImplementedError
+        else:
+            return cli.run(quiet=self.quiet)
 
 
 if __name__=='__main__':

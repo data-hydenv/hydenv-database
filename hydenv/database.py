@@ -6,6 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from hydenv.models import Base, Term, Variable
+from hydenv.examples.space import HydenvSpaceExamples
 from hydenv.util import env
 
 
@@ -125,6 +126,8 @@ class HydenvDatabase:
         if clean:
             Term.defaults(session=self.session)
             Variable.defaults(session=self.session)
+            cli = HydenvSpaceExamples(connection=self.__connection)
+            cli.run(quiet=True)
         
         print('Done')
 

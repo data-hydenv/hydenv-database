@@ -27,7 +27,7 @@ from hydenv.scripts.hobo_import import HydenvHoboImporter
 
 
 class HydenvHoboExamples:
-    r"""
+    """
     Hobo Example Loader.\n
     Loads HOBO example data from Github (or other sources) and loads them into the
     given database. The database has to be installed and initialized before. 
