@@ -4,6 +4,12 @@ export interface ExerciseReference {
   order: number;
 }
 
+export interface ExerciseSession {
+  name: string;
+  description?: string;
+  exercises: ExerciseReference[];
+}
+
 export interface TrackOptions {
   login?: boolean;
   paidBackend?: boolean;
@@ -17,5 +23,6 @@ export interface Track {
   description: string;
   admins?: string[];
   exercises: ExerciseReference[];
+  sessions: ExerciseSession[];
   options?: TrackOptions;
 }
