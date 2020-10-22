@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { ClarityModule } from '@clr/angular';
 
 import { TrackCardComponent } from './track-card.component';
-import { ExerciseListModule } from '../exercise-list/exercise-list.module';
+import { SessionsModule } from '../sessions/sessions.module';
 
 
 @NgModule({
@@ -14,7 +14,7 @@ import { ExerciseListModule } from '../exercise-list/exercise-list.module';
     CommonModule,
     RouterModule,
     ClarityModule,
-    ExerciseListModule
+    SessionsModule,
   ],
   exports: [
     TrackCardComponent

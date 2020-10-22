@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TrackPageComponent } from './track-page.component';
 import { RouterModule } from '@angular/router';
-import { ExerciseListModule } from '../../core/exercise-list/exercise-list.module';
 import { ClarityModule } from '@clr/angular';
 
-
+import { TrackPageComponent } from './track-page.component';
+import { SessionsModule } from '../../core/sessions/sessions.module';
 
 @NgModule({
   declarations: [TrackPageComponent],
@@ -15,7 +14,7 @@ import { ClarityModule } from '@clr/angular';
     RouterModule.forChild([
       {path: ':trackId', component: TrackPageComponent}
     ]),
-    ExerciseListModule,
+    SessionsModule,
   ]
 })
 export class TrackPageModule { }
