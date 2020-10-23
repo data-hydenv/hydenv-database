@@ -3,38 +3,38 @@
     "id": "Ydw6xp14NiHexPZz3nmD",
     "name": "Count records",
     "body": {
-      "content": "<p>To get a very basic overview of a table's content, you can simply count all records contained in the table and name the result <i>amount</i>.</p><p>How many records are in the <strong>metadata</strong> table?</p>",
+      "content": "<p>To get a very basic overview of a table's content, you can simply count all records contained in the table. This is the number of space missions between 1957 and Aug. 2020. Count them and name the result <i>launches</i>.</p><p>How many <strong>launches</strong> are in the <strong>space_raw</strong> table?</p>",
       "type": "html"
     },
     "solution": {
-      "content": "SELECT count(*) as amount FROM metadata;",
+      "content": "SELECT count(*) as launches FROM space_raw;",
       "type": "sql"
     }
   },
   {
     "id": "Lgggxqz9on2zmfr3dzwx",
-    "name": "Get Sensors",
+    "name": "First space mission",
     "body": {
-      "content": "<p>There might be a lot of different data in the database. Luckily, the type of the used <i>sensor</i> can be stored as well.</p><p>Load <strong>all available</strong> information from the database, to learn about sensor types.</p>",
+      "content": "<p>When did the first space mission take place? Where did it start and what are the mission details?</p><p>Query <strong>only</strong> the requested information from the database</p>",
       "type": "html"
     },
     "solution": {
-      "content": "SELECT * FROM sensors;",
+      "content": "SELECT datum, location, detail FROM space_raw ORDER BY datum ASC LIMIT 1;",
       "type": "sql"
     },
-    "hint": "<p>The name of the needed table is <code>sensors<code>.</p>"
+    "hint": "<p>The needed attributes are: <code>datum, location, detail</code></p>"
   },
   {
     "id": "Xqbc9bq5j9yunyhvlitk",
-    "name": "Count HOBO",
+    "name": "First NASA Mission",
     "body": {
-      "content": "<p>There might be a lot of different data in the database. Luckily, the type of the used <i>sensor</i> can be stored as well.</p><p>Load <strong>all available</strong> information from the database, to learn about sensor types.</p>",
+      "content": "<p>In the last exercise, you loaded the first space mission details from the database. This event started the space race in 1957. When did NASA join?</p><p>Load all available data of the first NASA mision.</p>",
       "type": "html"
     },
     "solution": {
-      "content": "SELECT count(*) as hobos FROM metadata WHERE sensor_id = (SELECT id FROM sensors WHERE name = 'hobo');",
+      "content": "SELECT * FROM space_raw WHERE company_name='NASA' ORDER BY datum ASC LIMIT 1;",
       "type": "sql"
     },
-    "hint": "<p>Instead of a subquery like <code>(SELECT ... FROM sensor)</code> you can simply note down the sensor ID from the last exercise and type it in literally.</p>"
+    "hint": "<p>The company or organization operating a space mission is stored in the <code>company_name</code> attribute.</p>"
   }
 ]
