@@ -1,0 +1,18 @@
+<div class="progress" *ngIf="mode==='card'">
+    <progress [max]="total" [value]="solved"></progress>
+</div>
+
+<ng-container *ngIf="mode==='simple'">
+    <clr-progress-bar clrLabeled [clrMax]="total" [clrValue]="solved" [clrDisplayval]="(solved / total * 100) + '%'"></clr-progress-bar>
+</ng-container>
+
+<ng-container *ngIf="mode==='full'">
+    <div class="progress-block">
+        <label for="all">All</label>
+        <clr-progress-bar id="all" clrLabeled [clrMax]="total" [clrValue]="solved" [clrDisplayval]="(solved / total * 100).toFixed(0) + ' %'"></clr-progress-bar>
+    </div>
+    <div class="progress-block">
+        <label for="mand">Mandatory</label>
+        <clr-progress-bar id="mand" clrLabeled [clrMax]="mandatoryTotal" [clrValue]="mandatorySolved" [clrDisplayval]="(mandatorySolved / mandatoryTotal * 100).toFixed(0) + ' %'"></clr-progress-bar>
+    </div>
+</ng-container>
