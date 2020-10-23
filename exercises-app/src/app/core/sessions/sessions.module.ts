@@ -10,7 +10,10 @@ import { ExerciseListComponent } from './exercise-list/exercise-list.component';
 
 
 @NgModule({
-  declarations: [SessionListComponent, ExerciseListComponent],
+  declarations: [
+    SessionListComponent,
+    ExerciseListComponent
+  ],
   imports: [
     CommonModule,
     FormsModule,
@@ -18,7 +21,8 @@ import { ExerciseListComponent } from './exercise-list/exercise-list.component';
     ClarityModule
   ],
   exports: [
-    SessionListComponent
+    SessionListComponent,
+    ExerciseListComponent,
   ]
 })
 export class SessionsModule { }

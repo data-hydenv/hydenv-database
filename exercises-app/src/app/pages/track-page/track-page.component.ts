@@ -29,6 +29,7 @@ export class TrackPageComponent implements OnInit {
         this.isSynced = isFinished;
         if (this.isSynced && this.trackId) {
           this.track = this.exerciseService.getTrackById(this.trackId);
+          this.isActive();
         }
       }
     });
@@ -39,8 +40,20 @@ export class TrackPageComponent implements OnInit {
         this.trackId = params.get('trackId');
         if (this.isSynced) {
           this.track = this.exerciseService.getTrackById(this.trackId);
+          this.isActive();
         }
       }
     });
+  }
+
+  /**
+   * Check if this is the active track and if not, publish it as the 
+   * active track.
+   */
+  private isActive(): void {
+    const activeTrack = this.exerciseService.activeTrack.getValue();
+    if (this.track && (!activeTrack || this.track.id !== activeTrack.id)) {
+      this.exerciseService.activeTrack.next(this.track);
+    }
   }
 }

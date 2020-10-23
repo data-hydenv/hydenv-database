@@ -23,17 +23,17 @@ export class TrackProgressService {
   /**
    * Update one of the exercises. After updating, the progress Cache
    * is saved to localstorage.
-   * @param exerciseId string - id of the exercise the assignment is for
+   * @param id string - id of the exercise the assignment is for
    * @param wasCorrect boolean - indicate if the result was correct.
    */
-  public update(exerciseId: string, wasCorrect: boolean): void {
+  public update(id: string, wasCorrect: boolean): Promise<void> {
     // check if the assignment has already an entry
-    const assignIdx = this.progressCache.findIndex(a => a.exerciseId === exerciseId);
+    const assignIdx = this.progressCache.findIndex(a => a.exerciseId === id);
     const current = new Date();
 
     // check if there is already an entry
     if (assignIdx === -1) {
-      const assign = {exerciseId: exerciseId, date: current, correct: wasCorrect, tries: [current]} as Assignment;
+      const assign = {exerciseId: id, date: current, correct: wasCorrect, tries: [current]} as Assignment;
 
       // add a new entry
       this.progressCache.push(assign);
@@ -49,7 +49,7 @@ export class TrackProgressService {
     }
 
     // finally save
-    this.save();
+    return this.save();
   }
 
   /**
@@ -57,7 +57,7 @@ export class TrackProgressService {
    */
   public isSolved(exerciseId: string): boolean {
     const assign = this.progressCache.find(a => a.exerciseId === exerciseId);
-    return assign && assign.correct;
+    return assign ? assign && assign.correct : false;
   }
 
   /**

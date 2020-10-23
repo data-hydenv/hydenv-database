@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 
 
 import { Exercise } from '../../models/exercise';
@@ -6,6 +6,7 @@ import { ExerciseService } from '../../exercise.service';
 import { SqlResult } from '../../models/sql-result';
 
 import { isEqual } from 'lodash';
+import { TrackProgressService } from '../../track-progress.service';
 
 @Component({
   selector: 'app-exercise-compare',
@@ -16,6 +17,9 @@ export class ExerciseCompareComponent implements OnInit {
   // store the whole exercise
   @Input() exercise: Exercise;
 
+  // change event - whenever the user checks an exercises, the result is emitted
+  @Output() checked = new EventEmitter<boolean>();
+
   // store the results
   userResult: SqlResult;
   solution: SqlResult;
@@ -25,7 +29,7 @@ export class ExerciseCompareComponent implements OnInit {
   showSolution = false;
   showHint = false;
 
-  constructor(private exerciseService: ExerciseService) { }
+  constructor(private exerciseService: ExerciseService, private progress: TrackProgressService) { }
 
   ngOnInit(): void {
   }
@@ -53,12 +57,19 @@ export class ExerciseCompareComponent implements OnInit {
    * Compare the user result to the solution.
    */
   private compare(): void {
+    // update the component state
     if (isEqual(this.userResult.data, this.solution.data)) {
       this.solutionCorrect = true;
       this.showSolution = true;
     } else {
       this.solutionCorrect = false;
     }
+
+    // publish to progress Serice
+    this.progress.update(this.exercise.id, this.solutionCorrect).then(() => {
+      // emit the checked event, after the progress was saved to local storage
+      this.checked.emit(this.solutionCorrect);
+    });
   }
 
 }

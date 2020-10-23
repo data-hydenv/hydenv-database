@@ -11,6 +11,7 @@ import { TrackProgressService } from '../../track-progress.service';
 })
 export class SessionListComponent implements OnInit {
   @Input() track: Track;
+  @Input() exercisesOnly = false;
 
   // store exercise and session progress
   sessionProgress = {};

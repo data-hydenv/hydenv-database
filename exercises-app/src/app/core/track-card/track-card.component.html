@@ -15,6 +15,13 @@
   </ng-container>
 
   <div class="card-footer">
+    <div class="progress tooltip tooltip-lg tooltip-top">
+      <progress [max]="allExercises.length" [value]="finishedExercises"></progress>
+      <span class="tooltip-content">
+        You progress on <code>{{ track.name.length > 25 ? track.name.slice(0, 22) + '...' : track.name }}</code><br>
+        {{ finishedExercises }} of {{ allExercises.length }} ({{ finishedExercises / allExercises.length * 100 | number }} %)
+      </span>
+    </div>
     <button type="button" class="btn btn-sm btn-link" *ngIf="!showExercises" (click)="showExercises = true">Exercises</button>
     <button type="button" class="btn btn-sm btn-link" *ngIf="showExercises" (click)="showExercises = false">Hide</button>
     <button type="button" class="btn btn-sm btn-link" (click)="onStartTrack()" [disabled]="activeTrackId && activeTrackId === track.id">Start</button>
@@ -24,6 +31,6 @@
 
 <ng-template #exercises>
   <div class="card-block">
-    <app-session-list [track]="track"></app-session-list>
+    <app-exercise-list [exercises]="allExercises"></app-exercise-list>
   </div>
 </ng-template>
