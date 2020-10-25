@@ -36,5 +36,8 @@
       "type": "sql"
     },
     "hint": "<p>The company or organization operating a space mission is stored in the <code>company_name</code> attribute.</p>"
+  },
+  {
+    "id"
   }
 ]
