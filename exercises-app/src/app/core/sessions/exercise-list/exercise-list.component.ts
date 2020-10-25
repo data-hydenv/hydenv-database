@@ -16,6 +16,7 @@ export class ExerciseListComponent implements OnInit {
   constructor(private progress: TrackProgressService) { }
 
   ngOnInit(): void {
+    this.exercises = this.exercises.sort((a, b) => a.order - b.order);
     this.exercises.forEach(e => {
       const status = this.progress.solveStatus(e.id);
       if (status) {

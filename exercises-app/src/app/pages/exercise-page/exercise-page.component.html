@@ -1,4 +1,7 @@
 <ng-container *ngIf="exercise; else notFound">
+  <div style="float: right;">
+    <app-next-exercise-button [exerciseId]="exerciseId" ></app-next-exercise-button>
+  </div>
   <h1>{{ exercise.name }}</h1>
   <app-exercise-body [body]="exercise.body"></app-exercise-body>
 

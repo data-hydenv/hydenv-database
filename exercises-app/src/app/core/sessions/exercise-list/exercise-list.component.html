@@ -1,10 +1,12 @@
 <clr-datagrid>
+    <clr-dg-column>#</clr-dg-column>
     <clr-dg-column>ID</clr-dg-column>
     <clr-dg-column>Mandatory</clr-dg-column>
     <clr-dg-column>Done</clr-dg-column>
     <clr-dg-column></clr-dg-column>
 
     <clr-dg-row *ngFor="let exercise of exercises">
+        <clr-dg-cell>{{ exercise.order }}</clr-dg-cell>
         <clr-dg-cell>{{ exercise.id }}</clr-dg-cell>
         <clr-dg-cell>
             <clr-icon [attr.shape]="exercise.mandatory ? 'check' : 'times'"></clr-icon>

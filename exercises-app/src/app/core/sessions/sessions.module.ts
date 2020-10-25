@@ -28,6 +28,7 @@ import { NextExerciseButtonComponent } from './next-exercise-button/next-exercis
     SessionListComponent,
     ExerciseListComponent,
     SessionProgressBarComponent,
+    NextExerciseButtonComponent
   ]
 })
 export class SessionsModule { }

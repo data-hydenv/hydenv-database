@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ExercisePageComponent } from './exercise-page.component';
 import { RouterModule } from '@angular/router';
 import { ExerciseModule } from '../../core/exercise/exercise.module';
+import { SessionsModule } from 'src/app/core/sessions/sessions.module';
 
 
 
@@ -14,6 +15,7 @@ import { ExerciseModule } from '../../core/exercise/exercise.module';
       {path: ':id', component: ExercisePageComponent}
     ]),
     ExerciseModule,
+    SessionsModule,
   ]
 })
 export class ExercisePageModule { }

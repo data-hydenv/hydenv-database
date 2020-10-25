@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 
 import { AngularFirestore } from '@angular/fire/firestore';
 import * as localforage from 'localforage';
+import { clone, cloneDeep } from 'lodash';
 
 import { SettingsService } from './settings.service';
 import { TrackProgressService } from './track-progress.service';
@@ -95,7 +96,7 @@ export class ExerciseService {
           }
 
           // mark the sync as finished
-          this.syncFinished.next(true);
+//          this.syncFinished.next(true);
         }
       });
     });
@@ -206,9 +207,9 @@ export class ExerciseService {
     return new Promise((resolve, reject) => {
       const exercise = this.exerciseCache.find(e => e.id === id);
       if (exercise) {
-        resolve(exercise);
+        resolve(cloneDeep(exercise));
       } else {
-        reject();
+        reject(`ID ${id} not found.`);
       }
     });
   }
@@ -220,7 +221,7 @@ export class ExerciseService {
   public getTrackById(trackId: string): Track {
     const track = this.tracksCache.find(t => t.id === trackId);
     if (track) {
-      return JSON.parse(JSON.stringify(track));
+      return cloneDeep(track);
     } else {
       console.log(`Track ID='${trackId}' not found.`);
       return null;
@@ -239,24 +240,32 @@ export class ExerciseService {
    * already solved.
    * Returns the exercise, -1 if it was the last and null if the id was not found.
    * @param id Exercise.id of the current exercise
+   * @param session - either 'all' or a list of sessions that shall be included
    */
-  public getNextExercise(id: string): Exercise | null | -1 {
-    const track = this.activeTrack.getValue();
+  public getNextExercise(id: string, session: 'all' | string[]= 'all'): Exercise | null | -1 {
+    const track = cloneDeep(this.activeTrack.getValue());
+    console.log(track);
     if (track) {
-      const exercises = track.exercises.sort((a, b) => b.order - a.order);
+      // filter sessions if neccessary
+      const sessions = session === 'all' ? track.sessions : track.sessions.filter(s => session.includes(s.name));
+
+      // flat map and sort
+      const exercises = sessions.flatMap(s => s.exercises.sort((a, b) => a.order - b.order));
+      console.log(exercises);
       const thisIndex = exercises.findIndex(e => e.id === id);
+      console.log(thisIndex);
       // if id is not in current track, return null
       if (thisIndex === -1) {
         return null;
       }
 
       // check if there is a next exercise
-      if (thisIndex + 1 === exercises.length) {
+      if (thisIndex === exercises.length - 1) {
         return -1;
       } else {
         const nextId = exercises[thisIndex + 1].id;
         const exercise = this.exerciseCache.find(e => e.id === nextId);
-        return exercise ? exercise : null;
+        return exercise ? cloneDeep(exercise) : null;
       }
     }
     return null;
@@ -266,10 +275,11 @@ export class ExerciseService {
    * Return the next unsolved exercise for the given exercise ID.
    * This function will not return solved exercises.
    * @param id Exercise.id of the current exercise
+   * @param session - either 'all' or a list of sessions that shall be included
    */
-  public getNextUnsolvedExercise(id: string): Exercise | null |-1 {
+  public getNextUnsolvedExercise(id: string, session: 'all' | string[]= 'all'): Exercise | null |-1 {
     // get the next
-    let nextExercise = this.getNextExercise(id);
+    let nextExercise = this.getNextExercise(id, session);
 
     // search for unsolved
     while (nextExercise !== -1) {
