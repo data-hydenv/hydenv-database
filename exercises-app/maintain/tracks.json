@@ -2,23 +2,6 @@
   {
     "id": "dataStorage",
     "name": "Data storage, data management, data visualization",
-    "exercises": [
-      {
-        "mandatory": true,
-        "id": "Ydw6xp14NiHexPZz3nmD",
-        "order": 1
-      },
-      {
-        "mandatory": true,
-        "id": "Lgggxqz9on2zmfr3dzwx",
-        "order": 2
-      },
-      {
-        "order": 3,
-        "id": "Xqbc9bq5j9yunyhvlitk",
-        "mandatory": true
-      }
-    ],
     "sessions": [
       {
         "name": "Introduction",
@@ -37,6 +20,31 @@
             "id": "Xqbc9bq5j9yunyhvlitk",
             "mandatory": false,
             "order": 3
+          },
+          {
+            "id": "Xppvvdzrr1vawpbrs5ox",
+            "mandatory": false,
+            "order": 5
+          },
+          {
+            "id": "Yxj4xswvtly8qmxokqlu",
+            "mandatory": true,
+            "order": 4
+          },
+          {
+            "id": "Wvzjwzsndnwwa3czz5fm",
+            "mandatory": false,
+            "order": 7
+          },
+          {
+            "id": "Jihyjoyq0aro6no8nmhj",
+            "mandatory": true,
+            "order": 6
+          },
+          {
+            "id": "Uqcibrvdtgapnqtponq7",
+            "mandatory": true,
+            "order": 8
           }
         ],
         "description": "<p>Introductory exercises using the <i>Space Missions</i> dataset. If there is no filled <code>raw_data</code> table, use this command to load the data:</p><pre><code>python -m hydenv examples space</code></pre>"
