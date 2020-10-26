@@ -18,15 +18,20 @@ export class SqlInputComponent implements OnInit {
   // explain handler
   addExplain = false;
 
+  // safe mode
+  @Input() enableSafeModeTrigger = false;
+  safeMode = true;
+
   constructor(private exerciseService: ExerciseService) { }
 
   ngOnInit(): void {
+    // store the default SQL for later (unused so far)
     this.defaultSql = this.sql;
   }
 
   onExecute(): void {
-    let explain = this.addExplain ? 'text' : null;
-    this.exerciseService.executeSql(this.sql, explain).then((data: SqlResult) => {
+    const explain = this.addExplain ? 'text' : null;
+    this.exerciseService.executeSql(this.sql, explain, !this.safeMode).then((data: SqlResult) => {
       this.result.emit(data);
     }).catch(error => {
       console.log(error);

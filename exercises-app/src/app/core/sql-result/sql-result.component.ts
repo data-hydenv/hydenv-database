@@ -9,7 +9,9 @@ import { SqlResult } from '../models/sql-result';
 export class SqlResultComponent implements OnInit {
   // inputs
   res: SqlResult;
+  loading = true;
   @Input()  set result(value: SqlResult) {
+    this.loading = true;
     this.res = value;
     this.getResultColumns();
   }
@@ -17,6 +19,7 @@ export class SqlResultComponent implements OnInit {
 
   // datagrid components
   resultColumns: string[] = [];
+  total: number;
 
   constructor() { }
 
@@ -31,6 +34,7 @@ export class SqlResultComponent implements OnInit {
           this.resultColumns.push(key);
         }
       });
+      this.loading = false;
     });
   }
 

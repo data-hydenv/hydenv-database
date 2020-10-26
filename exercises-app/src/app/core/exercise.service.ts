@@ -188,13 +188,12 @@ export class ExerciseService {
    * Execute a given SQL query against the database backend.
    * @param query - SQL query.
    */
-  public executeSql(query: string, explain?: string): Promise<any> {
-    const opt = {params: {sql: query}};
+  public executeSql(query: string, explain?: string, disableSafeMode?: boolean): Promise<any> {
+    const opt = {params: {sql: query, safe: !!disableSafeMode ? 'False' : 'True'}};
     // TODO: for now, only text output EXPLAINs are included
     if (explain) {
       (opt.params as any).explain = explain;
     }
-
     return new Promise((resolve, reject) => {
       this.http.get(this.backendUrl + 'execute', opt).subscribe({
         next: res => resolve(res),

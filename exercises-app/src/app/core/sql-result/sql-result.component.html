@@ -3,12 +3,19 @@
     <clr-tab *ngIf="res">
         <button clrTabLink>Data</button>
         <clr-tab-content>
-            <clr-datagrid>
-                <clr-dg-column *ngFor="let col of resultColumns">{{ col }}</clr-dg-column>
+            <clr-datagrid [clrDgLoading]="loading">
+                <clr-dg-column *ngFor="let col of resultColumns" [clrDgField]="col">{{ col }}</clr-dg-column>
 
-                <clr-dg-row *ngFor="let row of res.data">
+                <clr-dg-row *clrDgItems="let row of res.data">
                     <clr-dg-cell *ngFor="let col of resultColumns">{{ row[col] }}</clr-dg-cell>
                 </clr-dg-row>
+
+                <clr-dg-footer>
+                    <clr-dg-pagination *ngIf="!loading" #pagination [clrDgTotalItems]="res.data.length">
+                        Total: {{ res.data.length }} row{{ res.data.length > 0 ? 's' : '' }}
+                    </clr-dg-pagination>
+                </clr-dg-footer>
+
             </clr-datagrid>
         </clr-tab-content>
     </clr-tab>

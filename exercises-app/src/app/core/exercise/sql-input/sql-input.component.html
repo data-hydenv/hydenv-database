@@ -1,8 +1,21 @@
-<clr-toggle-container>
-  <clr-toggle-wrapper>
-    <input type="checkbox" clrToggle [(ngModel)]="addExplain">
-    <label>Explain results</label>
-  </clr-toggle-wrapper>
-</clr-toggle-container>
+<div class="clr-row">
+  <div class="clr-col-6">
+    <clr-toggle-container>
+      <clr-toggle-wrapper>
+        <input type="checkbox" clrToggle [(ngModel)]="addExplain">
+        <label>Explain results</label>
+      </clr-toggle-wrapper>
+    </clr-toggle-container>    
+  </div>
+  <div class="clr-col-6">
+    <clr-toggle-container>
+      <clr-toggle-wrapper class="tooltip tooltip-md tooltip-top-right">
+        <input type="checkbox" clrToggle [(ngModel)]="safeMode" [disabled]="!enableSafeModeTrigger">
+        <label>Turn {{ safeMode ? 'off' : 'on' }} safe mode</label>
+        <span class="tooltip-content">In safe mode, only single SELECT queries are allowed.</span>
+      </clr-toggle-wrapper>
+    </clr-toggle-container>    
+  </div>
+</div>
 <ngs-code-editor theme="vs-dark" [codeModel]="{language: 'sql', value: defaultSql}" (valueChanged)="onChange($event)"></ngs-code-editor>
 <button class="btn btn-outline-success btn-block" (click)="onExecute()">Execute</button>
