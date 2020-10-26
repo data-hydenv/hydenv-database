@@ -5,6 +5,7 @@ from datetime import datetime as dt
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 from sqlalchemy import create_engine
+from sqlalchemy.exc import ResourceClosedError
 
 from hydenv.util.json import sqlencoder
 from hydenv.database import HydenvDatabase
@@ -36,7 +37,10 @@ def execute():
     data.update(request.args)
 
     # get SQL query
-    safe = data.get('safe', True)
+    if 'safe' in data and data['safe'].lower() in ('f', 'false'):
+        safe = False
+    else:
+        safe = True
     sql = data.get('sql')
     explain = data.get('explain', False)
     if sql is None:
@@ -49,13 +53,24 @@ def execute():
     t2 = dt.now()
     try:
         res = cli.execute(sql=sql, safe=safe, json=True)
+    except ResourceClosedError:
+        res = [
+            dict(message="This query did not return any result rows.\nMost likely you ran an INSERT, UPDATE or CREATE. If not, check if this was an error.")
+            ]
     except Exception as e:
         return jsonify({
                 'message': 'Run errored!',
                 'params': data,
                 'error': True,
-                'data': [dict(errorMessage=str(e))]
+                'data': [dict(errorMessage=str(e))],
+                'perf': dict(startupTime=(t2 - t1).total_seconds())
             }, )
+
+    # extract the data
+    try:
+        result_data = [{k: sqlencoder(v) for k,v in r.items()} for r in res]
+    except Exception as e:
+        result_data = [dict(message="Error parsing the result data.\n%s" % str(e))]
 
     t3 = dt.now()
     
@@ -63,10 +78,11 @@ def execute():
     response = {
         'message': 'Run successful',
         'params': data,
-        'data': [{k: sqlencoder(v) for k,v in r.items()} for r in res],
+        'data': result_data,
         'perf': dict(
             backendTime=(t3 - t2).total_seconds(), 
-            executionTime=(t3 - t1).total_seconds()
+            executionTime=(t3 - t1).total_seconds(),
+            startupTime=(t2 - t1).total_seconds(),
         )
     }
 
@@ -85,7 +101,6 @@ def execute():
     
     # return
     return jsonify(response)
-
 
 
 @app.route('/api/v1/explain', methods=['GET'])
