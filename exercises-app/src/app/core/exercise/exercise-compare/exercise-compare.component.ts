@@ -24,6 +24,10 @@ export class ExerciseCompareComponent implements OnInit {
   userResult: SqlResult;
   solution: SqlResult;
 
+  // store the state of the explain and safe mode trigger
+  explain = false;
+  safeMode = true;
+
   // component logic
   solutionCorrect = false;
   showSolution = false;
@@ -43,8 +47,10 @@ export class ExerciseCompareComponent implements OnInit {
     this.userResult = result;
 
     if (!this.solution) {
+      const explainMode = this.explain ? 'text' : null;
+      console.log(`Explain: ${explainMode} Safe Mode: ${this.safeMode}`);
       // TODO, check the solution content type here
-      this.exerciseService.executeSql(this.exercise.solution.content)
+      this.exerciseService.executeSql(this.exercise.solution.content, explainMode, !this.safeMode)
       .then((data: SqlResult) => this.solution = data)
       .then(() => this.compare())
       .catch(error => console.log(error));

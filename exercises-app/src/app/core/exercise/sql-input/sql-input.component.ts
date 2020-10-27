@@ -16,11 +16,13 @@ export class SqlInputComponent implements OnInit {
   @Output() sqlChange = new EventEmitter<string>();
 
   // explain handler
-  addExplain = false;
+  @Input() addExplain = false;
+  @Output() addExplainChange = new EventEmitter<boolean>();
 
   // safe mode
   @Input() enableSafeModeTrigger = false;
   @Input() safeMode = true;
+  @Output() safeModeChange = new EventEmitter<boolean>();
 
   constructor(private exerciseService: ExerciseService) { }
 
