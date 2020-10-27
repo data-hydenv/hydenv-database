@@ -20,7 +20,7 @@ export class SqlInputComponent implements OnInit {
 
   // safe mode
   @Input() enableSafeModeTrigger = false;
-  safeMode = true;
+  @Input() safeMode = true;
 
   constructor(private exerciseService: ExerciseService) { }
 

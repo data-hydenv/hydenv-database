@@ -1,4 +1,4 @@
-<app-sql-input (result)="onUserInput($event)"></app-sql-input>
+<app-sql-input (result)="onUserInput($event)" [safeMode]="!exercise.disableSafeMode"></app-sql-input>
 
 <ng-container *ngIf="solution && solutionCorrect;">
   <div class="clr-row">

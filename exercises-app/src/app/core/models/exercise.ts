@@ -16,4 +16,5 @@ export interface Exercise {
     body: ExerciseBody;
     solution: ExerciseSolution;
     hint?: string;
+    disableSafeMode?: boolean;
 }
