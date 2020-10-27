@@ -1,5 +1,6 @@
 from hydenv.examples.hobo import HydenvHoboExamples
 from hydenv.examples.space import HydenvSpaceExamples
+from hydenv.examples.customers import HydenvCustomerExamples
 
 
 class HydenvExamples:
@@ -46,6 +47,21 @@ class HydenvExamples:
             raise NotImplementedError
         else:
             return cli.run(quiet=self.quiet)
+
+    def customers(self, k=500, normalize=False):
+        """
+        Import Customers example data.\n
+        This high level script create a set of k random fake customer purchases 
+        in fake stores. The data is not normalized and can be used for the 
+        normalization sessions.
+        :param k: number of purchases to create
+        :param normalize: If True, the normalized scheme will be added as well.
+        """
+        cli = HydenvCustomerExamples(connection=self.__connection)
+        return cli.run(quiet=self.quiet, k=k, normalize=normalize)
+
+    def customer(self, **kwargs):
+        return self.customers(**kwargs)
 
 
 if __name__=='__main__':

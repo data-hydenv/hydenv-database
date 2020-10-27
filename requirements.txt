@@ -5,3 +5,4 @@ flask-cors
 fire
 tabulate
 progressbar2
+barnum
