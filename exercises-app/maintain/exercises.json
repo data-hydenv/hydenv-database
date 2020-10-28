@@ -102,9 +102,60 @@
   },
   {
     "id": "",
+    "name": "Space insights",
+    "body": {
+      "content": "<p>For a recall on the avaliable information select <strong>all</strong> attributes from <code>space_raw</code>. Instead of querying and returning all rows, <code>LIMIT</code> the result to <strong>5</strong> rows.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM space_raw LIMIT 5;",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "",
+    "name": "Space insights",
+    "body": {
+      "content": "<p>For a recall on the avaliable information select <strong>all</strong> attributes from <code>space_raw</code>. Instead of querying and returning all rows, <code>LIMIT</code> the result to <strong>5</strong> rows.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM space_raw LIMIT 5;",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "",
+    "name": "Distinct companies",
+    "body": {
+      "content": "<p>For companies and organisations starting space missions, we need a lookup table. To prepare this step, select a list of distinct <strong>company names</strong>, ordered alphabetically.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT DISTINCT company_name from space_raw ORDER BY company_name ASC;",
+      "type": "sql"
+    },
+    "hint": "<p>Use the <code>DISTINCT</code> keyword after the <code>SELECT</code> command.</p>"
+  },
+  {
+    "id": "",
+    "name": "Company lookup table",
+    "body": {
+      "content": "<p>To only reference the executing company in the resulting normalized database, the <i>selection</i> from the last exercise needs an additional primary key. For this, we can enhance the distinct selection by the row number.</p><p>Check out the documentation of the <a href=\"https://www.postgresql.org/docs/12/functions-window.html\" target=\"_blank\"><code>row_number</code></a> function. The correct application of window function <a href=\"https://www.postgresql.org/docs/12/tutorial-window.html\" target=\"\">can be found here</a>.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\trow_number() over (order by company_name) as id,\n\tcompany_name\nFROM (SELECT DISTINCT company_name FROM space_raw) AS companies;",
+      "type": "sql"
+    },
+    "hint": "<p>You need to <strong>first</strong> sub-query the distinct companies and then select each unique company along with its row number.</p>",
+    "disableSafeMode": true
+  },
+  {
+    "id": "",
     "name": "",
     "body": {
-      "content": "",
+      "content": "<p></p>",
       "type": "html"
     },
     "solution": {
