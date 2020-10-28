@@ -99,5 +99,17 @@
       "type": "sql"
     },
     "hint": "<p>Filtering data using <code>WHERE</code> can not only compare two attributes, but also an attribute and a static value. Datetimes can be given as a ISO-8601 string or locale, without explicit type case. An example is: <code>'2013-09-24 11:23'</code>.</p>"
+  },
+  {
+    "id": "",
+    "name": "",
+    "body": {
+      "content": "",
+      "type": "html"
+    },
+    "solution": {
+      "content": "",
+      "type": "sql"
+    }
   }
 ]
