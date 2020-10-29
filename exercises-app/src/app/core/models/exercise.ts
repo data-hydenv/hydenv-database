@@ -8,6 +8,7 @@ export interface ExerciseSolution {
     type: 'sql' | 'literal';
     content: string;
     fallback?: string;
+    code?: string;
 }
 
 export interface Exercise {

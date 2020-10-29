@@ -1,6 +1,6 @@
-<app-sql-input 
-  (result)="onUserInput($event)" 
-  [safeMode]="!exercise.disableSafeMode" 
+<app-sql-input
+  (result)="onUserInput($event)"
+  [safeMode]="!exercise.disableSafeMode"
   (addExplainChange)="explain = $event"
   (safeModeChange)="safeMode = $event"
 ></app-sql-input>
@@ -26,16 +26,18 @@
           <p>Your solution is not yet quite correct</p>
         </div>
         <div class="clr-col-6">
-          <clr-toggle-container *ngIf="exercise.hint"><clr-toggle-wrapper>
-            <input type="checkbox" clrToggle [(ngModel)]="showHint">
-            <label>show hint</label>
-          </clr-toggle-wrapper></clr-toggle-container>
-        </div>
-        <div class="clr-col-6">
           <clr-toggle-container><clr-toggle-wrapper>
             <input type="checkbox" clrToggle [(ngModel)]="showSolution">
             <label>show solution</label>
           </clr-toggle-wrapper></clr-toggle-container>
+        </div>
+        <div class="clr-col-6">
+          <clr-toggle-container *ngIf="exercise.hint">
+            <clr-toggle-wrapper>
+              <input type="checkbox" clrToggle [(ngModel)]="showHint">
+              <label>show hint</label>
+            </clr-toggle-wrapper>
+          </clr-toggle-container>
         </div>
       </div>
     </div>
@@ -49,7 +51,7 @@
 
 <ng-container *ngIf="showSolution">
   <h3>Solution query</h3>
-  <pre><code [innerHTML]="exercise.solution.content"></code></pre>
+  <pre><code [innerHTML]="exercise.solution.code ? exercise.solution.code : exercise.solution.content"></code></pre>
 </ng-container>
 
 <ng-container *ngIf="userResult">
