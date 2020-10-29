@@ -52,7 +52,26 @@
       {
         "name": "Normalizing space",
         "exercises": [
-          
+          {
+            "order": 1,
+            "mandatory": true,
+            "id": "Re17spqhvt1eqo1lx2iq"
+          },
+          {
+            "order": 2,
+            "mandatory": true,
+            "id": "Hapf1kuc0mdqucqizfkl"
+          },
+          {
+            "order": 3,
+            "mandatory": true,
+            "id": "Xmlodfh8ra0t92efnjri"
+          },
+          {
+            "order": 4,
+            "mandatory": true,
+            "id": "A0axp5bdwllverbsspsr"
+          }
         ],
         "description": "<p>After learning and using the space dataset, it is time to improve it structurally. This paves the way for more sophisticated exercises</p><p>It is recommended to solve the <i>Introduction to space</i> session first.</p>"
       }

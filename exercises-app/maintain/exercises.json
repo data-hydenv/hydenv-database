@@ -101,7 +101,7 @@
     "hint": "<p>Filtering data using <code>WHERE</code> can not only compare two attributes, but also an attribute and a static value. Datetimes can be given as a ISO-8601 string or locale, without explicit type case. An example is: <code>'2013-09-24 11:23'</code>.</p>"
   },
   {
-    "id": "",
+    "id": "Re17spqhvt1eqo1lx2iq",
     "name": "Space insights",
     "body": {
       "content": "<p>For a recall on the avaliable information select <strong>all</strong> attributes from <code>space_raw</code>. Instead of querying and returning all rows, <code>LIMIT</code> the result to <strong>5</strong> rows.</p>",
@@ -113,19 +113,7 @@
     }
   },
   {
-    "id": "",
-    "name": "Space insights",
-    "body": {
-      "content": "<p>For a recall on the avaliable information select <strong>all</strong> attributes from <code>space_raw</code>. Instead of querying and returning all rows, <code>LIMIT</code> the result to <strong>5</strong> rows.</p>",
-      "type": "html"
-    },
-    "solution": {
-      "content": "SELECT * FROM space_raw LIMIT 5;",
-      "type": "sql"
-    }
-  },
-  {
-    "id": "",
+    "id": "Hapf1kuc0mdqucqizfkl",
     "name": "Distinct companies",
     "body": {
       "content": "<p>For companies and organisations starting space missions, we need a lookup table. To prepare this step, select a list of distinct <strong>company names</strong>, ordered alphabetically.</p>",
@@ -138,7 +126,7 @@
     "hint": "<p>Use the <code>DISTINCT</code> keyword after the <code>SELECT</code> command.</p>"
   },
   {
-    "id": "",
+    "id": "Xmlodfh8ra0t92efnjri",
     "name": "Company lookup table",
     "body": {
       "content": "<p>To only reference the executing company in the resulting normalized database, the <i>selection</i> from the last exercise needs an additional primary key. For this, we can enhance the distinct selection by the row number.</p><p>Check out the documentation of the <a href=\"https://www.postgresql.org/docs/12/functions-window.html\" target=\"_blank\"><code>row_number</code></a> function. The correct application of window function <a href=\"https://www.postgresql.org/docs/12/tutorial-window.html\" target=\"\">can be found here</a>.</p>",
@@ -148,19 +136,20 @@
       "content": "SELECT\n\trow_number() over (order by company_name) as id,\n\tcompany_name\nFROM (SELECT DISTINCT company_name FROM space_raw) AS companies;",
       "type": "sql"
     },
-    "hint": "<p>You need to <strong>first</strong> sub-query the distinct companies and then select each unique company along with its row number.</p>",
-    "disableSafeMode": true
+    "hint": "<p>You need to <strong>first</strong> sub-query the distinct companies and then select each unique company along with its row number.</p>"
   },
   {
-    "id": "",
-    "name": "",
+    "id": "A0axp5bdwllverbsspsr",
+    "name": "Create a company lookup",
     "body": {
-      "content": "<p></p>",
+      "content": "<p>Any result from a <code>SELECT</code> query can be persisted into a new <code>TABLE</code> or <code>VIEW</code>. Instead of defining the attributes of a new table, it is also possible to infer them from the query result. The syntax looks like: <pre><code>CREATE TABLE tablename AS SELECT ...</code></pre>.</p><p>Create a table called <strong>companies</strong> with an <strong>id</strong> and a <strong>name field</strong>, of all unique company names. Select the first 5 rows to verify that everything worked.</p>",
       "type": "html"
     },
     "solution": {
-      "content": "",
-      "type": "sql"
-    }
+      "content": "SELECT * FROM companies LIMIT 5",
+      "type": "sql",
+      "code": "DROP TABLE IF EXISTS companies;\nCREATE TABLE companies as\nSELECT\n\trow_number() OVER (ORDER BY company_name) AS id,\n\tcompany_name AS name\nFROM (SELECT DISTINCT company_name FROM space_raw) AS companies;\nALTER TABLE companies ADD CONSTRAINT pkey_companies PRIMARY KEY (id);"
+    },
+    "disableSafeMode": true
   }
 ]
