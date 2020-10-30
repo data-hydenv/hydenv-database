@@ -1,4 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+
+import { ClrLoadingState } from '@clr/angular';
+
 import { SqlResult } from '../../models/sql-result';
 import { ExerciseService } from '../../exercise.service';
 
@@ -24,6 +27,9 @@ export class SqlInputComponent implements OnInit {
   @Input() safeMode = true;
   @Output() safeModeChange = new EventEmitter<boolean>();
 
+  // component logic
+  btnState: ClrLoadingState = ClrLoadingState.DEFAULT;
+
   constructor(private exerciseService: ExerciseService) { }
 
   ngOnInit(): void {
@@ -32,11 +38,18 @@ export class SqlInputComponent implements OnInit {
   }
 
   onExecute(): void {
+    // set the button state
+    this.btnState = ClrLoadingState.LOADING;
+    // check if explain is needed
     const explain = this.addExplain ? 'text' : null;
+
+    // execute the SQL command
     this.exerciseService.executeSql(this.sql, explain, !this.safeMode).then((data: SqlResult) => {
       this.result.emit(data);
+      this.btnState = ClrLoadingState.SUCCESS;
     }).catch(error => {
       console.log(error);
+      this.btnState = ClrLoadingState.ERROR;
     });
   }
 
