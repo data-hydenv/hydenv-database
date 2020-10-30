@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { ClarityModule } from '@clr/angular';
 
 import { ConsolePageComponent } from './console-page.component';
-import { SqlResultModule } from 'src/app/core/sql-result/sql-result.module';
 import { ExerciseModule } from '../../core/exercise/exercise.module';
 
 
@@ -19,7 +18,6 @@ import { ExerciseModule } from '../../core/exercise/exercise.module';
     ]),
     FormsModule,
     ClarityModule,
-    SqlResultModule,
     ExerciseModule,
   ]
 })
