@@ -29,6 +29,13 @@
       </clr-tab-content>
     </clr-tab>
 
+    <clr-tab *ngIf="res && res.data && res.data.length > 1">
+      <button clrTabLink>Plot</button>
+      <clr-tab-content *clrIfActive>
+        <app-result-plot [data]="res.data"></app-result-plot>
+      </clr-tab-content>
+    </clr-tab>
+
     <clr-tab *ngIf="res">
         <button clrTabLink>Performance</button>
         <clr-tab-content>

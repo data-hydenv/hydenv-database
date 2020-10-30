@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { SqlResult } from '../models/sql-result';
+import { SqlResult } from '../../models/sql-result';
 
 @Component({
   selector: 'app-sql-result',
