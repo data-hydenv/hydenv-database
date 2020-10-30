@@ -148,7 +148,7 @@
     "solution": {
       "content": "SELECT * FROM companies LIMIT 5",
       "type": "sql",
-      "code": "DROP TABLE IF EXISTS companies;\nCREATE TABLE companies as\nSELECT\n\trow_number() OVER (ORDER BY company_name) AS id,\n\tcompany_name AS name\nFROM (SELECT DISTINCT company_name FROM space_raw) AS companies;\nALTER TABLE companies ADD CONSTRAINT pkey_companies PRIMARY KEY (id);"
+      "code": "DROP TABLE IF EXISTS companies;\nCREATE TABLE companies as\nSELECT\n\trow_number() OVER (ORDER BY company_name) AS id,\n\tcompany_name AS name\nFROM (SELECT DISTINCT company_name FROM space_raw) AS companies;\nALTER TABLE companies ADD CONSTRAINT pkey_companies PRIMARY KEY (id);\nSELECT * FROM companies LIMIT 5;"
     },
     "disableSafeMode": true
   }

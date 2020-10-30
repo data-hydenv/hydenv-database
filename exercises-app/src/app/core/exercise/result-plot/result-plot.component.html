@@ -1,0 +1,73 @@
+<clr-spinner *ngIf="loading; else plot"></clr-spinner>
+<ng-template #plot>
+  <div style="text-align: center;">The attribute selection is sometimes reacting really slow. We are working on a solution.</div>
+  <!-- SELECTORS -->
+  <div class="clr-row">
+    <div class="clr-col-md-4 clr-col-sm-12">
+      <clr-select-container>
+        <label>Plot type</label>
+        <select clrSelect name="plotType" [(ngModel)]="selectedPlotType" (change)="onPlotTypeChanged()">
+          <option *ngFor="let t of plotTypes" [value]="t">{{ t }}</option>
+        </select>
+      </clr-select-container>
+    </div>
+    <div class="clr-col-md-4 clr-col-sm-12">
+      <clr-select-container *ngIf="selectedPlotType">
+        <label>x-axis attribute</label>
+        <select clrSelect name="xAxis" [(ngModel)]="selectedXAttribute" (change)="onXAxisChanged()">
+          <option *ngFor="let n of xAxisAttributeOptions" [value]=[n]>{{ n }}</option>
+        </select>
+      </clr-select-container>
+      <i *ngIf="!selectedPlotType">Select a plot Type first</i>
+    </div>
+    <div class="clr-col-md-4 clr-col-sm-12">
+      <ng-container *ngIf="selectedPlotType && selectedXAttribute; else noY">
+        <clr-select-container>
+          <label>y-axis attributes</label>
+          <select clrSelect name="yAxis" [(ngModel)]="selectedYAttribute">
+            <option *ngFor="let n of yAxisAttributeOptions" [value]=[n]>{{ n }}</option>
+          </select>
+        </clr-select-container>
+        <button [disabled]="!selectedYAttribute" class="btn btn-primary btn-sm" (click)="onAddYAxis()">Add</button>
+      </ng-container>
+      <ng-template #noY>
+        <i>Select a plot Type first</i>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- PLOT -->
+  <div class="clr-row">
+
+    <div class="clr-col-md-9 clr-col-sm-12">
+      <ng-container *ngIf="axes.length > 0; else noPlot">
+        <plotly-plot
+          [data]="axes"
+          [layout]="layout"
+          [useResizeHandler]="true"
+          [style]="{position: 'relative', width: '100%', height: '450px'}"
+        ></plotly-plot>
+      </ng-container>
+      <ng-template #noPlot>
+        <div style="width: 100%; height:450%; display: flex; flex-direction: column; justify-content: center; text-align: center">
+          <i>First select a plot type and specify the axes</i>
+        </div>
+      </ng-template>
+    </div>
+
+    <div class="clr-col-md-3 clr-col-sm-12">
+      <div class="card" *ngIf="axes.length > 0">
+        <div class="card-header">Datasets</div>
+        <ul class="list-group">
+          <li *ngFor="let g of axes; let i = index" class="list-group-item">
+            <div style="display: flex; flex-direction: row; justify-content:space-between">
+              <span>{{ g.name }}</span>
+              <clr-icon shape="times" (click)="onRemoveAxis(i)" style="cursor: pointer;"></clr-icon>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</ng-template>
