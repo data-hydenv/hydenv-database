@@ -1,6 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, ForeignKey, UniqueConstraint
-from sqlalchemy import Integer, String, DateTime, Numeric, Boolean
+from sqlalchemy import Integer, BigInteger, String, DateTime, Numeric, Boolean
 from sqlalchemy.orm import relationship, Session
 from geoalchemy2 import Geometry
 
@@ -209,3 +209,29 @@ class SpaceRaw(Base):
     detail = Column(String)
     status_rocket = Column(String)
     status_mission = Column(String)
+
+class OSMAssociation(Base):
+    __tablename__ = 'nm_nodes_tags'
+
+    node_id = Column(BigInteger, ForeignKey('osm_nodes.id'), primary_key=True)
+    tag_id = Column(BigInteger, ForeignKey('osm_tags.id'), primary_key=True)
+
+class OSMNode(Base):
+    __tablename__ = 'osm_nodes'
+
+    id = Column(BigInteger, primary_key=True)
+    geom = Column(Geometry(srid=4326), nullable=False)
+    name = Column(String, nullable=True)
+    node_type = Column(String, nullable=True)
+    raw_tags = relationship('OSMTag', secondary='nm_nodes_tags', back_populates='nodes', cascade='all,delete')
+
+    def get_tags(self):
+        return {t.key: t.value for t in self.raw_tags}
+
+class OSMTag(Base):
+    __tablename__ = 'osm_tags'
+
+    id = Column(BigInteger, primary_key=True)
+    key = Column(String(2048), nullable=False)
+    value = Column(String(2048), nullable=False)
+    nodes = relationship('OSMNode', secondary='nm_nodes_tags', back_populates='raw_tags')

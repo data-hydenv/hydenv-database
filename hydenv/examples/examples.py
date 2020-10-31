@@ -1,6 +1,7 @@
 from hydenv.examples.hobo import HydenvHoboExamples
 from hydenv.examples.space import HydenvSpaceExamples
 from hydenv.examples.customers import HydenvCustomerExamples
+from hydenv.examples.osm import HydenvOSMExamples
 
 
 class HydenvExamples:
@@ -62,6 +63,41 @@ class HydenvExamples:
 
     def customer(self, **kwargs):
         return self.customers(**kwargs)
+
+    def osm(self, action, *args, **kwargs):
+        """
+        Import OSM example data.\n
+        This high level script downloads data from the OSM database and imports
+        it into the hydenv database at given connection. You have to specify, 
+        which example set should be loaded using the `action` parameter.
+        There are the following example sets available:
+        
+        * energiewende
+
+        Additionally, you can use the more low level endpoints to access any data.
+
+        * nodes (for POINT geometries)
+        * ways (for LINESTRING and POLYGON geometries)
+
+        Using the low level endpoints, you need to specify the `boundary`,
+        `attribute` and `value` parameters.
+        :param action: The CLI action to perfom. See docs above.
+        :param boundary: string - Any valid OSM administrative boundary to limit
+            the results to, like `"Baden-Württemberg"` or `"Freiburg im Breisghau"`.
+        :param attribute: string - Any valid OSM Tag attribute for filtering.
+            In most cases, this will be `amenity`.
+        :param value: string - filter value. This is the value that the 
+            attribute should have. If value is not given, all nodes with having 
+            the tag will be returned. That can be a lot.
+        """
+        cli = HydenvOSMExamples(connection=self.__connection)
+
+        if action.lower() == 'energiewende':
+            return cli.energiewende(quiet=self.quiet, **kwargs)
+        if action.lower() == 'nodes':
+            return cli.run('nodes', *args, quiet=self.quiet, **kwargs)
+        if action.lower() == 'way':
+            return cli.run('way', *args, quiet=self.quiet, **kwargs)
 
 
 if __name__=='__main__':
