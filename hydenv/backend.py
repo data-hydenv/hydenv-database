@@ -45,6 +45,8 @@ def execute():
     explain = data.get('explain', False)
     if sql is None:
         return jsonify({'message': 'No SQL query given.'}), 404
+    else:
+        sql = sql.replace('%', '%%')
     
     # build the CLI
     cli = HydenvDatabase(connection=app.config['DB_URI'])
