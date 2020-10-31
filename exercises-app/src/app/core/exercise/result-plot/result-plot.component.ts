@@ -47,12 +47,17 @@ export class ResultPlotComponent implements OnInit {
   layout: Layout = {
     autosize: true,
     plot_bgcolor: '#1A2A32',
-    paper_bgcolor: '#1A2A32'
+    paper_bgcolor: '#1A2A32',
+    barmode: 'group',
+    font: {
+      size: 18,
+      color: '#fff'
+    }
   } as Layout;
 
   // selects
-  plotTypes: ('line' | 'scatter')[] = [];
-  selectedPlotType: 'line' | 'scatter';
+  plotTypes: ('line' | 'scatter' | 'bar' | 'map')[] = [];
+  selectedPlotType: 'line' | 'scatter' | 'bar' |'map';
   xAxisAttributeOptions: string[] = [];
   selectedXAttribute: string;
   yAxisAttributeOptions: string[] = [];
@@ -70,8 +75,8 @@ export class ResultPlotComponent implements OnInit {
     this.axes = [];
     // check plot types
     // line
-    if (this.selectedPlotType === 'line') {
-      this.xAxisAttributeOptions = this.allAttributes.filter(a => ['numeric', 'datetime'].includes(a.type)).map(a => a.name);
+    if (this.selectedPlotType === 'line' || this.selectedPlotType === 'bar') {
+      this.xAxisAttributeOptions = this.allAttributes.filter(a => ['numeric', 'datetime', 'text'].includes(a.type)).map(a => a.name);
       this.yAxisAttributeOptions = this.allAttributes.filter(a => a.type === 'numeric').map(a => a.name);
       this.selectedXAttribute = null;
       this.selectedYAttribute = null;
@@ -123,11 +128,13 @@ export class ResultPlotComponent implements OnInit {
   private getAllowedPlotTypes(): void {
     this.plotTypes = [];
     const nNumeric = sum(this.allAttributes.map(a => a.type === 'numeric' ? 1 : 0));
-    const nDates = sum (this.allAttributes.map(a => a.type === 'datetime' ? 1 : 0));
+    const nDates = sum(this.allAttributes.map(a => a.type === 'datetime' ? 1 : 0));
+    const nText = sum(this.allAttributes.map(a => a.type === 'text' ? 1 : 0));
 
     // for a line plot at least 2 numerics or 1 datetime and 1 numeric is needed
-    if (nNumeric >= 2 || (nDates >= 1 && nNumeric >= 1)) {
+    if (nNumeric >= 2 || (nDates >= 1 && nNumeric >= 1) || (nText >= 1 && nNumeric >= 1)) {
       this.plotTypes.push('line');
+      this.plotTypes.push('bar');
     }
 
     // for a scatter plot at least 2 numerics are needed
