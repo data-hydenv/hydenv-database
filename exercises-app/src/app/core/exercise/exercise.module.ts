@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 
 import { ClarityModule } from '@clr/angular';
 import { CodeEditorModule } from '@ngstack/code-editor';
+import { ColorPickerModule } from 'ngx-color-picker';
 
 import { ExerciseBodyComponent } from './exercise-body/exercise-body.component';
 import { ExerciseCompareComponent } from './exercise-compare/exercise-compare.component';
@@ -32,6 +33,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
     FormsModule,
     CodeEditorModule.forChild(),
     PlotlyModule,
+    ColorPickerModule,
   ],
   exports: [
     ExerciseBodyComponent,

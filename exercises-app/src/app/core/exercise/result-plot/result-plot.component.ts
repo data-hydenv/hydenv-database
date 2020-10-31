@@ -9,8 +9,8 @@ function isValidDate(date): boolean {
 
 export interface Attribute {
   name: string;
-  type: 'numeric' | 'text' | 'wkt' | 'lon' | 'lat' | 'datetime';
-  data: number[] | string[] | Date[];
+  type: 'numeric' | 'text' | 'lonLat' | 'linestring' | 'polygon' | 'datetime';
+  data: number[] | string[] | Date[] | [number, number][] | [number, number][][];
 }
 
 const TYPEMAP = {
@@ -52,12 +52,16 @@ export class ResultPlotComponent implements OnInit {
     font: {
       size: 18,
       color: '#fff'
-    }
+    },
+    mapbox: {
+      style: 'dark',
+      pitch: 40
+    },
   } as Layout;
 
   // selects
   plotTypes: ('line' | 'scatter' | 'bar' | 'map')[] = [];
-  selectedPlotType: 'line' | 'scatter' | 'bar' |'map';
+  selectedPlotType: 'line' | 'scatter' | 'bar' | 'map';
   xAxisAttributeOptions: string[] = [];
   selectedXAttribute: string;
   yAxisAttributeOptions: string[] = [];
@@ -114,7 +118,8 @@ export class ResultPlotComponent implements OnInit {
         y: [...attr.data],
         type: TYPEMAP[this.selectedPlotType],
         mode: MODEMAP[this.selectedPlotType],
-        name: attr.name
+        name: attr.name,
+        marker: {color: 'cyan'}
       } as PlotData;
       this.axes = [...this.axes, g];
     }
@@ -175,6 +180,7 @@ export class ResultPlotComponent implements OnInit {
     this.allAttributes.forEach(attr => {
       if (attr.type === 'datetime') {
         attr.data = [...this.rawData.map(row => new Date(row[attr.name]))];
+      // TODO HIER MUSS NOCH EIN ELSE IF REIN DAS DIE GEO-DATEN IN GEOJSON UND SO UMWANDELT
       } else {
         attr.data = [...this.rawData.map(row => row[attr.name])];
       }
@@ -183,20 +189,19 @@ export class ResultPlotComponent implements OnInit {
     this.getAllowedPlotTypes();
   }
 
-  private inferAttributeType(row: {[k: string]: any}, key: string): 'numeric' | 'text' | 'wkt' | 'lon' | 'lat' |'datetime' {
+  private inferAttributeType(row: {[k: string]: any}, key: string): 'numeric' | 'text' | 'lonLat' | 'linestring' | 'polygon' | 'datetime' {
     const v = row[key];
     if (typeof(v) === 'number') {
-      if (key.toLowerCase() === 'lon' || key.toLowerCase() === 'longitude') {
-        return 'lon';
-      } else if (key.toLowerCase() === 'lat' || key.toLowerCase() === 'latitude') {
-        return 'lat';
-      } else {
         return 'numeric';
-      }
 
     } else if (typeof(v) === 'string') {
-      if (key.toLowerCase() === 'wkt') {
-        return 'wkt';
+      // check the geometry types
+      if (v.includes('POINT')) {
+        return 'lonLat';
+      } else if (v.includes('LINESTRING')) {
+        return 'linestring';
+      } else if (v.includes('POLYGON')) {
+        return 'polygon';
       } else if (isValidDate(new Date(v))) {
         return 'datetime';
       }

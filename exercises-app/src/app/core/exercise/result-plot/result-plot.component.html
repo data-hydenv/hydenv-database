@@ -61,8 +61,12 @@
         <ul class="list-group">
           <li *ngFor="let g of axes; let i = index" class="list-group-item">
             <div style="display: flex; flex-direction: row; justify-content:space-between">
-              <span>{{ g.name }}</span>
-              <clr-icon shape="times" (click)="onRemoveAxis(i)" style="cursor: pointer;"></clr-icon>
+              <span [style.color]=[g.marker.color]>{{ g.name }}</span>
+              <div>
+                <!--<input [(colorPicker)]="g.marker.color" [style.background]="g.marker.color">-->
+                <clr-icon shape="color-palette" [(colorPicker)]="g.marker.color" [style.color]="g.marker.color" class="is-solid"></clr-icon>
+                <clr-icon shape="times" (click)="onRemoveAxis(i)" style="cursor: pointer;"></clr-icon>
+              </div>
             </div>
           </li>
         </ul>
