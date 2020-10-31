@@ -390,6 +390,9 @@ licenses; we recommend you read them, as their terms may differ from the
 terms above.
 
 
+ngx-color-picker
+MIT
+
 plotly.js
 MIT
 The MIT License (MIT)
