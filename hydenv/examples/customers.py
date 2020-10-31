@@ -80,16 +80,17 @@ class HydenvCustomerExamples:
     def run(self, quiet=True, k=500, normalize=False):
         """
         """
-        # 8% different stores - max 350
-        maxs = 350 if int(0.08 * k) > 350 else int(0.08 * k) 
+        # 3% different stores - max 60
+        maxs = 60 if int(0.03 * k) > 60 else int(0.03 * k) 
         stores = [gen_data.create_company_name() for _ in range(maxs)]
 
-        # 5% different locations - max 75
-        maxs = 75 if int(0.05 * k) > 75 else int(0.05 * k)
+        # 2% different locations - max 21
+        maxs = 21 if int(0.02 * k) > 21 else int(0.02 * k)
         locations = [gen_data.create_city_state_zip() for _ in range(maxs)]
 
-        # 10% different products
-        products = [(int(random() * 10**8), gen_data.create_nouns(choices([1,2,3], weights=[0.7, 0.2, 0.1], k=1)[0])) for _ in range(int(0.1 * k))]
+        # 8% different products - 1200 max 
+        maxs = 1200 if int(0.08 * k) > 1200 else int(0.08 * k)
+        products = [(int(random() * 10**8), gen_data.create_nouns(choices([1,2,3], weights=[0.7, 0.2, 0.1], k=1)[0])) for _ in range(maxs)]
 
         # 60% different customers
         customer_ids = choices(list(range(int(0.6 * k))), k=k)
