@@ -59,12 +59,12 @@
       <div class="card" *ngIf="axes.length > 0">
         <div class="card-header">Datasets</div>
         <ul class="list-group">
-          <li *ngFor="let g of axes; let i = index" class="list-group-item">
+          <li *ngFor="let l of axesLabel; let i = index" class="list-group-item">
             <div style="display: flex; flex-direction: row; justify-content:space-between">
-              <span [style.color]=[g.marker.color]>{{ g.name }}</span>
+              <span [style.color]="l.color">{{ l.name }}</span>
               <div>
                 <!--<input [(colorPicker)]="g.marker.color" [style.background]="g.marker.color">-->
-                <clr-icon shape="color-palette" [(colorPicker)]="g.marker.color" [style.color]="g.marker.color" class="is-solid"></clr-icon>
+                <clr-icon shape="color-palette" [(colorPicker)]="l.color"  (colorPickerChange)="onColorChange(i)" [style.color]="l.color" class="is-solid"></clr-icon>
                 <clr-icon shape="times" (click)="onRemoveAxis(i)" style="cursor: pointer;"></clr-icon>
               </div>
             </div>

@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 
 import { cloneDeep, sum } from 'lodash';
-import { Layout, PlotData } from 'plotly.js';
+import { Layout, PlotData, Margin } from 'plotly.js';
+import * as wkt from 'wellknown';
 
 function isValidDate(date): boolean {
   return date && Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date);
@@ -10,7 +11,7 @@ function isValidDate(date): boolean {
 export interface Attribute {
   name: string;
   type: 'numeric' | 'text' | 'lonLat' | 'linestring' | 'polygon' | 'datetime';
-  data: number[] | string[] | Date[] | [number, number][] | [number, number][][];
+  data: number[] | string[] | Date[] | any[];
 }
 
 const TYPEMAP = {
@@ -43,6 +44,7 @@ export class ResultPlotComponent implements OnInit {
   allAttributes: Attribute[] = [];
 
   // plot management
+  axesLabel: {name: string, idx: number[], color: string}[] = [];
   axes: PlotData[] = [];
   layout: Layout = {
     autosize: true,
@@ -54,8 +56,8 @@ export class ResultPlotComponent implements OnInit {
       color: '#fff'
     },
     mapbox: {
-      style: 'dark',
-      pitch: 40
+      style: 'carto-darkmatter',
+      pitch: 15
     },
   } as Layout;
 
@@ -82,16 +84,104 @@ export class ResultPlotComponent implements OnInit {
     if (this.selectedPlotType === 'line' || this.selectedPlotType === 'bar') {
       this.xAxisAttributeOptions = this.allAttributes.filter(a => ['numeric', 'datetime', 'text'].includes(a.type)).map(a => a.name);
       this.yAxisAttributeOptions = this.allAttributes.filter(a => a.type === 'numeric').map(a => a.name);
-      this.selectedXAttribute = null;
-      this.selectedYAttribute = null;
     }
 
     // scatter
     if (this.selectedPlotType === 'scatter') {
       this.xAxisAttributeOptions = this.allAttributes.filter(a => a.type === 'numeric').map(a => a.name);
       this.yAxisAttributeOptions = this.allAttributes.filter(a => a.type === 'numeric').map(a => a.name);
-      this.selectedXAttribute = null;
-      this.selectedYAttribute = null;
+
+    }
+
+    // map
+    if (this.selectedPlotType === 'map') {
+      this.xAxisAttributeOptions = this.allAttributes.filter(a => ['lonLat', 'linestring', 'polygon'].includes(a.type)).map(a => a.name);
+      this.yAxisAttributeOptions = this.allAttributes.filter(a => a.type === 'numeric').map(a => a.name);
+
+      // change layout options
+      this.layout.showlegend = false;
+      this.layout.margin = {t: 0, b: 0, l: 0, r: 0} as Margin;
+    } else {
+      this.layout.showlegend = true;
+      this.layout.margin = null;
+    }
+
+    // de-select current selection
+    this.selectedXAttribute = null;
+    this.selectedYAttribute = null;
+  }
+
+  onColorChange(labelIdx: number): void {
+    const col = this.axesLabel[labelIdx].color;
+    this.axesLabel[labelIdx].idx.forEach(idx => {
+      this.axes[idx].marker.color = col;
+      if ((this.axes[idx].marker as any).fillcolor) {
+        (this.axes[idx].marker as any).fillcolor = col;
+      }
+    });
+  }
+
+  private convertMapLayer(geomattr: Attribute, attr?: Attribute): PlotData[] | any[] {
+    // add that is not chropleth
+    if (!(geomattr.type === 'polygon' && attr)) {
+      const data: PlotData[] = [];
+      geomattr.data.forEach((geom, index) => {
+        const g = {name: attr ? attr.name : geomattr.name} as PlotData;
+
+        // create the traces
+        if (geomattr.type === 'lonLat') {
+          g.type = 'scattermapbox';
+          g.lon = [geom.coordinates[0]];
+          g.lat = [geom.coordinates[1]];
+          if (attr) {
+            g.text = attr.data[index];
+          }
+        } else if (geomattr.type === 'linestring') {
+          g.type = 'scattermapbox';
+          g.lon = [...geom.coordinates.map(c => c[0])];
+          g.lat = [...geom.coordinates.map(c => c[1])];
+          g.mode = 'lines';
+          if (attr) {
+            g.text = attr.data[index];
+          }
+        } else if (geomattr.type === 'polygon') {
+          g.type = 'scattermapbox';
+          g.lon = [...geom.coordinates[0].map(c => c[0])];
+          g.lat = [...geom.coordinates[0].map(c => c[1])];
+          g.mode = 'lines';
+          if (attr) {
+            g.text = attr.data[index];
+          }
+
+          g.fill = 'toself';
+          g.fillcolor = 'cyan';
+        }
+
+        // set the default color
+        g.marker = {size: 12, color: 'cyan'};
+
+        // push the trace
+        data.push(g);
+      });
+
+      return data;
+    }
+
+    // this is the choropleth map
+    else {
+      return [
+        {
+          type: 'choroplethmapbox',
+          z: [...attr.data],
+          locations: [...(geomattr.data as any[]).map((f, idx) => idx)],
+          geojson: cloneDeep({
+            type: 'FeatureCollection',
+            features: [...(geomattr.data as any[]).map((f, idx) => {
+            return {type: 'Feature', id: idx, geometry: {...f}};
+          })]
+          })
+        } as any
+      ];
     }
   }
 
@@ -101,8 +191,15 @@ export class ResultPlotComponent implements OnInit {
   onXAxisChanged(): void {
     const xattr = this.allAttributes.find(a => a.name === this.selectedXAttribute);
     if (xattr) {
-      const newAxes = this.axes.map(a => ({...a, x: [...xattr.data]} as PlotData));
-      this.axes = cloneDeep(newAxes);
+      // all charts
+      if (this.selectedPlotType !== 'map') {
+        const newAxes: PlotData[] = this.axes.map(a => ({...a, x: [...xattr.data]} as PlotData));
+        this.axes = cloneDeep(newAxes);
+
+        // map types
+      } else {
+
+      }
     }
   }
 
@@ -111,8 +208,20 @@ export class ResultPlotComponent implements OnInit {
     const attr = this.allAttributes.find(a => a.name === this.selectedYAttribute);
     const xattr = this.allAttributes.find(a => a.name === this.selectedXAttribute);
 
+    if (this.selectedPlotType === 'map') {
+      // create new axes and infer the indices
+      const axes = this.convertMapLayer(xattr, attr);
+      const currIdx = this.axes.length - 1;
+      const idxs = (axes as any[]).map((a, i) => currIdx + (i + 1));
+      this.axes = [...this.axes, ...axes];
+      this.axesLabel.push({name: attr ? attr.name : xattr.name, color: 'cyan', idx: [...idxs]});
+
+
+      console.log(this.axes);
+    }
+
     // check that they exist
-    if (attr && xattr) {
+    else  if (attr && xattr) {
       const g = {
         x: [...xattr.data],
         y: [...attr.data],
@@ -122,12 +231,18 @@ export class ResultPlotComponent implements OnInit {
         marker: {color: 'cyan'}
       } as PlotData;
       this.axes = [...this.axes, g];
+      this.axesLabel.push({name: attr.name, color: 'cyan', idx: [this.axes.length - 1]});
     }
   }
 
   onRemoveAxis(index: number): void {
-    const newAxes = this.axes.filter((a, idx) => idx !== index);
+    // find the labels
+    const label = this.axesLabel[index];
+    const newAxes = this.axes.filter((a, idx) => !label.idx.includes(idx));
+
+    // set new
     this.axes = cloneDeep(newAxes);
+    this.axesLabel.splice(index, 1);
   }
 
   private getAllowedPlotTypes(): void {
@@ -135,6 +250,7 @@ export class ResultPlotComponent implements OnInit {
     const nNumeric = sum(this.allAttributes.map(a => a.type === 'numeric' ? 1 : 0));
     const nDates = sum(this.allAttributes.map(a => a.type === 'datetime' ? 1 : 0));
     const nText = sum(this.allAttributes.map(a => a.type === 'text' ? 1 : 0));
+    const nGeom = sum(this.allAttributes.map(a => ['lonLat', 'linestring', 'polygon'].includes(a.type) ? 1 : 0));
 
     // for a line plot at least 2 numerics or 1 datetime and 1 numeric is needed
     if (nNumeric >= 2 || (nDates >= 1 && nNumeric >= 1) || (nText >= 1 && nNumeric >= 1)) {
@@ -145,6 +261,11 @@ export class ResultPlotComponent implements OnInit {
     // for a scatter plot at least 2 numerics are needed
     if (nNumeric >= 2) {
       this.plotTypes.push('scatter');
+    }
+
+    // map types
+    if (nGeom >= 1) {
+      this.plotTypes.push('map');
     }
 
     this.loading = false;
@@ -180,7 +301,12 @@ export class ResultPlotComponent implements OnInit {
     this.allAttributes.forEach(attr => {
       if (attr.type === 'datetime') {
         attr.data = [...this.rawData.map(row => new Date(row[attr.name]))];
-      // TODO HIER MUSS NOCH EIN ELSE IF REIN DAS DIE GEO-DATEN IN GEOJSON UND SO UMWANDELT
+
+      // convert the Geometry types
+      } else if (['lonLat', 'linestring', 'polygon'].includes(attr.type)) {
+        const geojson = [...this.rawData.map(row => wkt.parse(row[attr.name]))];
+        console.log(geojson);
+        attr.data = geojson;
       } else {
         attr.data = [...this.rawData.map(row => row[attr.name])];
       }
