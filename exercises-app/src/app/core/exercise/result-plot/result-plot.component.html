@@ -1,6 +1,6 @@
 <clr-spinner *ngIf="loading; else plot"></clr-spinner>
 <ng-template #plot>
-  <div style="text-align: center;">The attribute selection is sometimes reacting really slow. We are working on a solution.</div>
+  <!--<div style="text-align: center;">The attribute selection is sometimes reacting really slow. We are working on a solution.</div>-->
   <!-- SELECTORS -->
   <div class="clr-row">
     <div class="clr-col-md-4 clr-col-sm-12">
@@ -13,7 +13,8 @@
     </div>
     <div class="clr-col-md-4 clr-col-sm-12">
       <clr-select-container *ngIf="selectedPlotType">
-        <label>x-axis attribute</label>
+        <label *ngIf="selectedPlotType !== 'map'">x-axis attribute</label>
+        <label *ngIf="selectedPlotType === 'map'">Geometry attribute</label>
         <select clrSelect name="xAxis" [(ngModel)]="selectedXAttribute" (change)="onXAxisChanged()">
           <option *ngFor="let n of xAxisAttributeOptions" [value]=[n]>{{ n }}</option>
         </select>
@@ -23,12 +24,17 @@
     <div class="clr-col-md-4 clr-col-sm-12">
       <ng-container *ngIf="selectedPlotType && selectedXAttribute; else noY">
         <clr-select-container>
-          <label>y-axis attributes</label>
+          <label *ngIf="selectedPlotType !== 'map'">y-axis attributes</label>
+          <label *ngIf="selectedPlotType === 'map'">property</label>
           <select clrSelect name="yAxis" [(ngModel)]="selectedYAttribute">
             <option *ngFor="let n of yAxisAttributeOptions" [value]=[n]>{{ n }}</option>
           </select>
         </clr-select-container>
-        <button [disabled]="!selectedYAttribute" class="btn btn-primary btn-sm" (click)="onAddYAxis()">Add</button>
+        <button 
+          [disabled]="selectedPlotType !== 'map' && !selectedYAttribute"
+          class="btn btn-primary btn-sm" 
+          (click)="onAddYAxis()"
+        >Add</button>
       </ng-container>
       <ng-template #noY>
         <i>Select a plot Type first</i>
