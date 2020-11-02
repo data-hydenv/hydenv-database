@@ -108,11 +108,11 @@ class HydenvOSMExamples:
         # run for 
         if not quiet:
             print('Loading all Gas stations in %s' % boundary)
-        self.run(boundary, 'amenity', 'fuel', quiet=quiet)
+        self.run('node', boundary, 'amenity', 'fuel', quiet=quiet)
 
         if not quiet:
             print('Loading all charging stations in %s' % boundary)
-        self.run(boundary, 'amenity', 'charging_station', quiet=quiet)
+        self.run('node', boundary, 'amenity', 'charging_station', quiet=quiet)
 
         if not quiet:
             print('Energiewende loaded.')
