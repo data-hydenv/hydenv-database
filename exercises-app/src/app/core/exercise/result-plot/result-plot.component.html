@@ -1,46 +1,5 @@
 <clr-spinner *ngIf="loading; else plot"></clr-spinner>
 <ng-template #plot>
-  <!--<div style="text-align: center;">The attribute selection is sometimes reacting really slow. We are working on a solution.</div>-->
-  <!-- SELECTORS -->
-  <div class="clr-row">
-    <div class="clr-col-md-4 clr-col-sm-12">
-      <clr-select-container>
-        <label>Plot type</label>
-        <select clrSelect name="plotType" [(ngModel)]="selectedPlotType" (change)="onPlotTypeChanged()">
-          <option *ngFor="let t of plotTypes" [value]="t">{{ t }}</option>
-        </select>
-      </clr-select-container>
-    </div>
-    <div class="clr-col-md-4 clr-col-sm-12">
-      <clr-select-container *ngIf="selectedPlotType">
-        <label *ngIf="selectedPlotType !== 'map'">x-axis attribute</label>
-        <label *ngIf="selectedPlotType === 'map'">Geometry attribute</label>
-        <select clrSelect name="xAxis" [(ngModel)]="selectedXAttribute" (change)="onXAxisChanged()">
-          <option *ngFor="let n of xAxisAttributeOptions" [value]=[n]>{{ n }}</option>
-        </select>
-      </clr-select-container>
-      <i *ngIf="!selectedPlotType">Select a plot Type first</i>
-    </div>
-    <div class="clr-col-md-4 clr-col-sm-12">
-      <ng-container *ngIf="selectedPlotType && selectedXAttribute; else noY">
-        <clr-select-container>
-          <label *ngIf="selectedPlotType !== 'map'">y-axis attributes</label>
-          <label *ngIf="selectedPlotType === 'map'">property</label>
-          <select clrSelect name="yAxis" [(ngModel)]="selectedYAttribute">
-            <option *ngFor="let n of yAxisAttributeOptions" [value]=[n]>{{ n }}</option>
-          </select>
-        </clr-select-container>
-        <button 
-          [disabled]="selectedPlotType !== 'map' && !selectedYAttribute"
-          class="btn btn-primary btn-sm" 
-          (click)="onAddYAxis()"
-        >Add</button>
-      </ng-container>
-      <ng-template #noY>
-        <i>Select a plot Type first</i>
-      </ng-template>
-    </div>
-  </div>
 
   <!-- PLOT -->
   <div class="clr-row">
@@ -62,6 +21,74 @@
     </div>
 
     <div class="clr-col-md-3 clr-col-sm-12">
+      <!-- ADD DATA CARD -->
+      <div class="card">
+        <div class="card-header">Add Data</div>
+        <div class="card-block select-block">
+
+          <clr-select-container>
+            <label>Plot type</label>
+            <select clrSelect name="plotType" [(ngModel)]="selectedPlotType" (change)="onPlotTypeChanged()">
+              <option *ngFor="let t of plotTypes" [value]="t">{{ t }}</option>
+            </select>
+          </clr-select-container>
+
+          <clr-select-container *ngIf="selectedPlotType">
+            <label *ngIf="selectedPlotType !== 'map'">x-axis attribute</label>
+            <label *ngIf="selectedPlotType === 'map'">Geometry attribute</label>
+            <select clrSelect name="xAxis" [(ngModel)]="selectedXAttribute" (change)="onXAxisChanged()">
+              <option *ngFor="let n of xAxisAttributeOptions" [value]=[n]>{{ n }}</option>
+            </select>
+          </clr-select-container>
+
+          <clr-select-container *ngIf="selectedPlotType && selectedXAttribute">
+            <label *ngIf="selectedPlotType !== 'map'">y-axis attributes</label>
+            <label *ngIf="selectedPlotType === 'map'">property</label>
+            <select clrSelect name="yAxis" [(ngModel)]="selectedYAttribute">
+              <option *ngFor="let n of yAxisAttributeOptions" [value]=[n]>{{ n }}</option>
+            </select>
+          </clr-select-container>
+        </div>
+        <div class="card-footer">
+          <button [disabled]="selectedPlotType !== 'map' && !selectedYAttribute" class="btn btn-primary btn-sm" (click)="onAddYAxis()">
+            Add
+          </button>
+
+          <clr-dropdown>
+            <button class="btn btn-link" clrDropdownTrigger>
+              <clr-icon shape="caret" direction="right"></clr-icon>
+              Options
+            </button>
+            <clr-dropdown-menu clrPosition="left">
+              <button clrDropdownItem (click)="layout.showlegend=!layout.showlegend">
+                {{layout.showlegend ? 'hide' : 'show'}} legend
+              </button>
+
+              <clr-dropdown>
+                <button clrDropdownTrigger [disabled]="selectedPlotType!=='map'">Map Style</button>
+                <clr-dropdown-menu clrPosition="bottom-left">
+                  <button clrDropdownItem (click)="onChangeMapStyle('carto-darkmatter')">dark</button>
+                  <button clrDropdownItem (click)="onChangeMapStyle('carto-positron')">light</button>
+                  <button clrDropdownItem (click)="onChangeMapStyle('open-street-map')">OSM</button>
+                  <button clrDropdownItem (click)="onChangeMapStyle('stamen-terrain')">Terrain</button>
+                </clr-dropdown-menu>
+              </clr-dropdown>
+
+              <clr-dropdown>
+                <button clrDropdownTrigger [disabled]="selectedPlotType!=='bar'">Bar Type</button>
+                <clr-dropdown-menu clrPosition="bottom-left">
+                  <button clrDropdownItem (click)="layout.barmode='group'">single</button>
+                  <button clrDropdownItem (click)="layout.barmode='stack'">stacked</button>
+                  <button clrDropdownItem (click)="layout.barmode='relative'">relative</button>
+                </clr-dropdown-menu>
+              </clr-dropdown>
+
+            </clr-dropdown-menu>
+          </clr-dropdown>
+        </div>
+      </div>
+
+      <!-- DATASET CARD -->
       <div class="card" *ngIf="axes.length > 0">
         <div class="card-header">Datasets</div>
         <ul class="list-group">
