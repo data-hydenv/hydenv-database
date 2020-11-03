@@ -50,14 +50,15 @@ export class ResultPlotComponent implements OnInit {
     autosize: true,
     plot_bgcolor: '#1A2A32',
     paper_bgcolor: '#1A2A32',
-    barmode: 'group',
+    barmode: 'stack',
+    showlegend: false,
     font: {
       size: 18,
       color: '#fff'
     },
     mapbox: {
       style: 'carto-darkmatter',
-      pitch: 15
+      pitch: 25
     },
   } as Layout;
 
@@ -99,10 +100,8 @@ export class ResultPlotComponent implements OnInit {
       this.yAxisAttributeOptions = this.allAttributes.filter(a => a.type === 'numeric').map(a => a.name);
 
       // change layout options
-      this.layout.showlegend = false;
       this.layout.margin = {t: 0, b: 0, l: 0, r: 0} as Margin;
     } else {
-      this.layout.showlegend = true;
       this.layout.margin = null;
     }
 
@@ -340,6 +339,13 @@ export class ResultPlotComponent implements OnInit {
     } else {
       return null;
     }
+  }
+
+  onChangeMapStyle(newStyle: string): void {
+    this.layout = {
+      ...this.layout,
+      mapbox: {...this.layout.mapbox, style: newStyle}
+    } as Layout;
   }
 
 }
