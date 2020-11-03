@@ -202,7 +202,7 @@ class Detail(Base):
 class SpaceRaw(Base):
     __tablename__ = 'space_raw'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     company_name = Column(String(65))
     location = Column(String)
     datum = Column(DateTime)

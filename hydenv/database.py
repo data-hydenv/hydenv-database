@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from hydenv.models import Base, Term, Variable
 from hydenv.examples.space import HydenvSpaceExamples
+from hydenv.examples.examples import HydenvExamples
 from hydenv.util import env
 
 
@@ -96,7 +97,7 @@ class HydenvDatabase:
         host_port = self.__connection.split('@')[1].split('/')[0]
         host, port = host_port.split(':')
         self.__connection = 'postgresql://{usr}:{pw}@{host}:{port}/{db}'.format(
-            usr=role, pw=password, host=host,port=port, db=db_name
+            usr=user, pw=password, host=host,port=port, db=db_name
         )
         # expose conn if 
         self.__expose_con('file', usr=role, pw=password, host=host, port=port, dbname=db_name)
@@ -117,7 +118,13 @@ class HydenvDatabase:
         """
         # drop if existing
         if clean:
+            # drop the models
             Base.metadata.drop_all(bind=self.engine)
+
+            # drop other stuff
+            cli = HydenvExamples(connection=self.__connection, quiet=True)
+            cli.clean()
+
         
         # creata tables
         Base.metadata.create_all(bind=self.engine)
@@ -203,7 +210,6 @@ class HydenvDatabase:
         # extract info 
         while not isinstance(d, dict) or len(d) == 1:
             d = d[0]
-
 
         # build the query plan object
         explain = dict(

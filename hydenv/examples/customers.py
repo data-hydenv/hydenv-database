@@ -60,6 +60,12 @@ alter table customers add constraint fkey_stores foreign key (store_id) referenc
 alter table customers add constraint fkey_cities foreign key (city_id) references cities (city_id);
 COMMIT;
 """
+DROP_SQL = """
+drop table if exists products cascade;
+drop table if exists cities cascade;
+drop table if exists stores cascade;
+drop table if exists customers;
+"""
 class HydenvCustomerExamples:
     """
     Space Missions Example Loader.\n
@@ -131,3 +137,7 @@ class HydenvCustomerExamples:
     def _normalize(self):
         with self.engine.connect() as con:
             con.execute(NORMALIZE_SQL)
+
+    def drop(self):
+        with self.engine.connect() as con:
+            con.execute(DROP_SQL)

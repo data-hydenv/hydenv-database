@@ -1,8 +1,11 @@
+from progressbar import ProgressBar
+
 from hydenv.examples.hobo import HydenvHoboExamples
 from hydenv.examples.space import HydenvSpaceExamples
 from hydenv.examples.customers import HydenvCustomerExamples
 from hydenv.examples.osm import HydenvOSMExamples
 
+CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvCustomerExamples, HydenvOSMExamples]
 
 class HydenvExamples:
     r"""
@@ -44,10 +47,7 @@ class HydenvExamples:
         :param normalize: If set, the data will be normalized before uplaod.
         """
         cli = HydenvSpaceExamples(connection=self.__connection)
-        if normalize:
-            raise NotImplementedError
-        else:
-            return cli.run(quiet=self.quiet)
+        return cli.run(normalize=normalize, quiet=self.quiet)
 
     def customers(self, k=500, normalize=False):
         """
@@ -98,6 +98,27 @@ class HydenvExamples:
             return cli.run('nodes', *args, quiet=self.quiet, **kwargs)
         if action.lower() == 'way':
             return cli.run('way', *args, quiet=self.quiet, **kwargs)
+
+    def clean(self): 
+        """
+        Cleaning Up.\n
+        This command will clean all additional tables that were created by the CLI 
+        which do not have a model representation in `hydenv.models`. This includes
+        the normalized examples of space and customers.
+        Usually, this is only called by the `database --clean` command and a 
+        manual invocation is not needed
+        """
+        if not self.quiet:
+            bar = ProgressBar(max_value=len(CLIs), redirect_stdout=True)
+        
+        # drop all extra tables
+        for i, CLI in enumerate(CLIs):
+            if hasattr(CLI, 'drop'):
+                cli = CLI(connection=self.__connection)
+                cli.drop()
+
+                if not self.quiet:
+                    bar.update(i + 1)
 
 
 if __name__=='__main__':
