@@ -14,6 +14,7 @@ import { SqlResultComponent } from './sql-result/sql-result.component';
 
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';
 import { PlotlyModule } from 'angular-plotly.js';
+import { ExerciseProgressDetailComponent } from './exercise-progress-detail/exercise-progress-detail.component';
 PlotlyModule.plotlyjs = PlotlyJS;
 // import { PlotlyViaCDNModule as PlotlyModule } from 'angular-plotly.js';
 // PlotlyModule.setPlotlyVersion('latest');
@@ -25,7 +26,8 @@ PlotlyModule.plotlyjs = PlotlyJS;
     ExerciseCompareComponent,
     SqlInputComponent,
     ResultPlotComponent,
-    SqlResultComponent
+    SqlResultComponent,
+    ExerciseProgressDetailComponent
   ],
   imports: [
     CommonModule,
@@ -41,6 +43,7 @@ PlotlyModule.plotlyjs = PlotlyJS;
     SqlInputComponent,
     ResultPlotComponent,
     SqlResultComponent,
+    ExerciseProgressDetailComponent,
   ]
 })
 export class ExerciseModule { }

@@ -1,6 +1,11 @@
 <ng-container *ngIf="exercise; else notFound">
-  <div style="float: right;">
-    <app-next-exercise-button [exerciseId]="exerciseId" ></app-next-exercise-button>
+  <div class="clr-row">
+    <div class="clr-col-10" style="overflow-x: auto;">
+      <app-exercise-progress-detail [exerciseId]="exerciseId"></app-exercise-progress-detail>
+    </div>
+    <div class="clr-col-2">
+      <app-next-exercise-button [exerciseId]="exerciseId" ></app-next-exercise-button>
+    </div>
   </div>
   <h1>{{ exercise.name }}</h1>
   <app-exercise-body [body]="exercise.body"></app-exercise-body>

@@ -1,0 +1,28 @@
+<ng-container *ngIf="progress; else noProgress">
+    <clr-timeline [clrLayout]="layout">
+
+        <ng-container *ngIf="progress.tries">
+            <clr-timeline-step clrState="error" *ngFor="let t of progress.tries">
+                <!--<clr-timeline-step-header>{{ t | date:'dd.MM.yy HH:mm'}}</clr-timeline-step-header>-->
+                <clr-timeline-step-header>Not correct</clr-timeline-step-header>
+                <clr-timeline-step-description>{{ t| date:'dd.MM.yy HH:mm' }}</clr-timeline-step-description>
+            </clr-timeline-step>
+        </ng-container>
+
+        <clr-timeline-step *ngIf="progress.correct" clrState="success">
+            <!--<clr-timeline-step-header>{{ progress.date ? progress.date : 'sometimes'}}</clr-timeline-step-header>-->
+            <clr-timeline-step-header>Correct!</clr-timeline-step-header>
+            <clr-timeline-step-description>Well done!</clr-timeline-step-description>
+        </clr-timeline-step>
+
+    </clr-timeline>
+</ng-container>
+
+<ng-template #noProgress>
+    <clr-timeline [clrLayout]="layout">
+        <clr-timeline-step clrState="not-started">
+            <clr-timeline-step-header>not started</clr-timeline-step-header>
+            <clr-timeline-step-description>No progress data found in the storage of this device</clr-timeline-step-description>
+        </clr-timeline-step>
+    </clr-timeline>
+</ng-template>
