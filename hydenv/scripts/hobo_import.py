@@ -161,7 +161,7 @@ class HydenvHoboImporter:
 		# upload to temporary table
 		temp.to_sql(name, engine, index=False)
 		engine.execute('INSERT INTO raw_data (meta_id, variable_id, tstamp, value) SELECT meta_id, variable_id, tstamp, value FROM %s ON CONFLICT (meta_id, variable_id, tstamp) DO NOTHING' % name)
-		engine.execute('UPDATE raw_data r SET value=t.value FROM %s t WHERE r.meta_id=t.meta_id AND r.tstamp=t.tstamp' % name)
+		engine.execute('UPDATE raw_data r SET value=t.value FROM %s t WHERE r.meta_id=t.meta_id AND r.tstamp=t.tstamp AND r.variable_id=t.variable_id' % name)
 
 		# delete the temp table
 		engine.execute("DROP TABLE %s" % name)

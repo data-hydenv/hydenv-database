@@ -1,6 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, ForeignKey, UniqueConstraint
-from sqlalchemy import Integer, BigInteger, String, DateTime, Numeric, Boolean
+from sqlalchemy import Integer, BigInteger, String, DateTime, Numeric, Boolean, REAL
 from sqlalchemy.orm import relationship, Session
 from geoalchemy2 import Geometry
 
@@ -143,7 +143,7 @@ class Data(Base):
     meta_id = Column(Integer, ForeignKey('metadata.id'), primary_key=True)
     variable_id = Column(Integer, ForeignKey('variables.id'), primary_key=True)
     tstamp = Column(DateTime, primary_key=True)
-    value = Column(Numeric, nullable=False)
+    value = Column(REAL, nullable=False)
     quality_flag_id = Column(Integer, ForeignKey('quality.id'), nullable=False)
 
 
@@ -156,7 +156,7 @@ class RawData(Base):
     meta_id = Column(Integer, ForeignKey('metadata.id'), primary_key=True)
     variable_id = Column(Integer, ForeignKey('variables.id'), primary_key=True)
     tstamp = Column(DateTime, primary_key=True)
-    value = Column(Numeric, nullable=False)
+    value = Column(REAL, nullable=False)
 
 
 class Detail(Base):
