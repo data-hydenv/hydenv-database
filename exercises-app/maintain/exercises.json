@@ -142,14 +142,96 @@
     "id": "A0axp5bdwllverbsspsr",
     "name": "Create a company lookup",
     "body": {
-      "content": "<p>Any result from a <code>SELECT</code> query can be persisted into a new <code>TABLE</code> or <code>VIEW</code>. Instead of defining the attributes of a new table, it is also possible to infer them from the query result. The syntax looks like: <pre><code>CREATE TABLE tablename AS SELECT ...</code></pre>.</p><p>Create a table called <strong>companies</strong> with an <strong>id</strong> and a <strong>name field</strong>, of all unique company names. Select the first 5 rows to verify that everything worked.</p>",
+      "content": "<p>Any result from a <code>SELECT</code> query can be persisted into a new <code>TABLE</code> or <code>VIEW</code>. Instead of defining the attributes of a new table, it is also possible to infer them from the query result. The syntax looks like: <pre><code>CREATE TABLE tablename AS SELECT ...</code></pre>.</p><p>Create a table called <strong>companies</strong> with an <strong>company_id</strong> and a <strong>company_name</strong> field, of all unique company names. Select the first 5 rows to verify that everything worked.</p>",
       "type": "html"
     },
     "solution": {
       "content": "SELECT * FROM companies LIMIT 5",
       "type": "sql",
-      "code": "DROP TABLE IF EXISTS companies;\nCREATE TABLE companies as\nSELECT\n\trow_number() OVER (ORDER BY company_name) AS id,\n\tcompany_name AS name\nFROM (SELECT DISTINCT company_name FROM space_raw) AS companies;\nALTER TABLE companies ADD CONSTRAINT pkey_companies PRIMARY KEY (id);\nSELECT * FROM companies LIMIT 5;"
+      "code": "DROP TABLE IF EXISTS companies CASCADE;\nCREATE TABLE companies as\nSELECT\n\trow_number() OVER (ORDER BY company_name) AS company_id,\n\tcompany_name\nFROM (SELECT DISTINCT company_name FROM space_raw) AS companies;\nALTER TABLE companies ADD CONSTRAINT pkey_companies PRIMARY KEY (id);\nSELECT * FROM companies LIMIT 5;"
     },
+    "disableSafeMode": true
+  },
+  {
+    "id": "Tycbjvkmyc70166o3t4a",
+    "name": "Find all Rockets",
+    "body": {
+      "content": "<p>The creation of a rocket type lookup table involves one more step. The needed information is contained in the <code>detail</code> attribute, which is not atomic. You need to extract the information and select all distinct rockets as <strong>rocket_name</strong>.",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT DISTINCT split_part(detail, ' | ', 1) as rocket_name FROM space_raw",
+      "type": "sql"
+    },
+    "hint": "</p><p>Have a look at the <code>split_part</code> function. While choosing the split string, be sure to include <strong>all</strong> necessary letters.</p>"
+  },
+  {
+    "id": "Bbuug56sdhyuaaovyrvv",
+    "name": "Add the rocket status",
+    "body": {
+      "content": "<p>Besides the rocket names contained in the <code>detail</code> attribute, there is a <code>status_rocket</code> available. It actually only contains two distinctive values.</p><p>Use a <code>CASE WHEN [...]</code> construct to turn status_rocket into a <code>boolean</code> attribute called <strong>is_active</strong> and add it to the result of the last exercise.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT DISTINCT\n\tsplit_part(detail, ' | ', 1) as rocket_name,\n\tCASE WHEN status_rocket='StatusActive' THEN true ELSE false END as is_active\nFROM space_raw;",
+      "type":"sql",
+      "code":"-- First find the two distinct values:\nSELECT DISTINCT status_rocket FROM space_raw\n\n-- Now run the actual solution:\nSELECT DISTINCT\n\tsplit_part(detail, ' | ', 1) as rocket_name,\n\tCASE WHEN status_rocket='StatusActive' THEN true ELSE false END as is_active\nFROM space_raw;"
+    }
+  },
+  {
+    "id": "Ozoulne7yuvypjghrgut",
+    "name": "Create a rocket lookup",
+    "body": {
+      "content": "<p>Recall the last two exercises. You created an overview of all rocket names along with the active status. Now, turn this into a lookup table called <strong>rockets</strong>, with an added integer primary key called <storng>rocket_id</strong> and select the first <strong>5</strong> rows after creation.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM rockets LIMIT 5",
+      "type": "sql",
+      "code": "DROP TABLE IF EXISTS rockets CASCADE;\nCREATE TABLE rockets AS\nSELECT row_number() OVER (ORDER BY t.rocket_name) AS rocket_id, t.rocket_name, is_active FROM\n(SELECT DISTINCT\n\tsplit_part(detail, ' | ', 1) as rocket_name,\n\tCASE WHEN status_rocket='StatusActive' THEN true ELSE false END as is_active\nFROM space_raw) t;\nALTER TABLE rockets ADD CONSTRAINT pkey_rockets PRIMARY KEY (rocket_id);\n\nSELECT * FROM rockets LIMIT 5;"
+    },
+    "disableSafeMode": true
+  },
+  {
+    "id": "Yc6uvec9w7szpkotdis2",
+    "name": "Extract location information",
+    "body": {
+      "content": "<p>On the one hand, extracting the information of rocket launch location from the <code>space_raw</code> table works exactly like for the <strong>rockets</strong> and <strong>companies</strong> tables. On the other hand, there is some more data wrangling that we have to take care of.</p><p>Select the first <strong>20</strong> <code>location</code> values from the <code>space_raw</code> and split the available information into the attributes <strong>identifier, location_name</strong> and <strong>country</strong>.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\tsplit_part(location, ', ', 1) AS identifier.\n\tsplit_part(location, ', ', 2) AS location_name,\n\tsplit_part(location, ', ', 3) AS country\nFROM space_raw\nLIMIT 20;",
+      "type": "sql"
+    },
+    "hint": "</p><p>Have a look at the <code>split_part</code> function. While choosing the split string, be sure to include <strong>all</strong> necessary letters.</p>"
+  },
+  {
+    "id": "Neovznujhn4hx7sktpjt",
+    "name": "Solving location issues",
+    "body": {
+      "content": "<p>After exploring the different non-atomic values of the <strong>location</strong> in the <code>space_raw</code> table, it's time to normalize it. First, implement a query that extracts <strong>four</strong> new attributes from <code>space_raw</code>: <strong>identifier, location_name, state</strong> and <strong>country</strong>. If the location does not contain a state information, it should contain just a <code>NULL</code> value.</p><p>In a second step, create the actual lookup table called <strong>locations</strong>, with an added integer primary key called <strong>location_id</strong>. Finally, select the first <strong>5</strong> rows of the newly created table.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM locations LIMIT 5;",
+      "type": "sql",
+      "code": "DROP TABLE IF EXISTS locations CASCADE;\nCREATE TABLE locations AS\nSELECT row_number() OVER (ORDER BY identifier) AS location_id, t.* FROM\n(SELECT DISTINCT\n\tsplit_part(location, ', ', 1) as identifier,\n\tsplit_part(location, ', ', 2) as location_name,\n\tCASE WHEN split_part(location, ', ', 4) = '' THEN null ELSE split_part(location, ', ', 3) END as state,\n\tCASE WHEN split_part(location, ', ', 4) = '' THEN split_part(location, ', ', 3) ELSE split_part(location, ', ', 4) END AS country\nFROM space_raw) t;\nALTER TABLE locations ADD CONSTRAINT pkey_locations PRIMARY KEY (location_id);\n\nSELECT * FROM locations LIMIT 5;"
+    },
+    "disableSafeMode": true
+  },
+  {
+    "id": "Q8advnnubahbgrgs1vgv",
+    "name": "Normalizing space",
+    "body": {
+      "content": "<p>With the last few couple of exercises, all non-atomic, duplicated and transitive dependent information was extracted from <code>space_raw</code> and stored into newly created lookup tables. Finally, only the <code>space_raw</code> table itself is missing.</p><p>Identify the information, that is unique to each rocket launch. Remember that besides attributes like <strong>datum</strong>, there is the non-atomic information on the mission itself in <strong>detail</strong>, that is unique and should be stored into a new attribute called <strong>mission_detail</strong>. Isolate this information and add various foreign keys called <strong>company_id, location_id</strong> and <strong>rocket_id</strong> to relate the correct lookup table records.</p><p>Select the first <strong>5</strong> records to check that the table creation worked fine.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM space LIMIT 5;",
+      "type": "sql",
+      "code": "DROP TABLE IF EXISTS space CASCADE;\nCREATE TABLE space AS\nSELECT\n\tid, datum,\n\t(SELECT company_id FROM companies WHERE company_name=space_raw.company_name) as company_id,\n\t(SELECT location_id FROM locations WHERE\n\t\tidentifier=split_part(location, ', ', 1) AND \n\t\tlocation_name=split_part(location, ', ', 2)\n\t) as location_id,\n\t(SELECT rocket_id FROM rockets WHERE rocket_name=split_part(detail, ' | ', 1)) as rocket_id,\n\tsplit_part(detail, ' | ', 2) as mission_detail,\n\tstatus_mission\nFROM space_raw;\n\nALTER TABLE space ADD CONSTRAINT pkey_space PRIMARY KEY (id);\nALTER TABLE space ADD CONSTRAINT fkey_space_location FOREIGN KEY (location_id) REFERENCES locations (location_id);\nALTER TABLE space ADD CONSTRAINT fkey_space_rocket FOREIGN KEY (rocket_id) REFERENCES rockets (rocket_id);\nALTER TABLE space ADD CONSTRAINT fkey_space_company FOREIGN KEY (company_id) REFERENCES companies (company_id);\n\nSELECT * FROM space LIMIT 5;"
+    },
+    "hint": "<p>There are a few <code>identifier</code> <i>'duplicates'</i> in the <strong>locations</strong> table, as several countires used the same identifier system. Only the combination of identifer and location_name makes the entries unique.</p><p>The final attribute names in the <code>space</code> table are: <strong>id, datum, company_id, location_id, rocket_id, mission_detail</strong> and <strong>status_mission</strong></p>",
     "disableSafeMode": true
   }
 ]

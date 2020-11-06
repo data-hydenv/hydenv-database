@@ -7,44 +7,44 @@
         "name": "Introduction to space",
         "exercises": [
           {
-            "order": 1,
+            "order": 10,
             "mandatory": true,
             "id": "Ydw6xp14NiHexPZz3nmD"
           },
           {
-            "order": 2,
+            "order": 20,
             "mandatory": true,
             "id": "Lgggxqz9on2zmfr3dzwx"
           },
           {
             "id": "Xqbc9bq5j9yunyhvlitk",
             "mandatory": false,
-            "order": 3
+            "order": 30
           },
           {
             "id": "Xppvvdzrr1vawpbrs5ox",
             "mandatory": false,
-            "order": 5
+            "order": 50
           },
           {
             "id": "Yxj4xswvtly8qmxokqlu",
             "mandatory": true,
-            "order": 4
+            "order": 40
           },
           {
             "id": "Wvzjwzsndnwwa3czz5fm",
             "mandatory": false,
-            "order": 7
+            "order": 70
           },
           {
             "id": "Jihyjoyq0aro6no8nmhj",
             "mandatory": true,
-            "order": 6
+            "order": 60
           },
           {
             "id": "Uqcibrvdtgapnqtponq7",
             "mandatory": true,
-            "order": 8
+            "order": 80
           }
         ],
         "description": "<p>Introductory exercises using the <i>Space Missions</i> dataset. If there is no filled <code>raw_data</code> table, use this command to load the data:</p><pre><code>python -m hydenv examples space</code></pre>"
@@ -53,24 +53,54 @@
         "name": "Normalizing space",
         "exercises": [
           {
-            "order": 1,
-            "mandatory": true,
+            "order": 10,
+            "mandatory": false,
             "id": "Re17spqhvt1eqo1lx2iq"
           },
           {
-            "order": 2,
-            "mandatory": true,
+            "order": 20,
+            "mandatory": false,
             "id": "Hapf1kuc0mdqucqizfkl"
           },
           {
-            "order": 3,
-            "mandatory": true,
+            "order": 30,
+            "mandatory": false,
             "id": "Xmlodfh8ra0t92efnjri"
           },
           {
-            "order": 4,
+            "order": 40,
             "mandatory": true,
             "id": "A0axp5bdwllverbsspsr"
+          },
+          {
+            "order": 50,
+            "mandatory": false,
+            "id": "Tycbjvkmyc70166o3t4a"
+          },
+          {
+            "order": 60,
+            "mandatory": false,
+            "id": "Bbuug56sdhyuaaovyrvv"
+          },
+          {
+            "order": 70,
+            "mandatory": true,
+            "id": "Ozoulne7yuvypjghrgut"
+          },
+          {
+            "order": 80,
+            "mandatory": false,
+            "id": "Yc6uvec9w7szpkotdis2"
+          },
+          {
+            "order": 90,
+            "mandatory": true,
+            "id": "Neovznujhn4hx7sktpjt"
+          },
+          {
+            "order": 100,
+            "mandatory": true,
+            "id": "Q8advnnubahbgrgs1vgv"
           }
         ],
         "description": "<p>After learning and using the space dataset, it is time to improve it structurally. This paves the way for more sophisticated exercises</p><p>It is recommended to solve the <i>Introduction to space</i> session first.</p>"
