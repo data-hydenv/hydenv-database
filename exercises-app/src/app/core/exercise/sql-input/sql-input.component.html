@@ -11,7 +11,7 @@
     <clr-toggle-container>
       <clr-toggle-wrapper class="tooltip tooltip-md tooltip-top-right">
         <input type="checkbox" clrToggle [(ngModel)]="safeMode" [disabled]="!enableSafeModeTrigger">
-        <label>Safe mode: <code>{{ safeMode ? 'off' : 'on' }}</code></label>
+        <label>Safe mode: <code>{{ safeMode ? 'on' : 'off' }}</code></label>
         <span class="tooltip-content">In safe mode, only single SELECT queries are allowed.</span>
       </clr-toggle-wrapper>
     </clr-toggle-container>
