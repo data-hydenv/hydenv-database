@@ -104,6 +104,11 @@
           }
         ],
         "description": "<p>After learning and using the space dataset, it is time to improve it structurally. This paves the way for more sophisticated exercises</p><p>It is recommended to solve the <i>Introduction to space</i> session first.</p>"
+      },
+      {
+        "name": "Working on relations",
+        "exercises": [],
+        "description": "<p><With a newly created and normalized space missions database, we will dive into some more advanced concepts of SQL in this session. This includes <code>JOIN</code> and sub-queries along with more powerful grouping concepts.</p><p>You need the normalized version of the space mission database, created in the last session. If you didn't finish, or skipped the session, you can load the needed data with hydenv CLI:</p><pre><code>python -m hydenv examples space --normalize</code></pre>"
       }
     ],
     "description": "<p><strong>University of Freiburg</strong></p><p>Exercises for the data storage, data management and data visualization course as part of the Hydrology master and environmental science master track.</p><p>The exercises included cover most parts of the lecture and are highly recommended. </p>",

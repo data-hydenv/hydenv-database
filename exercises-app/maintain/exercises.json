@@ -233,5 +233,54 @@
     },
     "hint": "<p>There are a few <code>identifier</code> <i>'duplicates'</i> in the <strong>locations</strong> table, as several countires used the same identifier system. Only the combination of identifer and location_name makes the entries unique.</p><p>The final attribute names in the <code>space</code> table are: <strong>id, datum, company_id, location_id, rocket_id, mission_detail</strong> and <strong>status_mission</strong></p>",
     "disableSafeMode": true
+  },
+  {
+    "id": "",
+    "name": "Overview",
+    "body": {
+      "content": "<p>To recall the structure and data contained in the normalized <code>space</code> table, SELECT the <strong>first 20</strong> missions that ever took place.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM space ORDER BY datum ASC LIMIT 20;", 
+      "type": "sql"
+    }
+  },
+  {
+    "id": "",
+    "name": "Working horse",
+    "body": {
+      "content": "<p>In the <code>space</code> table, you can see that the first two missions were carried by the same rocket, as it is indicated by the <code>rocket_id</code>.</p><p>Which was the working horste of space missions during the first 10 years (until 04. Oct 1967)? Reduce the <strong>rocket_id</strong> and count the starts as <strong>launches</strong> to find the <strong>5</strong> most used rockets.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT rocket_id, count(*) AS launches FROM space WHERE datum <= '1967-04-10' GROUP BY rocket_id ORDER BY launches DESC LIMIT 5;",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "",
+    "name": "Rocket details",
+    "body": {
+      "content": "<p>Now we will take the last exercise a step further. We found the IDs of the rockets, that were most used during the first 10 years. It would be more helpful, to have the rocket names and the status.</p><p><code>JOIN</code> the <code>rockets</code> table to the result and select all available information from the <strong>rockets table</strong> for the 5 most used rockets until 04. Oct 1967</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT horses.*, rockets.* FROM \n(SELECT rocket_id, count(*) AS launches FROM space \n\tWHERE datum <= '1967-04-10' \n\tGROUP BY rocket_id \n\tORDER BY launches DESC \n\tLIMIT 5\n) as horses\nJOIN rockets on horses.rocket_id=rockets.rocket_id;",
+      "type": "sql"
+    },
+    "hint": "<p>There is more than one possible solution for this exercise. In case your result is correct, but your SQL query substantially different, you can run both with the <i>explain</i> trigger active to learn about performance differences.</p>"
+  },
+  {
+    "id": "",
+    "name": "Rocket lifetime",
+    "body": {
+      "content": "<p>Reuse the last example.</p><p>It is possible to create way more metadata from the available tables. E.g., for each of the <strong>20</strong> most used rockets of <strong>all</strong> times, we can add the <storng>first_launch</strong> and <storng>last_launch</strong> along with the total number of <storng>launches</strong> as aggregated attributes. Also select the difference of first and last launch as <strong>lifetime</strong>.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT horses.*, rockets.* FROM \n(SELECT \n\t\trocket_id, \n\t\tcount(*) AS launches,\n\t\tmin(datum) first_start,\n\t\tmax(datum) last_start,\n\t\tmax(datum) - min(datum) as lifetime\n\tFROM space \n\tGROUP BY rocket_id \n\tORDER BY launches DESC \n\tLIMIT 20\n) as horses\nJOIN rockets on horses.rocket_id=rockets.rocket_id;",
+      "type": "sql"
+    }
   }
 ]
