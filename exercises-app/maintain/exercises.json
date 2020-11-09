@@ -282,5 +282,18 @@
       "content": "SELECT horses.*, rockets.* FROM \n(SELECT \n\t\trocket_id, \n\t\tcount(*) AS launches,\n\t\tmin(datum) first_start,\n\t\tmax(datum) last_start,\n\t\tmax(datum) - min(datum) as lifetime\n\tFROM space \n\tGROUP BY rocket_id \n\tORDER BY launches DESC \n\tLIMIT 20\n) as horses\nJOIN rockets on horses.rocket_id=rockets.rocket_id;",
       "type": "sql"
     }
+  },
+  {
+    "id": "",
+    "name": "More Statistics",
+    "body": {
+      "content": "<p>Read the documentation of the <code>UNION</code> command. It is important, that you name the result attributes <strong>exactly</strong> the same, <strong>in the same order</strong>, to merge the output of many <code>SELECT</code> queries together.</p><p>Create an overview with three attributes, a <strong>label, rocket_name</strong> and a <strong>stat</strong>, for the following statistics:</p><ul><li><code>'longest lifetime'</code> for the rocket with the longest lifetime in days</li><li><code>'most launched'</code> for the rocket that had the most lauchnes</li><li><code>'most frequent'</code> for the rocket that had more than <strong>10</strong> launches and then the <strong>least<strong> days per launch.</li></ul><p>Note: This is a very complex exercerise. You will need more than one try to solve it.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "(\n\tSELECT 'most launched' as label, rocket_name, count(*)::int AS stat FROM space \n\tJOIN rockets on rockets.rocket_id=space.rocket_id\n\tGROUP BY space.rocket_id, rocket_name ORDER BY stat DESC LIMIT 1\n)\nUNION\n(\n\tSELECT 'longest lifetime' as label, rocket_name, date_part('days', max(datum) - min(datum))::int AS stat FROM space \n\tJOIN rockets on rockets.rocket_id=space.rocket_id\n\tGROUP BY space.rocket_id, rocket_name ORDER BY stat DESC LIMIT 1\n)\nUNION\n(\n\tSELECT \n\t\t'most frequent' as label, rocket_name, \n\t\tCASE WHEN count(datum) <= 10 THEN 9999999 ELSE (date_part('days', max(datum) - min(datum)) / count(datum))::int END AS stat\n\tFROM space\n\tJOIN rockets on rockets.rocket_id=space.rocket_id\n\tGROUP BY space.rocket_id, rocket_name ORDER BY stat ASC LIMIT 1\n);",
+      "type": "sql"
+    },
+    "hint": "<p>Solve the three queries for the final <code>UNION</code> one at a time. The final <code>stat</code> column has to be of same data type, as always in SQL.</p><p>If you get an syntax error because there is a <code>LIMIT</code> called before the <code>UNION</code>, use braces to encapsulate the single Selects. Otherwise postgres will try to <code>LIMIT</code> the <strong>result</strong> of the <code>UNION</code></p>"
   }
 ]
