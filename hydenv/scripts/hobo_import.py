@@ -18,7 +18,13 @@ def read_file(fname, txtfmt=False):
 	if txtfmt:
 		# HOBO TXT format
 		df = pd.read_csv(fname, skiprows=2, header=None, sep='\s+', thousands=',', na_values='Logged')
-		df['tstamp'] = [dt.strptime(row[1] + ' ' + row[2], '%d-%m-%y %H:%M:%S') for i, row in df.iterrows()]
+		try:
+			df['tstamp'] = [dt.strptime(row[1] + ' ' + row[2], '%d-%m-%y %H:%M:%S') for i, row in df.iterrows()]
+		except Exception as e:
+			try:
+				df['tstamp'] = pd.to_datetime([row[1] + ' ' + row[2] for i, row in df.iterrows()], infer_datetime_format=True)
+			except:
+				raise e
 		df.drop([0,1,2], axis=1, inplace=True)
 		df.columns = ['temperature', 'light', 'tstamp']
 	else:
@@ -96,17 +102,10 @@ class HydenvHoboImporter:
 		
 		# add sensor info
 		df['sensor_id'] = hobo.id
-
 		# build an engine
 #		engine = create_engine(self.__connection)
 
 		# upload
-		#imp.to_sql('metadata', engine, if_exists=if_exists, index=False)
-#		metas = []
-#		for d in df.to_dict('records'):
-#			meta = Metadata(**d)
-#			meta.set_details({k:v for k,v in d.items() if k not in ignores})
-#			metas.append(meta)
 		try:
 			self.session.add_all([Metadata(**d) for d in df.to_dict('records')])
 			self.session.commit()

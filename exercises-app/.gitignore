@@ -47,3 +47,6 @@ Thumbs.db
 
 # do not upload GCP service-accounts and SSH keys
 service-accounts
+
+# if the CLI is run inside the repo, irgnore temporary files
+data-master
