@@ -1,11 +1,12 @@
-<div class="clr-row">
+<div class="content-area">
+  <div class="clr-row">
+    <ng-container *ngFor="let track of tracks">
 
-  <ng-container *ngFor="let track of tracks">
+      <div class="clr-col-4">
+        <app-track-card [track]="track"></app-track-card>
+      </div>
 
-    <div class="clr-col-4">
-      <app-track-card [track]="track"></app-track-card>
-    </div>
-
-  </ng-container>
-
+    </ng-container>
 </div>
+</div>
+
