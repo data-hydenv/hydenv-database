@@ -1,0 +1,8 @@
+<plotly-plot
+  [layout]="layout"
+  [data]="data"
+  [style]="{width: '100%', height: '100%'}"
+  [useResizeHandler]="true"
+  (initialized)="onPlotlyLoaded($event)"
+  (plotlyClick)="onPlotlyClicked($event)"
+></plotly-plot>

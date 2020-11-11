@@ -1,0 +1,19 @@
+<ng-container *ngIf="!pending && armed; else msg">
+  <plotly-plot [layout]="layout" [data]="data" [style]="{width: '100%', height: '100%'}" [useResizeHandler]="true"></plotly-plot>
+</ng-container>
+
+<ng-template #msg>
+  <ng-container *ngIf="pending">
+    <div class="infobox">
+      <span class="spinner spinner-inline spinner-inverse">&nbsp;processing incoming data...</span>
+      <span>&nbsp;processing incoming data...</span>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!armed">
+    <div class="infobox">
+      <i>no dataview available</i>
+    </div>
+  </ng-container>
+</ng-template>
+
+

@@ -1,3 +1,28 @@
-<pre>
-  {{ allTracks | json }}
-</pre>
+<div class="clr-row" style="margin: 0px; height: calc(65vh  - 30px);">
+    <div class="clr-col-12">
+      <ng-container *ngIf="isConnected; else notConnected">
+        <app-map (traceFocused)="detailPlot.lastEvent = $event; dataPlot.lastEvent = $event"></app-map>
+      </ng-container>
+    </div>
+</div>
+<div class="clr-row"  style="margin: 0px; height: calc(35vh - 30px);">
+    <div class="clr-col-md-4 clr-col-12">
+      <app-detail-plot #detailPlot></app-detail-plot>
+    </div>
+
+    <div class="clr-col-md-8 clr-col-12">
+      <app-data-plot #dataPlot></app-data-plot>
+    </div>
+
+</div>
+
+
+
+<ng-template #notConnected>
+  <div style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center;">
+    <p style="text-align: center;">
+      <span class="spinner spinner-inline spinner-inverse"> Searching hydenv Backend...</span>
+      <span> Searching hydenv Backend...</span>
+    </p>
+  </div>
+</ng-template>
