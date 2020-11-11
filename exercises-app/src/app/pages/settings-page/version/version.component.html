@@ -1,0 +1,69 @@
+<table class="table table-noborder">
+  <thead>
+    <tr>
+      <th class="left">Module</th>
+      <th>Version</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="left">Hydenv Exercise Application
+        <a role="tooltip" aria-haspopup="true" class="tooltip tooltip-lg">
+          <clr-icon shape="help" size="14"></clr-icon>
+          <span class="tooltip-content">
+            This is the version of the Exercises GUI application. Reference it if you experience issues with the user interface.
+          </span>
+        </a>
+      </td>
+      <td>{{ versions.app }}</td>
+    </tr>
+    <tr>
+      <td class="left">Tracks Sync Status
+        <a role="tooltip" aria-haspopup="true" class="tooltip tooltip-lg">
+          <clr-icon shape="help" size="14"></clr-icon>
+          <span class="tooltip-content">
+            This is the last version, that has been synced from our database to your device.
+            Reference this version in issues with exercises that might not be up to date.
+          </span>
+        </a>
+      </td>
+      <td>{{ versions.tracks ? versions.tracks : 'not in sync' }}</td>
+    </tr>
+    <tr>
+      <td class="left">Exercises Sync Status
+        <a role="tooltip" aria-haspopup="true" class="tooltip tooltip-lg">
+          <clr-icon shape="help" size="14"></clr-icon>
+          <span class="tooltip-content">
+            This is the last version, that has been synced from our database to your device. Reference this version in issues
+            with tracks that might not be up to date.
+          </span>
+        </a>
+      </td>
+      <td>{{ versions.exercises ? versions.exercises : 'not in sync' }}</td>
+    </tr>
+    <tr>
+      <td class="left">Backend CLI Version
+        <a role="tooltip" aria-haspopup="true" class="tooltip tooltip-lg">
+          <clr-icon shape="help" size="14"></clr-icon>
+          <span class="tooltip-content">
+            The backend is a local webserver started by the hydenv CLI. Check this version
+            against the latest version on PyPI: https://pypi.org/project/hydenv/
+          </span>
+        </a>
+      </td>
+      <td>{{ versions.backend ? versions.backend : 'not connected' }}</td>
+    </tr>
+    <tr>
+      <td class="left">Backend Python Version
+        <a role="tooltip" aria-haspopup="true" class="tooltip tooltip-lg">
+          <clr-icon shape="help" size="14"></clr-icon>
+          <span class="tooltip-content">
+            The Backend is written in Python. Your Python version should be 3.7 or later.
+            Reference this version if you experience general problems with a non-starting CLI.
+          </span>
+        </a>
+      </td>
+      <td>{{ versions.python ? versions.python : 'not connected' }}</td>
+    </tr>
+  </tbody>
+</table>
