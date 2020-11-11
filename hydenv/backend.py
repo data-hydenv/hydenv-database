@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 from datetime import datetime as dt
 
@@ -9,6 +10,7 @@ from sqlalchemy.exc import ResourceClosedError
 
 from hydenv.util.json import sqlencoder
 from hydenv.database import HydenvDatabase
+from hydenv import __version__ as hydenv_version
 
 app = Flask(__name__)
 CORS(app)
@@ -26,7 +28,14 @@ def index():
 
 @app.route('/api/v1/ping', methods=['GET'])
 def ping():
-    return jsonify({'message': 'I an here'}), 200
+    return jsonify({
+        'message': 'Raw data is awesome',
+        'version': {
+            'python': '%d.%d.%d' % sys.version_info[:3],
+            'python_text': sys.version,
+            'hydenv': hydenv_version
+        }
+    }), 200
 
 
 @app.route('/api/v1/execute', methods=['GET'])
