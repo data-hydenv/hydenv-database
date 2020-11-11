@@ -61,6 +61,13 @@ export class ExerciseService {
         // set a negative version to force sync
         this.localVersions = {tracks: -1, exercises: -1};
       }
+
+      // publish
+      this.settings.versions.next({
+        ...this.settings.versions.getValue(),
+        tracks: this.localVersions.tracks,
+        exercises: this.localVersions.exercises
+      });
     }).then(() => {
 
       // subscribe to firebase version

@@ -2,6 +2,18 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 
+import { environment } from 'src/environments/environment';
+
+export interface VersionInfo {
+  app: string;
+  tracks?: number;
+  exercises?: number;
+  backend?: string;
+  python?: string;
+
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -16,6 +28,8 @@ export class SettingsService {
   checkTimoutId: number;
   checkConnection = new BehaviorSubject<boolean>(true);
 
+  // versions
+  versions = new BehaviorSubject<VersionInfo>({app: environment.version});
 
   constructor(private http: HttpClient) { }
 
@@ -32,7 +46,7 @@ export class SettingsService {
    * connectRequested Event is emitted, which will be consumed by the
    * startup component.
    */
-  public requestBackendConnect():  void {
+  public requestBackendConnect(): void {
     this.connectRequested.emit();
   }
 
@@ -60,8 +74,15 @@ export class SettingsService {
         resolve(false);
       }
       this.http.get(this.backendUrl + 'ping').subscribe({
-        next: () =>  {
+        next: (info: {message: string, version: {[key: string]: any}}) =>  {
           this.isConnected.next(true);
+
+          // publish the backend version
+          this.versions.next({
+            ...this.versions.getValue(),
+            python: info.version.python,
+            backend: info.version.hydenv
+          });
           resolve(true);
         },
         error: () => {
