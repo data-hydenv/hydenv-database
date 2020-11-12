@@ -39,9 +39,17 @@ class HydenvExercises:
             self.backend = backend
         print(self.backend)
 
-    def start(self):
+    def start(self, no_browser=False):
         """
-        Check if the backend is already running.
+        Start the Exercises Application.\n
+        This runs a backend server to solve SQL exercises in the 
+        connected database. It will automatically start a browser and 
+        navigate to the application. If the browser does not open, you can 
+        find the app at: http://localhost:5000
+        :param connection: The database URI following syntax:\n
+            postgresql://<user>:<password>@<host>:<port>/<database>
+        :param no_browser: If flag is set, the application will start supress
+            the webbrowser startup.
         """
         print(self.backend)
         try:
@@ -50,9 +58,9 @@ class HydenvExercises:
                 raise requests.ConnectionError()
             print('Backend instance already running')
         except requests.ConnectionError:
-            self._run_backend_server()
+            self._run_backend_server(no_browser=no_browser)
 
-    def _run_backend_server(self):
+    def _run_backend_server(self, no_browser=False):
         """
         On local machines, we need to start the functions-framework in a 
         subprocess.
@@ -70,10 +78,10 @@ class HydenvExercises:
 #            subprocess.call(['iptables', '-t', 'nat', '-A', 'PREROUTING', '-p', 'tcp', '--dport', '80', '-j', 'REDIRECT', '--to-port', '8080'])
         
         # execute
-        print('Running\nOpen a new terminal to start learning')
-#        t = Timer(0.5, webbrowser.open_new_tab, args=[self.backend + 'api/v1/ping'])
-        t = Timer(0.8, webbrowser.open_new_tab, args=[self.backend + 'index.html'])
-        t.start()
+        print('Backend is running.')
+        if not no_browser:
+            t = Timer(0.8, webbrowser.open_new_tab, args=[self.backend + 'index.html'])
+            t.start()
         self._backend_proc = subprocess.call(cmds)
         
 
