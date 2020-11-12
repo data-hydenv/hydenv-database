@@ -5,6 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ClarityModule } from '@clr/angular';
 import { AngularFireModule } from '@angular/fire';
+import { AngularFireAnalyticsModule, CONFIG, COLLECTION_ENABLED } from '@angular/fire/analytics';
 import { CodeEditorModule } from '@ngstack/code-editor';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -25,12 +26,22 @@ import { environment } from 'src/environments/environment';
     HttpClientModule,
     ClarityModule,
     AngularFireModule.initializeApp(environment.firebase),
+    AngularFireAnalyticsModule,
     BrowserAnimationsModule,
     CodeEditorModule.forRoot(),
     LayoutsModule,
     StartupModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: CONFIG,
+      useValue: {anonymize_ip: true}
+    },
+    {
+      provide: COLLECTION_ENABLED,
+      useValue: false
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

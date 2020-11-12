@@ -4,6 +4,7 @@ import * as localforage from 'localforage';
 
 import { Assignment } from './models/progress';
 import { BehaviorSubject } from 'rxjs';
+import { AngularFireAnalytics } from '@angular/fire/analytics';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class TrackProgressService {
   private progressCache: Assignment[] = [];
   progress = new BehaviorSubject<Assignment[]>(this.progressCache);
 
-  constructor() {
+  constructor(private analytics: AngularFireAnalytics) {
     // load
     this.loadFromStorage().then(() => {
       this.progress.next(this.progressCache);
@@ -46,6 +47,16 @@ export class TrackProgressService {
 
       // overwrite
       this.progressCache[assignIdx] = assign;
+
+      // if analytics is enabled, store event
+      if (wasCorrect) {
+        this.analytics.logEvent('exercise_solved', {
+          exerciseId: id,
+          onFirst: assignIdx === -1
+        });
+      } else {
+        this.analytics.logEvent('exercise_attempt', {exerciseId: id});
+      }
     }
 
     // finally save

@@ -15,20 +15,38 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
   backendUrlSubscription: Subscription;
   backendStatusSubscription: Subscription;
 
+  analyticsEnabled = false;
+  analyticsSubscription: Subscription;
+
   constructor(private settings: SettingsService) { }
 
   ngOnInit(): void {
+    // backend status subscriptions
     this.backendUrlSubscription = this.settings.backend.subscribe({
       next: url => this.backendUrl = url
     });
     this.backendStatusSubscription = this.settings.isConnected.subscribe({
       next: connected => this.backendStatus = connected ? 'online' : 'offline'
     });
+
+    // google analytics subscription
+    this.analyticsSubscription = this.settings.analyticsAllowed.subscribe({
+      next: allowed => this.analyticsEnabled = allowed
+    });
   }
 
   ngOnDestroy(): void {
     this.backendUrlSubscription.unsubscribe();
     this.backendStatusSubscription.unsubscribe();
+    this.analyticsSubscription.unsubscribe();
+  }
+
+  toggleAnalytics(): void {
+    if (this.analyticsEnabled) {
+      this.settings.rejectGoogleAnalytics();
+    } else {
+      this.settings.enableGoogleAnalytics();
+    }
   }
 
 }

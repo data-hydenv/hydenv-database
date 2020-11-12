@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
+import { AngularFireAnalytics } from '@angular/fire/analytics';
 
 export interface VersionInfo {
   app: string;
@@ -31,7 +32,17 @@ export class SettingsService {
   // versions
   versions = new BehaviorSubject<VersionInfo>({app: environment.version});
 
-  constructor(private http: HttpClient) { }
+  // analytics settings
+  analyticsAllowed = new BehaviorSubject<boolean>(false);
+
+  constructor(private http: HttpClient, private analytics: AngularFireAnalytics) {
+    // check if google analytics is allowed
+    const ga = localStorage.getItem('hydenv_allow_ga');
+    if (!!ga && ga === 'allow') {
+      this.analytics.setAnalyticsCollectionEnabled(true);
+      this.analyticsAllowed.next(true);
+    }
+  }
 
   changeBackend(address: string): void {
     if (address.endsWith('api/v1/')) {
@@ -91,5 +102,23 @@ export class SettingsService {
         }
       });
     });
+  }
+
+  public enableGoogleAnalytics(): void {
+    // first set the token
+    localStorage.setItem('hydenv_allow_ga', 'allow');
+
+    // then activate
+    this.analytics.setAnalyticsCollectionEnabled(true);
+    this.analyticsAllowed.next(true);
+  }
+
+  public rejectGoogleAnalytics(): void {
+    // delete the token
+    localStorage.removeItem('hydenv_allow_ga');
+
+    // disable ga
+    this.analytics.setAnalyticsCollectionEnabled(false);
+    this.analyticsAllowed.next(false);
   }
 }
