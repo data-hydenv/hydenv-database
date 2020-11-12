@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from overpy import Overpass
+from overpy.exception import DataIncomplete, OverpassTooManyRequests
 from progressbar import ProgressBar
 
 from hydenv.util import env
@@ -10,7 +11,7 @@ from hydenv import models
 
 BY_AREA = """
 area[boundary~"administrative"][name="{boundary_name}"];
-{obj}(area)[{attribute}{value}];out;
+{obj}(area)[{attribute}{value}];(._;>;);out;
 """
 
 
@@ -73,7 +74,13 @@ class HydenvOSMExamples:
             if geometry == 'nodes' or geometry == 'node':
                 wkt = 'SRID=4326;POINT (%f %f)' % (float(node.lon), float(node.lat))
             else:
-                points = node.get_nodes(resolve_missing=True)
+                try:
+                    points = node.get_nodes(resolve_missing=False)
+                except DataIncomplete:
+                    points = node.get_nodes(resolve_missing=True)
+                except OverpassTooManyRequests:
+                    print('Too many requests to Overpass API, maybe you need to use a smaller boundary.')
+                    continue
                 # check if a POLYGON or LINESTRING is needed
                 if points[0] == points[-1]:
                     wkt = 'SRID=4326;POLYGON ((%s))' % ','.join(['%s %s ' % (p.lon, p.lat) for p in points])
