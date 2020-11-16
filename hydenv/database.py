@@ -67,11 +67,11 @@ class HydenvDatabase:
         """
         # check if the user exists
         with self.engine.connect() as con:
-            res = con.execute("SELECT true FROM pg_roles WHERE rolname='{usr}'".format(usr=role)).scalar()
+            res = con.execute("SELECT true FROM pg_roles WHERE rolname='{usr}'".format(usr=user)).scalar()
             if res is not True:
                 if password == 'changeme':
                     raise AttributeError('Please specify a password like --password=pw')
-                con.execute("CREATE USER {usr} WITH PASSWORD '{pw}'".format(usr=role, pw=password))
+                con.execute("CREATE USER {usr} WITH PASSWORD '{pw}'".format(usr=user, pw=password))
         
         # create the SQL and commit
         with self.engine.connect() as con:
@@ -81,7 +81,7 @@ class HydenvDatabase:
         # grant 
         with self.engine.connect() as con:
             con.execute('commit')
-            con.execute('GRANT ALL PRIVILEGES ON DATABASE "{db}" TO {usr}'.format(db=db_name, usr=role))
+            con.execute('GRANT ALL PRIVILEGES ON DATABASE "{db}" TO {usr}'.format(db=db_name, usr=user))
         
         # build the connection to the new database
         chunks = self.__connection.split('/')
@@ -96,11 +96,11 @@ class HydenvDatabase:
         # rebuild the connection
         host_port = self.__connection.split('@')[1].split('/')[0]
         host, port = host_port.split(':')
-        self.__connection = 'postgresql://{usr}:{pw}@{host}:{port}/{db}'.format(
+        self.__init__('postgresql://{usr}:{pw}@{host}:{port}/{db}'.format(
             usr=user, pw=password, host=host,port=port, db=db_name
-        )
+        ))
         # expose conn if 
-        self.__expose_con('file', usr=role, pw=password, host=host, port=port, dbname=db_name)
+        self.__expose_con('file', usr=user, pw=password, host=host, port=port, dbname=db_name)
         
         if skip_init:
             return res
