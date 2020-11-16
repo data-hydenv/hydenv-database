@@ -73,6 +73,7 @@ class HydenvExamples:
         There are the following example sets available:
         
         * energiewende
+        * city-districts
 
         Additionally, you can use the more low level endpoints to access any data.
 
@@ -94,10 +95,16 @@ class HydenvExamples:
 
         if action.lower() == 'energiewende':
             return cli.energiewende(quiet=self.quiet, **kwargs)
-        if action.lower() == 'nodes':
+        elif action.lower() == 'city-districts' or action.lower() == 'city_districts':
+            return cli.city_districts(quiet=self.quiet, **kwargs)
+        elif action.lower() == 'counties':
+            return cli.counties(quiet=self.quiet, **kwargs)
+        elif action.lower() == 'nodes':
             return cli.run('nodes', *args, quiet=self.quiet, **kwargs)
-        if action.lower() == 'way':
+        elif action.lower() == 'way':
             return cli.run('way', *args, quiet=self.quiet, **kwargs)
+        else:
+            print("'%s' is not a supported OSM example." % action)
 
     def clean(self): 
         """

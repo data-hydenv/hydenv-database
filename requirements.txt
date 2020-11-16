@@ -7,3 +7,4 @@ tabulate
 progressbar2
 barnum
 overpy
+shapely

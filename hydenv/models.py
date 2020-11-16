@@ -228,6 +228,20 @@ class OSMNode(Base):
     def get_tags(self):
         return {t.key: t.value for t in self.raw_tags}
 
+    def to_dict(self, stringify=False):
+        d = dict(id=self.id, name=self.name, node_type=self.node_type, geom=self.geom)
+        tags = self.get_tags()
+        
+        # stringify
+        if stringify:
+            d = {k:str(v) for k,v in d.items()}
+            tags = {k:str(v) for k,v in tags.items()}
+
+        d['tags'] = tags
+
+        return d
+
+
 class OSMTag(Base):
     __tablename__ = 'osm_tags'
 
