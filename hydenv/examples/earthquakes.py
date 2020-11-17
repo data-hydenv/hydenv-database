@@ -59,6 +59,7 @@ ALTER TABLE earthquakes ADD CONSTRAINT fkey_earthquakes_sources FOREIGN KEY (sou
 ALTER TABLE earthquakes ADD CONSTRAINT fkey_earthquakes_sources_location FOREIGN KEY (location_source_id) REFERENCES earthquake_sources (source_id);
 ALTER TABLE earthquakes ADD CONSTRAINT fkey_earthquakes_sources_magnitude FOREIGN KEY (magnitude_source_id) REFERENCES earthquake_sources (source_id);
 CREATE INDEX idx_magnitude ON earthquakes USING btree (magnitude DESC NULLS LAST);
+COMMIT;
 """
 DROP_SQL = """
 drop table if exists earthquake_types CASCADE;
@@ -66,6 +67,7 @@ drop table if exists magnitude_types CASCADE;
 drop table if exists earthquake_sources CASCADE;
 drop table if exists earthquakes CASCADE;
 drop table if exists earthquakes_raw CASCADE;
+COMMIT;
 """
 
 
@@ -104,7 +106,7 @@ class HydenvEarthquakeExamples:
             print('done.\nUploading...', end='')
         
         # Upload
-        df.to_sql('earthquakes_raw', self.engine, index=None)
+        df.to_sql('earthquakes_raw', self.engine, index=None, if_exists='replace')
 
         if not self.quiet:
             print('done.')

@@ -111,7 +111,7 @@ class HydenvExamples:
         """
         Import Earthquakes example data.\n
         This high level script downloads a database of earthquakes from 
-        the past couple of decades. This dataset can be used for an advanced
+        1967 to 2016 with a magnitude > 5.5. This dataset can be used for an advanced
         normalization exercise and as a spatial dataset with global coverage.
         The final normalized structure can be added using the normalize flag.
         :param normalize: If set, the data will be normalized before uplaod.
