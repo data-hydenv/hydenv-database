@@ -4,8 +4,9 @@ from hydenv.examples.hobo import HydenvHoboExamples
 from hydenv.examples.space import HydenvSpaceExamples
 from hydenv.examples.customers import HydenvCustomerExamples
 from hydenv.examples.osm import HydenvOSMExamples
+from hydenv.examples.earthquakes import HydenvEarthquakeExamples
 
-CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvCustomerExamples, HydenvOSMExamples]
+CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvCustomerExamples, HydenvOSMExamples, HydenvEarthquakeExamples]
 
 class HydenvExamples:
     r"""
@@ -105,6 +106,18 @@ class HydenvExamples:
             return cli.run('way', *args, quiet=self.quiet, **kwargs)
         else:
             print("'%s' is not a supported OSM example." % action)
+
+    def earthquake(self, normalize=False):
+        """
+        Import Earthquakes example data.\n
+        This high level script downloads a database of earthquakes from 
+        the past couple of decades. This dataset can be used for an advanced
+        normalization exercise and as a spatial dataset with global coverage.
+        The final normalized structure can be added using the normalize flag.
+        :param normalize: If set, the data will be normalized before uplaod.
+        """
+        cli = HydenvEarthquakeExamples(connection=self.__connection, quiet=self.quiet)
+        return cli.run(normalize=normalize)
 
     def clean(self): 
         """
