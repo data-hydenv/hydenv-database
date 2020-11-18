@@ -300,9 +300,9 @@
     "name": "Natural Join",
     "body": {
       "content": "<p>In this exercise we will use another type of <code>JOIN</code>: the <code>NATURAL JOIN</code></p><p>In other exercises, you might have wondered why we prefixed primary keys of lookup tables with their table name. Using this prefix we have the exactly same attribute name in the lookup table and main table. This is what a <code>NATURAL JOIN</code> can make use of, which will save you from specifying the relationship yourself. This can save you some time in management scenarios involving a lot of joins.</p><p>Select the first five entries from <strong>space</strong> with <strong>locations</strong> and <strong>companies</strong> naturally joined.</p>",
-      "tpye": "html"
+      "type": "html"
     },
-    "solution" {
+    "solution": {
       "content": "SELECT * FROM space\nNATURAL JOIN locations\nNATURAL JOIN companies LIMIT 5;",
       "type": "sql"
     }
@@ -315,8 +315,49 @@
       "type": "sql"
     },
     "solution": {
-      "code": "select\n\tcompany_name,\n\tcount(*) as launches\from space\nnatural join companies\nGROUP BY 1\nORDER BY 2 DESC\nlimit 15",
+      "content": "select\n\tcompany_name,\n\tcount(*) as launches\from space\nnatural join companies\nGROUP BY 1\nORDER BY 2 DESC\nlimit 15",
       "type": "sql"
+    }
+  },
+  {
+    "id": "",
+    "name": "Business times for space agencies",
+    "body": {
+      "content": "<p>You can reuse the query of the last exercise.</p><p>Calculate more statistics for all companies. Calculate the total number of rocket launches (called <strong>launches<strong>); Query their first and last operated launch (<strong>first_launch, last_launch</strong>); and calculate the active years as the difference between both by taking the <strong>full</strong> served years (named <strong>active_years</strong>). Create a <strong>full list</strong> of all space companies ordered by their actives years.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\tcompany_name,\n\tcount(*) AS launches,\n\tmin(datum) AS first_launch,\n\tmax(datum) AS last_launch,\n\t(date_part('day', max(datum) - min(datum)) / 365)::INTEGER AS active_years\nFROM space\nNATURAL JOIN companies\nGROUP BY 1\nORDER BY 5 DESC",
+      "type": "sql",
+      "prefill": "select\n\tcompany_name,\n\tcount(*) as launches\from space\nnatural join companies\nGROUP BY 1\nORDER BY 2 DESC\nlimit 15"
+    },
+    "hint": "<p>You can use the <code>date_part('day' ...)</code> function to extract the days of a timestamp interval data type. Make smart use of type casting to obtain <strong>full</strong> years.</p>"
+  },
+  {
+    "id": "",
+    "name": "Full agency statistics",
+    "body": {
+      "content": "<p>You can reuse the query of the last exercise.</p><p>In this exercise, we will add only one more statistic to the result of the last exercise. We calculated the number of launches and the total full active years. Now, we want to calculate how many rocket launches a company operated on average per year. If you try that, you will most likely run into an error. Go ahead and just try it.</p><p>The problem is, that there are companies with <code>0</code> active years, i.e. because there was only a single rocket launch. Figure out a way, how to handle that error and calculated the desired statistic and name it <strong>launches_per_year</strong>. Order the results by this new statistic and query only the top 20.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\tt.*,\n\tlaunches / active_years as launches_per_year\nFROM (\n\tSELECT\n\t\tcompany_name,\n\t\tcount(*) AS launches,\n\t\tmin(datum) AS first_launch,\n\t\tmax(datum) AS last_launch,\n\t\t(date_part('day', max(datum) - min(datum)) / 365)::INTEGER AS active_years\n\tFROM space\n\tNATURAL JOIN companies\n\tGROUP BY 1\n\tORDER BY 5 DESC\n) AS t\nWHERE active_years > 0\nORDER BY launches_per_year DESC\nLIMIT 20",
+      "type": "sql",
+      "prefill": "SELECT\n\tcompany_name,\n\tcount(*) AS launches,\n\tmin(datum) AS first_launch,\n\tmax(datum) AS last_launch,\n\t(date_part('day', max(datum) - min(datum)) / 365)::INTEGER AS active_years\nFROM space\nNATURAL JOIN companies\nGROUP BY 1\nORDER BY 5 DESC"
+    },
+    "hint": "<p>There is more than just one possible solution to this task. You can subquery and filter, or use a <code>CASE WHEN</code>, to get rid of the companies with 0 active years.</p>"
+  },
+  {
+    "id": "",
+    "name": "Who starts from where",
+    "body": {
+      "content": "<p>We will use the query of the last exercise.</p><p>Extend the space agency statistics with another level of aggregation. We calculated an overview of <strong>launches, first_launch, last_launch, active_years</strong> and <strong>launches_per_year</strong> for the <strong>20</strong> companies with most launches per year. Re-create this query, but break the results down to the different launching location <strong>countires</strong> and also add this column to the result set.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\tt.*,\n\tlaunches / active_years as launches_per_year\nFROM (\n\tSELECT\n\t\tcompany_name,\n\t\tcountry,\n\t\tcount(*) AS launches,\n\t\tmin(datum) AS first_launch,\n\t\tmax(datum) AS last_launch,\n\t\t(date_part('day', max(datum) - min(datum)) / 365)::INTEGER AS active_years\n\tFROM space\n\tNATURAL JOIN companies\n\tNATURAL JOIN locations\n\tGROUP BY 1,2\n\tORDER BY 5 DESC\n) AS t\nWHERE active_years > 0\nORDER BY launches_per_year DESC\nLIMIT 20",
+      "type": "sql",
+      "prefill": "SELECT\n\tt.*,\n\tlaunches / active_years as launches_per_year\nFROM (\n\tSELECT\n\t\tcompany_name,\n\t\tcount(*) AS launches,\n\t\tmin(datum) AS first_launch,\n\t\tmax(datum) AS last_launch,\n\t\t(date_part('day', max(datum) - min(datum)) / 365)::INTEGER AS active_years\n\tFROM space\n\tNATURAL JOIN companies\n\tGROUP BY 1\n\tORDER BY 5 DESC\n) AS t\nWHERE active_years > 0\nORDER BY launches_per_year DESC\nLIMIT 20"
     }
   }
 ]
