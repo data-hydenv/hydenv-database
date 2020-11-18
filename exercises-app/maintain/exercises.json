@@ -242,7 +242,7 @@
       "type": "html"
     },
     "solution": {
-      "content": "SELECT * FROM space ORDER BY datum ASC LIMIT 20;", 
+      "content": "SELECT * FROM space ORDER BY datum ASC LIMIT 20;",
       "type": "sql"
     }
   },
@@ -295,5 +295,28 @@
       "type": "sql"
     },
     "hint": "<p>Solve the three queries for the final <code>UNION</code> one at a time. The final <code>stat</code> column has to be of same data type, as always in SQL.</p><p>If you get an syntax error because there is a <code>LIMIT</code> called before the <code>UNION</code>, use braces to encapsulate the single Selects. Otherwise postgres will try to <code>LIMIT</code> the <strong>result</strong> of the <code>UNION</code></p>"
+  },{
+    "id": "",
+    "name": "Natural Join",
+    "body": {
+      "content": "<p>In this exercise we will use another type of <code>JOIN</code>: the <code>NATURAL JOIN</code></p><p>In other exercises, you might have wondered why we prefixed primary keys of lookup tables with their table name. Using this prefix we have the exactly same attribute name in the lookup table and main table. This is what a <code>NATURAL JOIN</code> can make use of, which will save you from specifying the relationship yourself. This can save you some time in management scenarios involving a lot of joins.</p><p>Select the first five entries from <strong>space</strong> with <strong>locations</strong> and <strong>companies</strong> naturally joined.</p>",
+      "tpye": "html"
+    },
+    "solution" {
+      "content": "SELECT * FROM space\nNATURAL JOIN locations\nNATURAL JOIN companies LIMIT 5;",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "",
+    "name": "Space Agencies",
+    "body": {
+      "content": "<p>Which of the space agencies (companies) lauched the <strong>most</strong> starts? Select the first <strong>15 company_name</strong> along with the number of <string>launches</strong>.</p>",
+      "type": "sql"
+    },
+    "solution": {
+      "code": "select\n\tcompany_name,\n\tcount(*) as launches\from space\nnatural join companies\nGROUP BY 1\nORDER BY 2 DESC\nlimit 15",
+      "type": "sql"
+    }
   }
 ]
