@@ -15,7 +15,11 @@ import { TrackProgressService } from '../../track-progress.service';
 })
 export class ExerciseCompareComponent implements OnInit {
   // store the whole exercise
-  @Input() exercise: Exercise;
+  exercise: Exercise;
+  @Input() set useExercise(value: Exercise)  {
+    this.exercise = value;
+    this.setPrefill();
+  }
 
   // change event - whenever the user checks an exercises, the result is emitted
   @Output() checked = new EventEmitter<boolean>();
@@ -23,6 +27,7 @@ export class ExerciseCompareComponent implements OnInit {
   // store the results
   userResult: SqlResult;
   solution: SqlResult;
+  prefill = '';
 
   // store the state of the explain and safe mode trigger
   explain = false;
@@ -36,6 +41,15 @@ export class ExerciseCompareComponent implements OnInit {
   constructor(private exerciseService: ExerciseService, private progress: TrackProgressService) { }
 
   ngOnInit(): void {
+    this.setPrefill();
+  }
+
+  private setPrefill(): void {
+    if (this.exercise && this.exercise.solution.prefill) {
+      this.prefill = this.exercise.solution.prefill;
+    } else {
+      this.prefill = '-- Put your SQL code here.\n-- If you use semicolons, multiple commands or other Queries than SELECT, you have to disable save Mode';
+    }
   }
 
   /**

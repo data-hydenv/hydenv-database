@@ -8,16 +8,24 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./exercise-body.component.scss']
 })
 export class ExerciseBodyComponent implements OnInit {
-  @Input() body: ExerciseBody;
+  @Input() content: ExerciseBody;
+  @Input() set body(value: ExerciseBody) {
+    this.content = value;
+    this.setContentText();
+  }
 
-  public content: string;
+  public contentText: string;
 
   constructor(private http: HttpClient) { }
 
   ngOnInit(): void {
-    if (this.body) {
-      if (this.body.content) {
-        this.content = this.body.content;
+    this.setContentText();
+  }
+
+  private setContentText(): void {
+    if (this.content) {
+      if (this.content.content) {
+        this.contentText = this.content.content;
       } else {
         this.loadFromUrl();
       }
@@ -25,7 +33,7 @@ export class ExerciseBodyComponent implements OnInit {
   }
 
   private loadFromUrl(): void {
-    this.http.get(this.body.url).subscribe({
+    this.http.get(this.content.url).subscribe({
       next: content => console.log(content)
     });
   }

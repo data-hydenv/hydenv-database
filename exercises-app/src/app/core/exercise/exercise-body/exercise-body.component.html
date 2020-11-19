@@ -1,10 +1,10 @@
-<ng-container *ngIf="body">
-  <ng-container *ngIf="body.type === 'html'">
-    <div [innerHTML]="content"></div>
+<ng-container *ngIf="content">
+  <ng-container *ngIf="content.type === 'html'">
+    <div [innerHTML]="contentText"></div>
   </ng-container>
 
-  <ng-container *ngIf="body.type === 'text'">
-    <p>{{ content }}</p>
+  <ng-container *ngIf="content.type === 'text'">
+    <p>{{ contentText }}</p>
   </ng-container>
 
 </ng-container>

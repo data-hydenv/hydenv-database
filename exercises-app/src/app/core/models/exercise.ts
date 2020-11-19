@@ -9,6 +9,7 @@ export interface ExerciseSolution {
     content: string;
     fallback?: string;
     code?: string;
+    prefill?: string;
 }
 
 export interface Exercise {

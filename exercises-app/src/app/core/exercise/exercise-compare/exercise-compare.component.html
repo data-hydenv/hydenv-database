@@ -1,4 +1,5 @@
 <app-sql-input
+  [sql]="prefill"
   (result)="onUserInput($event)"
   [safeMode]="!exercise.disableSafeMode"
   (addExplainChange)="explain = $event"
