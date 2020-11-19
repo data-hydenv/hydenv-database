@@ -107,7 +107,58 @@
       },
       {
         "name": "Working on relations",
-        "exercises": [],
+        "exercises": [
+          {
+            "order": 10,
+            "mandatory": false,
+            "id": "Sjx9zc8x6gn7uyh51y2z"
+          },
+          {
+            "order": 20,
+            "mandatory": true,
+            "id": "Cd8qa5c3ae4c6mee57vd"
+          },
+          {
+            "order": 30,
+            "mandatory": true,
+            "id": "Qohftwehlhohpqv3rskd"
+          },
+          {
+            "order": 31,
+            "mandatory": true,
+            "id": "Fnnmsdplfydbtdfstjj4"
+          },
+          {
+            "order": 40,
+            "mandatory": true,
+            "id": "X0qbytpiqib2qkmn9dfh"
+          },
+          {
+            "order": 60,
+            "mandatory": false,
+            "id": "Jkupteq3xvkumvpvmyho"
+          },
+          {
+            "order": 70,
+            "mandatory": true,
+            "id": "Qndbemjjfzhjaq52hvin"
+          },
+          {
+            "order": 71,
+            "mandatory": true,
+            "id": "Purcdm6g42bbn8igz9ka"
+          },
+          {
+            "order": 72,
+            "mandatory": true,
+            "id": "Y82grpaqjuogxcrrjhmh"
+          },
+          {
+            "order": 72,
+            "mandatory": true,
+            "id": "Fhoxc12junlqf6e5tp4l"
+          }
+        ],
         "description": "<p><With a newly created and normalized space missions database, we will dive into some more advanced concepts of SQL in this session. This includes <code>JOIN</code> and sub-queries along with more powerful grouping concepts.</p><p>You need the normalized version of the space mission database, created in the last session. If you didn't finish, or skipped the session, you can load the needed data with hydenv CLI:</p><pre><code>python -m hydenv examples space --normalize</code></pre>"
       }
     ],
