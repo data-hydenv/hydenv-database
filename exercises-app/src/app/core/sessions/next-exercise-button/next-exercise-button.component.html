@@ -1,23 +1,25 @@
-<ng-container *ngIf="!hasActiveTrack; else noTrack">
-<!-- HIER sollte der Button zurück zu einer Übersicht von allen Exercises führen -->
-    <span> No active track</span>
+<ng-container *ngIf="hasActiveTrack; else noTrack">
+  <ng-container *ngIf="nextExericse; else noExercise">
+    <button [routerLink]="['/', 'e', nextExericse.id]" class="btn tooltip tooltip-bottom-left" [ngClass]="btnClasses">
+      Next
+      <span class="tooltip-content">
+        Next up: {{ nextExericse.name }}
+      </span>
+    </button>
+  </ng-container>
+  <ng-template #noExercise>
+    <button [disabled]="true" class="btn tooltip tooltip-bottom-left" [ngClass]="btnClasses">
+      Next
+      <span class="tooltip-content">
+        This was the last {{ onlyUnsolved ? 'unsolved ' : '' }}
+        exercise {{ session === 'all' ? 'on this track' : 'in this session'}}.</span>
+    </button>
+  </ng-template>
 </ng-container>
+
 <ng-template #noTrack>
-    <ng-container *ngIf="nextExericse; else noExercise">
-        <button [routerLink]="['/', 'e', nextExericse.id]" class="btn tooltip tooltip-bottom-left" [ngClass]="btnClasses">
-            Next
-            <span class="tooltip-content">
-                Next up: {{ nextExericse.name }}
-            </span>
-        </button>
-    </ng-container>
-    <ng-template #noExercise>
-        <button [disabled]="true" class="btn tooltip tooltip-bottom-left" [ngClass]="btnClasses">
-            Next
-            <span class="tooltip-content">
-                This was the last {{ onlyUnsolved ? 'unsolved ' : '' }} 
-                exercise {{ session === 'all' ? 'on this track' : 'in this session'}}.</span>
-        </button>
-    </ng-template>
-    
+  <button [disabled]="true" class="btn tooltip tooltip-bottom-left" [ngClass]="btnClasses">
+    Next
+    <span class="tooltip-content">There is no active Track.</span>
+  </button>
 </ng-template>

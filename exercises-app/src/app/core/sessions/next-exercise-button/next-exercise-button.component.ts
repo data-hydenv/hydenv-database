@@ -15,11 +15,12 @@ export class NextExerciseButtonComponent implements OnInit, OnDestroy {
     if (this.isSynced) {
       this.getNext();
     }
-  };
+  }
   @Input() session: 'all' | string[] = 'all';
   @Input() onlyUnsolved = false;
   @Input() btnClasses: string[] = ['btn-primary'];
 
+  // next Exercise Object
   nextExericse: Exercise;
 
   // subscribe to exercise sync status

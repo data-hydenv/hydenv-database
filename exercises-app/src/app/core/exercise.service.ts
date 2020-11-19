@@ -277,6 +277,35 @@ export class ExerciseService {
     return null;
   }
 
+  public getPreviousExercise(id: string, session: 'all' | string[] = 'all'): Exercise | null | -1 {
+    const track = cloneDeep(this.activeTrack.getValue());
+    if (track) {
+      // filter sessions if needed
+      const sessions = session === 'all' ? track.sessions : track.sessions.filter(s => session.includes(s.name));
+
+      // flatmap and sort
+      const exercises = sessions.flatMap(s => s.exercises.sort((a,b) => a.order - b.order));
+      const thisIndex = exercises.findIndex(e => e.id === id);
+
+      // if thisIndex is -1 return null because given id is not known
+      if (thisIndex === -1) {
+        return null;
+      }
+
+      // now we can check for the previous exercise
+      if (thisIndex === 0) {
+        return -1;
+      } else {
+        const previousId = exercises[thisIndex - 1].id;
+        const exercise = this.exerciseCache.find(e => e.id === previousId);
+        return exercise ? cloneDeep(exercise) : null;
+      }
+    }
+    else {
+      return null;
+    }
+  }
+
   /**
    * Return the next unsolved exercise for the given exercise ID.
    * This function will not return solved exercises.

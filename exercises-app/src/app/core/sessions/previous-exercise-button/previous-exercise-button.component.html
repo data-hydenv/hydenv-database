@@ -1,0 +1,23 @@
+<ng-container *ngIf="hasActiveTrack; else noTrack">
+  <ng-container *ngIf="previousExercise; else noExercise">
+    <button [routerLink]="['/', 'e', previousExercise.id]" class="btn tooltip tooltip-bottom-left" [ngClass]="btnClasses">
+      Back
+      <span class="tooltip-content">
+        Previous: {{ previousExercise.name }}
+      </span>
+    </button>
+  </ng-container>
+  <ng-template #noExercise>
+    <button [disabled]="true" class="btn tooltip tooltip-bottom-right" [ngClass]="btnClasses">
+      Back
+      <span class="tooltip-content">This was the first exercise in the active track.</span>
+    </button>
+  </ng-template>
+</ng-container>
+
+<ng-template #noTrack>
+  <button [disabled]="true" class="btn tooltip tooltip-bottom-right" [ngClass]="btnClasses">
+    Back
+    <span class="tooltip-content">There is no active Track.</span>
+  </button>
+</ng-template>

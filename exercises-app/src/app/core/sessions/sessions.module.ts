@@ -8,6 +8,7 @@ import { RouterModule } from '@angular/router';
 import { ExerciseListComponent } from './exercise-list/exercise-list.component';
 import { SessionProgressBarComponent } from './session-progress-bar/session-progress-bar.component';
 import { NextExerciseButtonComponent } from './next-exercise-button/next-exercise-button.component';
+import { PreviousExerciseButtonComponent } from './previous-exercise-button/previous-exercise-button.component';
 
 
 
@@ -16,7 +17,8 @@ import { NextExerciseButtonComponent } from './next-exercise-button/next-exercis
     SessionListComponent,
     ExerciseListComponent,
     SessionProgressBarComponent,
-    NextExerciseButtonComponent
+    NextExerciseButtonComponent,
+    PreviousExerciseButtonComponent
   ],
   imports: [
     CommonModule,
@@ -28,7 +30,8 @@ import { NextExerciseButtonComponent } from './next-exercise-button/next-exercis
     SessionListComponent,
     ExerciseListComponent,
     SessionProgressBarComponent,
-    NextExerciseButtonComponent
+    NextExerciseButtonComponent,
+    PreviousExerciseButtonComponent,
   ]
 })
 export class SessionsModule { }
