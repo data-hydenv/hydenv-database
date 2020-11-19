@@ -18,4 +18,16 @@
   </div>
 </div>
 <ngs-code-editor theme="vs-dark" [codeModel]="{language: 'sql', value: defaultSql}" (valueChanged)="onChange($event)"></ngs-code-editor>
+<ng-container *ngIf="errorMessage">
+  <clr-alert [clrAlertType]="'danger'" [clrAlertAppLevel]="true">
+    <clr-alert-item>
+      <span class="alert-text" [innerHTML]="errorMessage"></span>
+      <div class="alert-actions">
+        <a href="https://github.com/data-hydenv/hydenv-database/issues/new?labels=bug,exercise-js&assignees=mmaelicke" target="_blank">
+          <button class="btn alert-action btn-sm">ISSUE</button>
+        </a>
+      </div>
+    </clr-alert-item>
+  </clr-alert>
+</ng-container>
 <button class="btn btn-outline-success btn-block" (click)="onExecute()" [clrLoading]="btnState">Execute</button>

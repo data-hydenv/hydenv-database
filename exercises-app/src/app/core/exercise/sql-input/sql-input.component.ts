@@ -1,9 +1,10 @@
-import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, HostListener } from '@angular/core';
 
 import { ClrLoadingState } from '@clr/angular';
 
 import { SqlResult } from '../../models/sql-result';
 import { ExerciseService } from '../../exercise.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-sql-input',
@@ -29,6 +30,19 @@ export class SqlInputComponent implements OnInit {
 
   // component logic
   btnState: ClrLoadingState = ClrLoadingState.DEFAULT;
+  errorMessage: string;
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeypress(event: KeyboardEvent): void {
+    // if it was [F5] or [Crtl + Enter], run SQL
+    if (event.code === 'F5' || (event.code === 'Enter' && event.ctrlKey)) {
+      // prevent page refresh
+      event.preventDefault();
+
+      // execute the SQL
+      this.onExecute();
+    }
+  }
 
   constructor(private exerciseService: ExerciseService) { }
 
@@ -38,6 +52,9 @@ export class SqlInputComponent implements OnInit {
   }
 
   onExecute(): void {
+    // reset errors
+    this.errorMessage = null;
+
     // set the button state
     this.btnState = ClrLoadingState.LOADING;
     // check if explain is needed
@@ -47,9 +64,12 @@ export class SqlInputComponent implements OnInit {
     this.exerciseService.executeSql(this.sql, explain, !this.safeMode).then((data: SqlResult) => {
       this.result.emit(data);
       this.btnState = ClrLoadingState.SUCCESS;
-    }).catch(error => {
-      console.log(error);
+    }).catch((error: HttpErrorResponse) => {
       this.btnState = ClrLoadingState.ERROR;
+
+      if (error.status === 0) {
+        this.errorMessage = `The hydenv backend is offline or unreachable. Used URL: ${error.url}`;
+      }
     });
   }
 
