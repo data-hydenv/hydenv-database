@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 
-import { cloneDeep, sum } from 'lodash';
+import { cloneDeep, isNumber, sum } from 'lodash';
 import { Layout, PlotData, Margin } from 'plotly.js';
 import * as wkt from 'wellknown';
 
@@ -120,44 +120,47 @@ export class ResultPlotComponent implements OnInit {
     });
   }
 
+  onChangeSizeFromData(labelIdx: number, dataAttributeName?: string): void {
+    const attr = this.allAttributes.find(a => a.name === dataAttributeName);
+    const z = attr ? [...attr.data] : null;
+    this.axesLabel[labelIdx].idx.forEach(idx => {
+      this.axes[idx].marker.size = z;
+    });
+
+  }
+
   private convertMapLayer(geomattr: Attribute, attr?: Attribute): PlotData[] | any[] {
-    // add that is not chropleth
-    if (!(geomattr.type === 'polygon' && attr)) {
+    // add points
+    if (geomattr.type === 'lonLat') {
+      const g = {
+        name: attr ? attr.name : geomattr.name,
+        lon: [...geomattr.data.map(geom => geom.coordinates[0])],
+        lat: [...geomattr.data.map(geom => geom.coordinates[1])],
+        type: 'scattermapbox',
+        mode: geomattr.type === 'lonLat' ? 'markers' : 'lines'
+      } as PlotData;
+      if (attr) {
+        g.text = attr.data.map(a => String(a));
+        if (isNumber(attr.data[0])) {
+          g.z = [...attr.data];
+        }
+      }
+      return [g];
+
+    // linestrings
+    } else if (geomattr.type === 'linestring') {
       const data: PlotData[] = [];
       geomattr.data.forEach((geom, index) => {
-        const g = {name: attr ? attr.name : geomattr.name} as PlotData;
-
-        // create the traces
-        if (geomattr.type === 'lonLat') {
-          g.type = 'scattermapbox';
-          g.lon = [geom.coordinates[0]];
-          g.lat = [geom.coordinates[1]];
-          if (attr) {
-            g.text = attr.data[index];
-          }
-        } else if (geomattr.type === 'linestring') {
-          g.type = 'scattermapbox';
-          g.lon = [...geom.coordinates.map(c => c[0])];
-          g.lat = [...geom.coordinates.map(c => c[1])];
-          g.mode = 'lines';
-          if (attr) {
-            g.text = attr.data[index];
-          }
-        } else if (geomattr.type === 'polygon') {
-          g.type = 'scattermapbox';
-          g.lon = [...geom.coordinates[0].map(c => c[0])];
-          g.lat = [...geom.coordinates[0].map(c => c[1])];
-          g.mode = 'lines';
-          if (attr) {
-            g.text = attr.data[index];
-          }
-
-          g.fill = 'toself';
-          g.fillcolor = 'cyan';
-        }
-
-        // set the default color
-        g.marker = {size: 12, color: 'cyan'};
+        const g = {
+          type: 'scattermapbox',
+          name: attr ? attr.name : geomattr.name,
+          lon: [...geom.coordinates.map(c => c[0])],
+          lat: [...geom.coordinates.map(c => c[1])],
+          marker: {size: 12, color: 'cyan'},
+          mode: 'lines',
+          z: attr && isNumber(attr.data[index]) ? attr.data[index] : null,
+          text: attr ? attr.data[index] : null
+        } as PlotData;
 
         // push the trace
         data.push(g);
@@ -171,7 +174,7 @@ export class ResultPlotComponent implements OnInit {
       return [
         {
           type: 'choroplethmapbox',
-          z: [...attr.data],
+          z: attr ? [...attr.data] : [...(geomattr.data as any[]).map(f => 1)],
           locations: [...(geomattr.data as any[]).map((f, idx) => idx)],
           geojson: cloneDeep({
             type: 'FeatureCollection',
