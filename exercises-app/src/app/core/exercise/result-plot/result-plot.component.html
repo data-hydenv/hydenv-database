@@ -96,7 +96,16 @@
             <div style="display: flex; flex-direction: row; justify-content:space-between">
               <span [style.color]="l.color">{{ l.name }}</span>
               <div>
-                <!--<input [(colorPicker)]="g.marker.color" [style.background]="g.marker.color">-->
+                <clr-dropdown *ngIf="['scatter', 'map'].includes(selectedPlotType)">
+                  <button class="btn btn-link" clrDropdownTrigger>
+                    <clr-icon shape="caret" dir="up">SIZE</clr-icon>
+                  </button>
+                  <clr-dropdown-menu clrPosition="left">
+                    <button *ngFor="let ax of xAxisAttributeOptions" clrDropdownItem (click)="onChangeSizeFromData(l, ax)">
+                      {{ ax }}
+                    </button>
+                  </clr-dropdown-menu>
+                </clr-dropdown>
                 <clr-icon shape="color-palette" [(colorPicker)]="l.color"  (colorPickerChange)="onColorChange(i)" [style.color]="l.color" class="is-solid"></clr-icon>
                 <clr-icon shape="times" (click)="onRemoveAxis(i)" style="cursor: pointer;"></clr-icon>
               </div>

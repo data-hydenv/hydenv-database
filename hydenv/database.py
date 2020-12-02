@@ -106,7 +106,7 @@ class HydenvDatabase:
             return res
         else:
             print(res)
-            self.init()
+            self.init(clean=True)
 
     def init(self, clean=False):
         """
