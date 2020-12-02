@@ -134,13 +134,13 @@ export class ResultPlotComponent implements OnInit {
     if (geomattr.type === 'lonLat') {
       const g = {
         name: attr ? attr.name : geomattr.name,
-        lon: [...geomattr.data.map(geom => geom.coordinates[0])],
-        lat: [...geomattr.data.map(geom => geom.coordinates[1])],
+        lon: [...(geomattr.data as any[]).map(geom => geom.coordinates[0])],
+        lat: [...(geomattr.data as any[]).map(geom => geom.coordinates[1])],
         type: 'scattermapbox',
         mode: geomattr.type === 'lonLat' ? 'markers' : 'lines'
       } as PlotData;
       if (attr) {
-        g.text = attr.data.map(a => String(a));
+        g.text = (attr.data as any[]).map(a => String(a));
         if (isNumber(attr.data[0])) {
           g.z = [...attr.data];
         }
