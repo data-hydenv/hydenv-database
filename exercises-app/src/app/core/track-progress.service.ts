@@ -48,6 +48,9 @@ export class TrackProgressService {
       // overwrite
       this.progressCache[assignIdx] = assign;
 
+      // publish the progress
+      this.progress.next(this.progressCache);
+
       // if analytics is enabled, store event
       if (wasCorrect) {
         this.analytics.logEvent('exercise_solved', {
