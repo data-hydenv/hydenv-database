@@ -6,7 +6,7 @@
       <clr-icon shape="bank" size="72" *ngIf="!track.options.image"></clr-icon>
       <ng-container *ngIf="track.options.image">
         <clr-icon *ngIf="track.options.image.type === 'icon'" [attr.shape]="track.options.image.src" size="72"></clr-icon>
-        <img *ngIf="track.options.image.type !== 'icon'" [src]="track.options.image.src">
+        <img class="main-track-image" *ngIf="track.options.image.type !== 'icon'" [src]="track.options.image.src">
       </ng-container>
     </div>
     <div class="card-block">
