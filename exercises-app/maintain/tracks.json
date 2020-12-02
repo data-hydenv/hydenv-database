@@ -1,7 +1,7 @@
 [
   {
-    "id": "dataStorage",
-    "name": "Data storage, data management, data visualization",
+    "id": "introductionSpace",
+    "name": "Introduction to SQL",
     "sessions": [
       {
         "name": "Introduction to space",
@@ -162,7 +162,7 @@
         "description": "<p><With a newly created and normalized space missions database, we will dive into some more advanced concepts of SQL in this session. This includes <code>JOIN</code> and sub-queries along with more powerful grouping concepts.</p><p>You need the normalized version of the space mission database, created in the last session. If you didn't finish, or skipped the session, you can load the needed data with hydenv CLI:</p><pre><code>python -m hydenv examples space --normalize</code></pre>"
       }
     ],
-    "description": "<p><strong>University of Freiburg</strong></p><p>Exercises for the data storage, data management and data visualization course as part of the Hydrology master and environmental science master track.</p><p>The exercises included cover most parts of the lecture and are highly recommended. </p>",
+    "description": "<p>Learn the basics of the SQL language</p><p>You will go through the most basic tasks and queries using a dataset of all space missions launched between 1957 and August 2020. This track covers:</p><ul><li>simple SELECT statements</li><li>data grouping and reductions</li><li>Filters</li><li>database normalization</li><li>Joins, sub-queries and views</li></ul>",
     "admins": [
       "modche",
       "mmaelicke"
@@ -171,7 +171,7 @@
       "login": true,
       "paidBackend": false,
       "image": {
-        "src": "https://images.unsplash.com/photo-1569396116180-210c182bedb8?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1949&q=80",
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/ORBCOMM-2_%2823282658734%29.jpg/800px-ORBCOMM-2_%2823282658734%29.jpg",
         "type": "http"
       },
       "storeResults": false
