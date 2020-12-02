@@ -48,13 +48,15 @@ class HydenvHoboExamples:
             'WT17': "#gid=1594319231",
             'WT18': "#gid=1500046150",
             'WT19': '#gid=651397949',
-            'WT20': "#gid=0"
+            'WT20': "#gid=0",
+            'WT21': "#gid=878625339"
         }
         self.__hobo_data_map = {
             'WT17': 'hobo/2017/',
-            'WT18': "hobo/2018/",
+            'WT18': 'hobo/2018/',
             'WT19': 'hobo/2019/',
-            'WT20': "hobo/2020/"
+            'WT20': 'hobo/2020/',
+            'WT21': 'hobo/2021/'
         }
     
     def run(self, terms='all', data_path='download', only=None, quiet=True):
