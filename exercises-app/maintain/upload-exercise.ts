@@ -18,10 +18,10 @@ import * as fs from 'fs';
 // import some m
 import { Exercise } from '../src/app/core/models/exercise';
 
-
+// get the upload filename
+const fname = process.argv[2] ? process.argv[2] : './exercises.json';
 
 // load service account
-//import * as serviceAccount from './service-accounts/firebase-admin.json';
 const serviceAccount = require('./service-accounts/firebase-admin.json');
 
 // init firebase
@@ -30,7 +30,7 @@ admin.initializeApp({
 });
 
 // load data
-const data: Exercise[] = JSON.parse(fs.readFileSync('./exercises.json', 'utf8'));
+const data: Exercise[] = JSON.parse(fs.readFileSync(fname, 'utf8'));
 
 // add all exercises
 process.stdout.write(`Start uploading ${data.length} exercises`)
