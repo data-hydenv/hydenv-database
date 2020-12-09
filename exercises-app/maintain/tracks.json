@@ -176,5 +176,65 @@
       },
       "storeResults": false
     }
+  },
+  {
+    "id": "earthquakes",
+    "name": "Earthquake data",
+    "sessions": [
+      {
+        "name": "Getting Started",
+        "exercises": [
+           {
+             "mandatory": false,
+             "order": 10,
+             "id": "Lxisln4xiesevdta6kid"
+           },
+           {
+             "mandatory": true,
+             "order": 20,
+             "id": "Jyzsmapa2bqpesjzafrh"
+           },
+           {
+             "mandatory": true,
+             "order": 30,
+             "id": "Cldef9b0bdhmz2ql8wwj"
+           },
+           {
+             "mandatory": true,
+             "order": 40,
+             "id": "Rcroefdo4qdvd9xjpids"
+           },
+           {
+             "mandatory": true,
+             "order": 50,
+             "id": "Ytpdel2hizwend3zdyg9"
+           },
+           {
+             "mandatory": true,
+             "order": 60,
+             "id": "Qrjjoyz8mnzrzdzoc3mm"
+           },
+           {
+             "mandatory": false,
+             "order": 70,
+             "id": "Dtplestcjwl4s9tddhbn"
+           }
+        ],
+        "description": "<p>In this session, you gather an basic overview on the earthquake data to be prepared for the more sophisticated sessions. Load the needed data as using the hydenv CLI: <pre><code>python -m hydenv examples earthquake --normalize</code></pre></p>"
+      }
+    ],
+    "admins": [
+      "modche",
+      "mmaelicke"
+    ],
+    "options": {
+      "login": true,
+      "paidBackend": false,
+      "image": {
+        "src": "https://cdn.pixabay.com/photo/2018/02/20/13/46/earthquake-3167693_960_720.jpg",
+        "type": "http"
+      },
+      "storeResults": false
+    }
   }
 ]
