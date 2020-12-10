@@ -97,7 +97,7 @@ class HydenvHoboExamples:
     def _upload_hobo(self, terms='all', quiet=True):
         # if all years, are requested, build the list
         if terms == 'all':
-            terms = ['WT17', 'WT18', 'WT19', 'WT20']
+            terms = ['WT17', 'WT18', 'WT19', 'WT20', 'WT21']
         if not isinstance(terms, list):
             terms = [terms]
 

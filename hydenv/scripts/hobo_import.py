@@ -78,7 +78,7 @@ class HydenvHoboImporter:
 			url += '&format=csv'
 
 		# download
-		df = pd.read_csv(url)
+		df = pd.read_csv(url, skiprows=1)
 
 #		imp = df[['hobo_id', 'description']].copy()
 		df['location'] = df[['longitude', 'latitude']].apply(lambda r: 'SRID=4326;POINT (%s %s)' % (r[0], r[1]), axis=1)
