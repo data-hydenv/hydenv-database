@@ -249,3 +249,14 @@ class OSMTag(Base):
     key = Column(String(2048), nullable=False)
     value = Column(String(2048), nullable=False)
     nodes = relationship('OSMNode', secondary='nm_nodes_tags', back_populates='raw_tags')
+
+
+class WorldBorder(Base):
+    __tablename__ = 'world_borders'
+
+    # columns
+    id = Column(Integer, primary_key=True)
+    geom = Column(Geometry(srid=4326), nullable=False)
+    name = Column(String(1024), nullable=False)
+    iso_a2 = Column(String(2), nullable=False)
+    iso_a3 = Column(String(3), nullable=False)

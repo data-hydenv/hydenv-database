@@ -5,6 +5,7 @@ from hydenv.examples.space import HydenvSpaceExamples
 from hydenv.examples.customers import HydenvCustomerExamples
 from hydenv.examples.osm import HydenvOSMExamples
 from hydenv.examples.earthquakes import HydenvEarthquakeExamples
+from hydenv.examples.wbd import HydenvWorldBorderExample
 
 CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvCustomerExamples, HydenvOSMExamples, HydenvEarthquakeExamples]
 
@@ -118,6 +119,16 @@ class HydenvExamples:
         """
         cli = HydenvEarthquakeExamples(connection=self.__connection, quiet=self.quiet)
         return cli.run(normalize=normalize)
+
+    def world_borders(self):
+        """
+        Load a minified version of the World Border dataset.\n
+        This dataset should only be used as a overview for maps. There is 
+        only very limited information in the tables and the border geometries
+        are very coarse.
+        """
+        cli = HydenvWorldBorderExample(connection=self.__connection)
+        return cli.run(quiet=self.quiet)
 
     def clean(self): 
         """
