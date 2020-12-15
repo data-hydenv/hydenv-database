@@ -29,11 +29,8 @@ jobs:
     # first create the release
     needs: [release]
     
-    # Run on Windows and Mac
-    strategy:
-      matrix:
-        os: [windows-latest]
-    runs-on: ${{ matrix.os }}
+    # Run on Windows
+    runs-on: windows-latest
 
     steps:
       - name: Checkout
@@ -54,7 +51,7 @@ jobs:
         run: pyinstaller hydenv/__main__.py --onefile --distpath ./deploy --name hydenv --add-data "hydenv/exercises-js;exercises-js"
       
       - name: Zip application
-        run: zip -r hydenv_${{ matrix.os }}.zip ./deploy
+        run: Tar.exe -r hydenv_win_${{ githuv.ref }}.zip ./deploy
         
       - name: Add executable
         uses: actions/upload-release-asset@v1
@@ -62,8 +59,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: ./deploy/ydenv_${{ matrix.os }}.zip
-          asset_name: ydenv_${{ matrix.os }}.zip
+          asset_path: ./deploy/hydenv_win_${{ githuv.ref }}.zip
+          asset_name: hydenv_win_${{ githuv.ref }}.zip
         
       
       
