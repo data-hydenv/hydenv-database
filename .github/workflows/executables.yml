@@ -22,6 +22,8 @@ jobs:
           release_name: Version ${{ github.ref }}
           draft: false
           prerelease: false
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
   build:
     # first create the release
