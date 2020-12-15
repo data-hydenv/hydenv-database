@@ -51,7 +51,7 @@ jobs:
         run: pip install pyinstaller
       
       - name: Create executable
-        run: pyinstaller hydenv/__main__.py --onefile --distpath ./deploy --name hydenv --add-data "hydenv/exercise-js;exercise-js"
+        run: pyinstaller hydenv/__main__.py --onefile --distpath ./deploy --name hydenv --add-data "hydenv/exercises-js;exercises-js"
       
       - name: Zip application
         run: zip -r hydenv_${{ matrix.os }}.zip ./deploy
