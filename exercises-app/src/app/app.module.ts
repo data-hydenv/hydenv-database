@@ -5,7 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ClarityModule } from '@clr/angular';
 import { AngularFireModule } from '@angular/fire';
-import { AngularFireAnalyticsModule, CONFIG, COLLECTION_ENABLED } from '@angular/fire/analytics';
+import { AngularFireAnalyticsModule, ScreenTrackingService, CONFIG, COLLECTION_ENABLED, DEBUG_MODE } from '@angular/fire/analytics';
 import { CodeEditorModule } from '@ngstack/code-editor';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -40,7 +40,12 @@ import { environment } from 'src/environments/environment';
     {
       provide: COLLECTION_ENABLED,
       useValue: false
-    }
+    },
+    {
+      provide: DEBUG_MODE,
+      useValue: true
+    },
+    ScreenTrackingService
   ],
   bootstrap: [AppComponent]
 })

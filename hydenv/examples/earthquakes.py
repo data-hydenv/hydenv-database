@@ -47,11 +47,11 @@ select
 	es.source_id, esl.source_id as location_source_id, esm.source_id as magnitude_source_id,
 	case when "Status"='Reviewed' THEN true ELSE false END as is_reviewed
 from earthquakes_raw r 
-join earthquake_types t on t.name=r."Type"
-join magnitude_types m on m.name=r."Magnitude Type"
-join earthquake_sources es on es.name=r."Source"
-join earthquake_sources esl on esl.name=r."Location Source"
-join earthquake_sources esm on esm.name=r."Magnitude Source";
+left outer join earthquake_types t on t.name=r."Type"
+left outer join magnitude_types m on m.name=r."Magnitude Type"
+left outer join earthquake_sources es on es.name=r."Source"
+left outer join earthquake_sources esl on esl.name=r."Location Source"
+left outer join earthquake_sources esm on esm.name=r."Magnitude Source";
 ALTER TABLE earthquakes ADD CONSTRAINT pkey_earthquakes PRIMARY KEY (id);
 ALTER TABLE earthquakes ADD CONSTRAINT fkey_earthquakes_type FOREIGN KEY (type_id) REFERENCES earthquake_types (type_id);
 ALTER TABLE earthquakes ADD CONSTRAINT fkey_earthquakes_magnitude_types FOREIGN KEY (magnitude_type_id) REFERENCES magnitude_types (type_id);

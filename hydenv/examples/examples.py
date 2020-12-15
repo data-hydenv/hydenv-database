@@ -102,7 +102,7 @@ class HydenvExamples:
             return cli.counties(quiet=self.quiet, **kwargs)
         elif action.lower() == 'nodes':
             return cli.run('nodes', *args, quiet=self.quiet, **kwargs)
-        elif action.lower() == 'way':
+        elif action.lower() == 'way' or action.lower() == 'ways':
             return cli.run('way', *args, quiet=self.quiet, **kwargs)
         else:
             print("'%s' is not a supported OSM example." % action)
