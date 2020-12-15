@@ -53,14 +53,17 @@ jobs:
       - name: Create executable
         run: pyinstaller hydenv/__main__.py --onefile --distpath ./deploy --name hydenv --add-data "hydenv/exercise-js;hydenv/exercise-js"
       
+      - name: Zip application
+        run: zip -r hydenv_${{ matrix.os }}.zip ./deploy
+        
       - name: Add executable
-        uses: actions/upload-relese-asset@v1
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: ./deploy/hydenv.exe
-          asset_name: hydenv.exe
+          asset_path: ./deploy/ydenv_${{ matrix.os }}.zip
+          asset_name: ydenv_${{ matrix.os }}.zip
         
       
       
