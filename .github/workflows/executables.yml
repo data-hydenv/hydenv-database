@@ -1,0 +1,63 @@
+name: Build installers
+
+on:
+  push:
+    tags: 
+      - 'v*'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Version ${{ github.ref }}
+          draft: false
+          prerelease: false
+          
+  build:
+    # first create the release
+    needs: [release]
+    
+    # Run on Windows and Mac
+    strategy:
+      matrix:
+        os: [windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      
+      - name: Install requirements
+        run: pip install -r requirements.txt
+      
+      - name: Install pyinstaller
+        run: pip install pyinstaller
+      
+      - name: Create executable
+        run: pyinstaller hydenv/__main__.py --onefile --distpath ./deploy --name hydenv --add-data "hydenv/exercise-js;hydenv/exercise-js"
+      
+      - name: Add executable
+        uses: actions/upload-relese-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ jobs.release.steps.create_release.outputs.upload_url }}
+          asset_path: ./deploy/hydenv.exe
+          asset_name: hydenv.exe
+        
+      
+      
