@@ -51,7 +51,7 @@ jobs:
         run: pyinstaller hydenv/__main__.py --onefile --distpath ./deploy --name hydenv --add-data "hydenv/exercises-js;exercises-js"
       
       - name: Create a tarball
-        run: tar -cvzf hydenv_win_${{ github.ref }}.tar ./deploy
+        run: tar -cvzf hydenv_win.tar ./deploy
         
       - name: Add executable
         uses: actions/upload-release-asset@v1
@@ -59,8 +59,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.release.outputs.upload_url }}
-          asset_path: ./deploy/hydenv_win_${{ github.ref }}.tar
-          asset_name: hydenv_win_${{ github.ref }}.tar
+          asset_path: ./deploy/hydenv_win.tar
+          asset_name: hydenv_win.tar
         
       
       
