@@ -1,5 +1,6 @@
 sqlalchemy
 geoalchemy2
+psycopg2
 flask
 flask-cors
 fire
@@ -8,3 +9,4 @@ progressbar2
 barnum
 overpy
 shapely
+requests
