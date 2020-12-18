@@ -85,5 +85,29 @@
       "content": "WITH r AS (\n\tSELECT CASE WHEN ranks < 2300 THEN 1 ELSE 0 END AS in_upper_10, type_id \n\tFROM\n\t(\n\t\tSELECT rank() OVER (ORDER BY magnitude DESC) AS ranks, type_id \n\t\tFROM earthquakes\n\t) t\n\tWHERE type_id=3\n)\nSELECT \n\tsum(r.in_upper_10)::real / count(r.in_upper_10)::real as strong_ratio\nFROM r",
       "type": "sql"
     }
+  },
+  {
+    "id": "",
+    "name": "Earthquake location",
+    "body": {
+      "content": "<p>Find the <strong>datum, magnitude</strong> and <strong>wkt</strong> of the 100 strongest earthquakes. The wkt should be a WKT representation of the <i>geom</i> attribute. You can use the Map plotting tool below to learn about the spatial distribution.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT datum, ST_AsEWKT(geom) as wkt, magnitude FROM earthquakes\nORDER BY magnitude DESC\nLIMIT 100",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "",
+    "name": "World borders",
+    "body": {
+      "content": "<p>Our main goal is to group and reduce the earthquake dataset to per-country statistics. For this, we can use the World Border Dataset, which the hydenv cli is able to load to the database. To get an overview, load the <strong>wkt</strong> of the <i>geom</i> attribute along with the <strong>name</strong> of all datasets.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT ST_AsEWKT(geom) as wkt, name FROM world_borders",
+      "type": "sql"
+    }
   }
 ]
