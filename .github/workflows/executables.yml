@@ -1,0 +1,67 @@
+name: Build installers
+
+on:
+  push:
+    tags: 
+      - 'v*'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs: 
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create Release
+        uses: actions/create-release@v1
+        id: create_release
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Version ${{ github.ref }}
+          draft: false
+          prerelease: false
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+  build:
+    # first create the release
+    needs: [release]
+    
+    # Run on Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      
+      - name: Install requirements
+        run: pip install -r requirements.txt
+      
+      - name: Install pyinstaller
+        run: pip install pyinstaller
+      
+      - name: Create executable
+        run: pyinstaller hydenv/__main__.py --onefile --distpath ./deploy --name hydenv --add-data "hydenv/exercises-js;exercises-js"
+      
+      - name: Create a tarball
+        run: tar -cvzf hydenv_win.tar ./deploy
+        
+      - name: Add executable
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: hydenv_win.tar
+          asset_name: hydenv_win.tar
+          asset_content_type: application/x-tar
+        
+      
+      
