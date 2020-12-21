@@ -130,6 +130,10 @@ class Term(Base):
 
 class Quality(Base):
     __tablename__ = 'quality'
+    __prepopulate__ = [
+        dict(short='R', name='Regression filled', comment='This measurement was filled by a linear regression model to another station.'),
+        dict(short='H', name='Hobo data', comment='This value was quality checked and aggregated from the HOBO data.')
+    ]
 
     id = Column(Integer, primary_key=True)
     short = Column(String(20), nullable=False, unique=True)

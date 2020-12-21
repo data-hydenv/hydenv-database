@@ -5,7 +5,7 @@ import json
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from hydenv.models import Base, Term, Variable
+from hydenv.models import Base, Term, Variable, Quality
 from hydenv.examples.space import HydenvSpaceExamples
 from hydenv.examples.examples import HydenvExamples
 from hydenv.util import env
@@ -133,6 +133,7 @@ class HydenvDatabase:
         if clean:
             Term.defaults(session=self.session)
             Variable.defaults(session=self.session)
+            Quality.defaults(session=self.session)
             cli = HydenvSpaceExamples(connection=self.__connection)
             cli.run(quiet=True)
         

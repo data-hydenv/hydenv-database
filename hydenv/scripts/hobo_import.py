@@ -7,6 +7,7 @@ from random import choice
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime as dt
+from datetime import timedelta as td
 from progressbar import ProgressBar
 
 from hydenv.util import env
@@ -41,6 +42,26 @@ def read_file(fname, txtfmt=False):
 	# drop na
 	df.dropna(how='any', axis=0, inplace=True)
 	
+	return df
+
+
+def read_hourly_file(fname):
+	if fname.endswith('.tsv'):
+		# read the file
+		df = pd.read_csv(fname, sep=r'\s+')
+
+		# create the hourly datetime index
+		conv = lambda r: dt.strptime(r[0], '%Y-%m-%d') + td(hours=int(r[1]))
+		idx = df.apply(conv, axis=1)
+
+		# set index
+		df['tstamp'] = idx
+
+		# drop old index
+		df.drop(['date', 'hour'], axis=1, inplace=True)
+		df.columns = ['value', 'origin', 'tstamp']
+	else:
+		raise AttributeError('The file format is not yet supported.')
 	return df
 
 
@@ -80,11 +101,9 @@ class HydenvHoboImporter:
 		# download
 		df = pd.read_csv(url, skiprows=1)
 
-#		imp = df[['hobo_id', 'description']].copy()
 		df['location'] = df[['longitude', 'latitude']].apply(lambda r: 'SRID=4326;POINT (%s %s)' % (r[0], r[1]), axis=1)
 		df.drop(['longitude', 'latitude'], axis=1, inplace=True)
 		df.dropna(axis=1, how='all', inplace=True)
-#		imp.columns = ['device_id', 'description', 'location']
 		df.rename({'hobo_id': 'device_id'}, axis=1, inplace=True)
 
 		# check if the sensor 'hobo' exists
@@ -102,8 +121,6 @@ class HydenvHoboImporter:
 		
 		# add sensor info
 		df['sensor_id'] = hobo.id
-		# build an engine
-#		engine = create_engine(self.__connection)
 
 		# upload
 		try:
@@ -113,7 +130,7 @@ class HydenvHoboImporter:
 			self.session.rollback()
 			raise e
 
-	def upload(self, filename: str, meta_id: int, variable=None):
+	def upload_raw_data(self, filename: str, meta_id: int, variable=None):
 		"""
 		Upload an Hobo file to the database. 
 		:param filename: Path to the file for upload
@@ -121,8 +138,8 @@ class HydenvHoboImporter:
 		"""
 		# check which variable should be uploaded
 		if variable is None:
-			self.upload(filename, meta_id, 'temperature')
-			self.upload(filename, meta_id, 'light')
+			self.upload_raw_data(filename, meta_id, 'temperature')
+			self.upload_raw_data(filename, meta_id, 'light')
 			return
 		
 		# load the file
@@ -133,14 +150,8 @@ class HydenvHoboImporter:
 			print("Parsing file '%s' was not successfull.\nDo not edit the files by hand!\nError: %s " % (filename, str(e)))
 			return
 
-#		# get the hobo id
-#		hobo_id = os.path.split(filename)[-1].split('.')[0]
-
 		# search the metadata
 		cli = HydenvMeasurements(connection=self.__connection)
-		#meta = cli.read('Metadata', id=meta_id)
-
-		# check if devices exists, if yes check timestamps
 
 		# get the ovariable ids
 		var_t = cli.read('Variable', name=variable, return_query=True).one()
@@ -168,7 +179,55 @@ class HydenvHoboImporter:
 		# return the number of rows
 		return len(temp)
 
-	def folder(self, path='.', match=r'[0-9]+\.(txt|csv)', term: str = None, quiet=True):
+	def upload_q_data(self, filename: str, meta_id: int):
+		"""
+		Upload an Hobo file to the database. 
+		:param filename: Path to the file for upload
+		:param meta_id: Database ID of your device
+		"""
+		
+		# load the file
+		try:
+			data = read_hourly_file(filename)
+		except Exception as e:
+			print("Parsing file '%s' was not successfull.\nDo not edit the files by hand!\nError: %s " % (filename, str(e)))
+			return
+
+		# search the metadata
+		cli = HydenvMeasurements(connection=self.__connection)
+
+		# get the ovariable ids
+		var_t = cli.read('Variable', name='temperature', return_query=True).one()
+		h_flag = cli.read('Quality', short='H', return_query=True).one()
+		r_flag = cli.read('Quality', short='R', return_query=True).one()
+		flag_map = {'H': h_flag.id, 'R': r_flag.id}
+
+		# upload temperature
+		temp = data[['tstamp', 'value']].copy()
+		temp['quality_flag_id'] = data.origin.replace(flag_map)
+		temp['meta_id'] = meta_id
+		temp['variable_id'] = var_t.id
+
+		# create database engine
+		engine = create_engine(self.__connection)
+		
+		# create a temporary table name
+		name = ''.join([choice(ascii_lowercase) for _ in range(16)])
+
+		# upload to temporary table
+		temp.to_sql(name, engine, index=False)
+		try:
+			engine.execute('INSERT INTO data (meta_id, variable_id, tstamp, value, quality_flag_id) SELECT meta_id, variable_id, tstamp, value, quality_flag_id FROM %s ON CONFLICT (meta_id, variable_id, tstamp) DO NOTHING' % name)
+			engine.execute('UPDATE data d SET value=d.value, quality_flag_id=d.quality_flag_id FROM %s t WHERE d.meta_id=t.meta_id AND d.tstamp=t.tstamp AND d.variable_id=t.variable_id' % name)
+		except Exception as e:
+			print("[ERROR]: File: '%s' errored. Message: %s" % (filename, str(e)))
+		# delete the temp table
+		engine.execute("DROP TABLE %s" % name)
+
+		# return the number of rows
+		return len(temp)
+
+	def folder(self, path='.', match=r'[0-9]+\.(txt|csv)', is_quality=False, term: str = None, quiet=True):
 		"""
 		Upload the whole folder content given at path.\n
 		Path defaults to the current location, but can be replaced.
@@ -197,7 +256,10 @@ class HydenvHoboImporter:
 		# load all files
 		for i, fname in enumerate(flist):
 			try:
-				device_id = ntpath.split(fname)[-1].split('.')[0]
+				if is_quality:
+					device_id = ntpath.split(fname)[-1].split('.')[0].strip('_-Tht')
+				else:
+					device_id = ntpath.split(fname)[-1].split('.')[0]
 				meta = cli.read('Metadata', return_query=True, device_id=device_id, term_id=term_id).first()
 			except:
 				print("File '%s' cannot be processed." % fname)
@@ -208,7 +270,10 @@ class HydenvHoboImporter:
 				print('File %s references HOBO ID=%s, which is not found.' % (fname, device_id))
 			else:
 				# upload
-				self.upload(filename=fname, meta_id=meta.id)
+				if is_quality:
+					self.upload_q_data(filename=fname, meta_id=meta.id)
+				else:
+					self.upload_raw_data(filename=fname, meta_id=meta.id)
 			if not quiet:
 				bar.update(i + 1)			
 

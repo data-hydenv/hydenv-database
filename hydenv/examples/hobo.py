@@ -69,7 +69,7 @@ class HydenvHoboExamples:
                 print('Done.')
         
         # download
-        if only is None or only == 'data':
+        if only is None or only != 'metadata':
             try:
                 if data_path == 'download':
                     if not quiet:
@@ -82,7 +82,15 @@ class HydenvHoboExamples:
                 # upload
                 if not quiet:
                     print('Start uploading. You can grab a coffee...')
-                self._upload_data(data_path, terms=terms, quiet=quiet)
+                
+                # check data to be uploaded
+                if only == 'raw-data' or only == 'raw':
+                    data_f = 'raw'
+                elif only == 'quality-data' or only=='quality':
+                    data_f = 'quality'
+                else:
+                    data_f = 'all'
+                self._upload_data(data_path, terms=terms, data=data_f, quiet=quiet)
 
             except Exception as e:
                 raise e
@@ -130,10 +138,10 @@ class HydenvHoboExamples:
         # save to current directory
         z.extractall()
     
-    def _upload_data(self, path,  terms='all', quiet=True):
+    def _upload_data(self, path,  terms='all', data='all', quiet=True):
         # if all years, are requested, build the list
         if terms == 'all':
-            terms = ['WT17', 'WT18', 'WT19', 'WT20']
+            terms = ['WT17', 'WT18', 'WT19', 'WT20', 'WT21']
         if not isinstance(terms, list):
             terms = [terms]
 
@@ -141,5 +149,13 @@ class HydenvHoboExamples:
         cli = HydenvHoboImporter(connection=self.__connection)
 
         for term in terms:
-            p = os.path.join(path, self.__hobo_data_map[term])
-            cli.folder(path=p, term=term, quiet=quiet)
+            if data == 'all' or data == 'raw':
+                # raw data
+                p = os.path.join(path, self.__hobo_data_map[term], 'raw')
+                cli.folder(path=p, term=term, is_quality=False, quiet=quiet)
+
+            if data == 'all' or data == 'quality':
+                # quality checked data
+                p = os.path.join(path, self.__hobo_data_map[term], 'hourly')
+                cli.folder(path=p, match=r'[0-9]+_Th\.(tsv)', is_quality=True, term=term, quiet=quiet)
+            
