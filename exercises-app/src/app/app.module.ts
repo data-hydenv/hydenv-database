@@ -5,7 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { ClarityModule } from '@clr/angular';
 import { AngularFireModule } from '@angular/fire';
-import { AngularFireAnalyticsModule, ScreenTrackingService, CONFIG, COLLECTION_ENABLED, DEBUG_MODE } from '@angular/fire/analytics';
+import { AngularFireAnalyticsModule, ScreenTrackingService, CONFIG, COLLECTION_ENABLED, DEBUG_MODE, APP_NAME, APP_VERSION } from '@angular/fire/analytics';
 import { CodeEditorModule } from '@ngstack/code-editor';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -33,19 +33,12 @@ import { environment } from 'src/environments/environment';
     StartupModule,
   ],
   providers: [
-    {
-      provide: CONFIG,
-      useValue: {anonymize_ip: true}
-    },
-    {
-      provide: COLLECTION_ENABLED,
-      useValue: false
-    },
-    {
-      provide: DEBUG_MODE,
-      useValue: true
-    },
-    ScreenTrackingService
+    ScreenTrackingService,
+    {provide: CONFIG, useValue: {anonymize_ip: true}},
+    {provide: COLLECTION_ENABLED,useValue: true},
+    {provide: DEBUG_MODE, useValue: true},
+    {provide: APP_NAME, useValue: environment.firebase.projectId},
+    {provide: APP_VERSION, useValue: environment.version}
   ],
   bootstrap: [AppComponent]
 })

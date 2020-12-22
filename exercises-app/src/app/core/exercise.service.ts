@@ -250,16 +250,16 @@ export class ExerciseService {
    */
   public getNextExercise(id: string, session: 'all' | string[]= 'all'): Exercise | null | -1 {
     const track = cloneDeep(this.activeTrack.getValue());
-    console.log(track);
+//    console.log(track);
     if (track) {
       // filter sessions if neccessary
       const sessions = session === 'all' ? track.sessions : track.sessions.filter(s => session.includes(s.name));
 
       // flat map and sort
       const exercises = sessions.flatMap(s => s.exercises.sort((a, b) => a.order - b.order));
-      console.log(exercises);
+//      console.log(exercises);
       const thisIndex = exercises.findIndex(e => e.id === id);
-      console.log(thisIndex);
+//      console.log(thisIndex);
       // if id is not in current track, return null
       if (thisIndex === -1) {
         return null;

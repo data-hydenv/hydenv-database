@@ -8,7 +8,7 @@ export const environment = {
     storageBucket: "data-course-261609.appspot.com",
     messagingSenderId: "26810996853",
     appId: "1:26810996853:web:68eaf158951b103202003c",
-    measurementId: "G-63LD6L8LCX"
+    measurementId: "G-RLF2LDRQSR"
   },
   version: require('../../package.json').version
 };

@@ -35,15 +35,7 @@ export class SettingsService {
   // analytics settings
   analyticsAllowed = new BehaviorSubject<boolean>(false);
 
-  constructor(private http: HttpClient, private analytics: AngularFireAnalytics) {
-    // check if google analytics is allowed
-    const ga = localStorage.getItem('hydenv_allow_ga');
-    if (!!ga && ga === 'allow') {
-      console.log('Allowing Google Analytics...\nGo to Settings to disable.');
-      this.analytics.setAnalyticsCollectionEnabled(true);
-      this.analyticsAllowed.next(true);
-    }
-  }
+  constructor(private http: HttpClient, private analytics: AngularFireAnalytics) {}
 
   changeBackend(address: string): void {
     if (address.endsWith('api/v1/')) {
@@ -105,6 +97,22 @@ export class SettingsService {
     });
   }
 
+  public checkGoogleAnalyticsEnabled(): void {
+    // check if google analytics is allowed
+    const ga = localStorage.getItem('hydenv_allow_ga');
+
+    if (!!ga && ga === 'allow') {
+      console.log('Allowing Google Analytics...\nGo to Settings to disable.');
+      this.analytics.setAnalyticsCollectionEnabled(true);
+        this.analyticsAllowed.next(true);
+    } else {
+      this.analytics.setAnalyticsCollectionEnabled(false);
+      this.analyticsAllowed.next(false);
+      console.log('Google Analytics disabled.\nConsider enabling in Settings to improve this application.');
+    }
+
+  }
+
   public enableGoogleAnalytics(): void {
     // first set the token
     localStorage.setItem('hydenv_allow_ga', 'allow');
@@ -112,6 +120,8 @@ export class SettingsService {
     // then activate
     this.analytics.setAnalyticsCollectionEnabled(true);
     this.analyticsAllowed.next(true);
+
+    console.log('Enabled anonymous statistics...');
   }
 
   public rejectGoogleAnalytics(): void {
@@ -121,5 +131,7 @@ export class SettingsService {
     // disable ga
     this.analytics.setAnalyticsCollectionEnabled(false);
     this.analyticsAllowed.next(false);
+
+    console.log('Rejected anonymous statistics...');
   }
 }
