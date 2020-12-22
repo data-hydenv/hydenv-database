@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { ClarityModule } from '@clr/angular';
-import { CodeEditorModule } from '@ngstack/code-editor';
+//import { CodeEditorModule } from '@ngstack/code-editor';
 import { ColorPickerModule } from 'ngx-color-picker';
+import { MonacoEditorModule } from 'ngx-monaco-editor';
 
 import * as PlotlyJS from 'plotly.js/dist/plotly.js';
 import { PlotlyModule } from 'angular-plotly.js';
@@ -34,7 +35,8 @@ import { ExerciseProgressDetailComponent } from './exercise-progress-detail/exer
     CommonModule,
     ClarityModule,
     FormsModule,
-    CodeEditorModule.forChild(),
+//    CodeEditorModule.forChild(),
+    MonacoEditorModule,
     PlotlyModule,
     ColorPickerModule,
   ],

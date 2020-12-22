@@ -6,7 +6,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ClarityModule } from '@clr/angular';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAnalyticsModule, ScreenTrackingService, CONFIG, COLLECTION_ENABLED, DEBUG_MODE, APP_NAME, APP_VERSION } from '@angular/fire/analytics';
-import { CodeEditorModule } from '@ngstack/code-editor';
+//import { CodeEditorModule } from '@ngstack/code-editor';
+import { MonacoEditorModule } from 'ngx-monaco-editor';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -28,7 +29,8 @@ import { environment } from 'src/environments/environment';
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAnalyticsModule,
     BrowserAnimationsModule,
-    CodeEditorModule.forRoot(),
+//    CodeEditorModule.forRoot(),
+    MonacoEditorModule.forRoot(),
     LayoutsModule,
     StartupModule,
   ],
