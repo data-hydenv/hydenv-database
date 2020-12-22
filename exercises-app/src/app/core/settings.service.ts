@@ -39,6 +39,7 @@ export class SettingsService {
     // check if google analytics is allowed
     const ga = localStorage.getItem('hydenv_allow_ga');
     if (!!ga && ga === 'allow') {
+      console.log('Allowing Google Analytics...\nGo to Settings to disable.');
       this.analytics.setAnalyticsCollectionEnabled(true);
       this.analyticsAllowed.next(true);
     }
