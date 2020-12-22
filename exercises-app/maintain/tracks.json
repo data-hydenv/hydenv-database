@@ -221,8 +221,40 @@
            }
         ],
         "description": "<p>In this session, you gather an basic overview on the earthquake data to be prepared for the more sophisticated sessions. Load the needed data as using the hydenv CLI: <pre><code>python -m hydenv examples earthquake --normalize</code></pre></p>"
+      },
+      {
+        "name": "Answering the 'WHERE'",
+        "description": "<p>In this sesison we will run some spatial queries on the earthquake data using the world border dataset. Load the needed data as using the hydenv CLI: <pre><code>python -m hydenv examples earthquake --normalize\npython -m hydenv examples world-borders</code></pre></p>",
+        "exercises": [
+          {
+            "mandatory": true,
+            "order": 10,
+            "id": "RgirAlrr8tM3hCfMx5dY"
+          },
+          {
+            "mandatory": false,
+            "order": 20,
+            "id": "Gz0ufloz6dhoud2j5t2n"
+          },
+          {
+            "mandatory": true,
+            "order": 30,
+            "id": "Sqq1dr84ysipkeajzwj4"
+          },
+          {
+            "mandatory": true,
+            "order": 31,
+            "id": "Ujf068qvp3kmfudsorjo"
+          },
+          {
+            "mandatory": false,
+            "order": 32,
+            "id": "Wz7tt3y64pszotr219cu"
+          }
+        ]
       }
     ],
+    "description": "<p>Work on a small dataset of global earthquake occurences. This short track will recap some fundamental concepts:</p><ul><li>aggregation</li><li>filters</li><li>spatial queries</li></ul>",
     "admins": [
       "modche",
       "mmaelicke"
