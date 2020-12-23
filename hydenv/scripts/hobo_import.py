@@ -123,7 +123,7 @@ class HydenvHoboImporter:
 		if not quiet:
 			if len(df) != len(orig):
 				print('Some entries are missing metadata:\n----------------------------------')
-				orig.iloc[[i for i in orig.index if i not in df.index],].to_string()
+				print(orig.iloc[[i for i in orig.index if i not in df.index],].to_string())
 
 
 		# check if the sensor 'hobo' exists
