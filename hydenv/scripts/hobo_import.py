@@ -80,7 +80,7 @@ class HydenvHoboImporter:
 		Session = sessionmaker(bind=self.engine)
 		self.session = Session()
 
-	def metadata(self, url: str, term: str = None, if_exists='append'):
+	def metadata(self, url: str, term: str = None, if_exists='append', quiet=True):
 		"""
 		Copy metadata from google tables.\n
 		Make sure that the URL format is correct. Open the correct sheet and copy the url,
@@ -98,8 +98,9 @@ class HydenvHoboImporter:
 		if not 'format=csv' in url:
 			url += '&format=csv'
 
-		# download
+		# download and make a copy
 		df = pd.read_csv(url, skiprows=1)
+		orig = df.copy()
 
 		# remove clear names
 		if 'name' in df.columns:
@@ -118,6 +119,12 @@ class HydenvHoboImporter:
 		# drop any empty row
 		df.dropna(axis=1, how='all', inplace=True)
 		
+		# print the dropped entries
+		if not quiet:
+			if len(df) != len(orig):
+				print('Some entries are missing metadata:\n----------------------------------')
+				orig.iloc[[i for i in orig.index if i not in df.index],].to_string()
+
 
 		# check if the sensor 'hobo' exists
 		cli = HydenvMeasurements(self.__connection)
