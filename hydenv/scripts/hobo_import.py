@@ -18,7 +18,7 @@ from hydenv.models import Metadata
 def read_file(fname, txtfmt=False):
 	if txtfmt:
 		# HOBO TXT format
-		df = pd.read_csv(fname, skiprows=2, header=None, sep='\s+', thousands=',', na_values='Logged')
+		df = pd.read_csv(fname, skiprows=2, header=None, sep=r'\s+', thousands=',', na_values='Logged')
 		try:
 			df['tstamp'] = [dt.strptime(row[1] + ' ' + row[2], '%d-%m-%y %H:%M:%S') for i, row in df.iterrows()]
 		except Exception as e:
@@ -101,10 +101,23 @@ class HydenvHoboImporter:
 		# download
 		df = pd.read_csv(url, skiprows=1)
 
+		# remove clear names
+		if 'name' in df.columns:
+			df.drop('name', axis=1, inplace=True)
+		
+		# remove anything without device id
+		df.rename({'hobo_id': 'device_id'}, axis=1, inplace=True)
+		df = df.where(~df.device_id.isnull()).dropna()
+
+		# convert lon lat
+		df = df.where(~df.longitude.isnull()).dropna()
+		df = df.where(~df.latitude.isnull()).dropna()
 		df['location'] = df[['longitude', 'latitude']].apply(lambda r: 'SRID=4326;POINT (%s %s)' % (r[0], r[1]), axis=1)
 		df.drop(['longitude', 'latitude'], axis=1, inplace=True)
+		
+		# drop any empty row
 		df.dropna(axis=1, how='all', inplace=True)
-		df.rename({'hobo_id': 'device_id'}, axis=1, inplace=True)
+		
 
 		# check if the sensor 'hobo' exists
 		cli = HydenvMeasurements(self.__connection)
