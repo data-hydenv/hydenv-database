@@ -108,7 +108,7 @@ class HydenvHoboImporter:
 		
 		# remove anything without device id
 		df.rename({'hobo_id': 'device_id'}, axis=1, inplace=True)
-		df = df.where(~df.device_id.isnull()).dropna()
+		df = df.where(~df.device_id.isnull()).dropna(how='all')
 		df['device_id'] = df.device_id.astype(int)
 
 		# convert lon lat
