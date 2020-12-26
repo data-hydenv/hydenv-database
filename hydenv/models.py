@@ -255,6 +255,40 @@ class OSMTag(Base):
     nodes = relationship('OSMNode', secondary='nm_nodes_tags', back_populates='raw_tags')
 
 
+class GPX(Base):
+    __tablename__ = 'gpx_points'
+
+    id = Column(BigInteger, primary_key=True)
+    track_id = Column(Integer, ForeignKey('gpx_tracks.id'), nullable=False)
+    geom = Column(Geometry(srid=4326), nullable=False)
+    tstamp = Column(DateTime, nullable=False)
+    elevation = Column(Numeric, nullable=True)
+
+    track = relationship('GPXTrack', back_populates='points')
+    extras = relationship('GPXExtra', back_populates='point')
+
+
+class GPXTrack(Base):
+    __tablename__ = 'gpx_tracks'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(256), nullable=False)
+    tstamp = Column(DateTime, nullable=True)
+
+    points = relationship('GPX', back_populates='track')
+
+
+class GPXExtra(Base):
+    __tablename__ = 'gpx_extra'
+
+    id = Column(BigInteger, primary_key=True)
+    gpx_id = Column(BigInteger, ForeignKey('gpx_points.id'), nullable=False)
+    tag_name = Column(String(20), nullable=False)
+    value = Column(Numeric, nullable=False)
+
+    point = relationship('GPX', back_populates='extras')
+
+
 class WorldBorder(Base):
     __tablename__ = 'world_borders'
 
