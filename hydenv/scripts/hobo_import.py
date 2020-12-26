@@ -112,8 +112,8 @@ class HydenvHoboImporter:
 		df['device_id'] = df.device_id.astype(int)
 
 		# convert lon lat
-		df = df.where(~df.longitude.isnull()).dropna()
-		df = df.where(~df.latitude.isnull()).dropna()
+		df = df.where(~df.longitude.isnull()).dropna(how='all')
+		df = df.where(~df.latitude.isnull()).dropna(how='all')
 		df['location'] = df[['longitude', 'latitude']].apply(lambda r: 'SRID=4326;POINT (%s %s)' % (r[0], r[1]), axis=1)
 		df.drop(['longitude', 'latitude'], axis=1, inplace=True)
 		
