@@ -6,8 +6,9 @@ from hydenv.examples.customers import HydenvCustomerExamples
 from hydenv.examples.osm import HydenvOSMExamples
 from hydenv.examples.earthquakes import HydenvEarthquakeExamples
 from hydenv.examples.wbd import HydenvWorldBorderExample
+from hydenv.examples.gpx import HydenvGPXExample
 
-CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvCustomerExamples, HydenvOSMExamples, HydenvEarthquakeExamples]
+CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvCustomerExamples, HydenvOSMExamples, HydenvEarthquakeExamples, HydenvWorldBorderExample, HydenvGPXExample]
 
 class HydenvExamples:
     r"""
@@ -129,6 +130,17 @@ class HydenvExamples:
         """
         cli = HydenvWorldBorderExample(connection=self.__connection)
         return cli.run(quiet=self.quiet)
+
+    def gpx(self, file_name, path_or_url=None):
+        """
+        Loads a GPX file into the database\n
+        This tool can load any GPX file, either from a local path or a remote URL.
+        The default path is the URL to the `extra/spatial/activity/` folder in the 
+        hydenv data repository on Github.
+        :param file-name: File name of the GPX file
+        """
+        cli = HydenvGPXExample(connection=self.__connection, quiet=self.quiet)
+        return cli.run(fname=file_name)
 
     def clean(self): 
         """
