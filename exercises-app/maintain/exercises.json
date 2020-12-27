@@ -1,6 +1,6 @@
 [
   {
-    "id": "",
+    "id": "St6jnvfg5nyvqffclheq",
     "name": "Available HOBOs",
     "body": {
       "content": "<p>To get he HOBO exercises started, you should verify, that enough HOBO records were loaded to the database. Count all rows and alias the result as <strong>HOBOs</strong>.</p>",
@@ -12,7 +12,7 @@
     }
   },
   {
-    "id": "",
+    "id": "Wuxpm3nyfauzlazsuyfg",
     "name": "Available data",
     "body": {
       "content": "<p>Beside the metadata, we will need some raw data recorded and some processed quality checked data. Select each <strong>meta_id</strong> along with two flags: <strong>raw_data_available, data_available</strong>, that indicate wheter related data records are available.</p>",
@@ -25,7 +25,7 @@
     "hint": "<p>You will need two sub-queries for this. A <i>flag</i> is typically a boolean value.</p>"
   },
   {
-    "id": "",
+    "id": "Mmprw5o9mdirjbh8zrfj",
     "name": "Available years",
     "body": {
       "content": "<p>Beside data and metadata, we need data originating from two different terms. All terms except the winter term 2020/2021 is spanning measured data across year borders. Therefore we need a lookup table to group metadata by terms. <code>JOIN</code> the <strong>terms</strong> table to the available metadata and reduce the dataset to all terms with available metadata and select the count of HOBOs as <storng>\"HOBOs\"</strong> along with all available information from the <strong>terms</strong> table. Run you query with <code>'explain'</code> enabled.</p>"
@@ -37,7 +37,7 @@
     "hint": "<p>There are at least two possible solutions: Join-then-group or Reduce-then-join. Run your soultion with explain enabled and compare to the other solution.</p>"
   },
   {
-    "id": "",
+    "id": "Hnxrrcmlzgsl1czbet38",
     "name": "Raw data bias",
     "body": {
       "content": "<p>For each of the terms that have raw data as well as quality checked data, we can run a simple, yet powerful analysis. Calculate for each term the average temperature, across all sensors and locations for the raw data and the checked data separately. The difference between the two distributions' location can reveal a systematic bias for any analysis that we would run on the raw data, instead of the quality data.</p><p>Select the terms' <strong>full_name</strong> and join the <code>avg</code> of the related records in the <strong>raw_data</strong> and <strong>data</strong> table, aliased as <strong>avg_raw, avg_data</strong></p>",
@@ -49,5 +49,58 @@
       "prefill": "SELECT raw.full_name, avg_raw, avg_data FROM (\n\t-- PUT YOUR raw_data query HERE\n) AS raw\nLEFT OUTER JOIN (\n\t-- PUT YOUR data query HERE\n) AS data ON raw.full_name=data.full_name"
     },
     "hint": "<p>Decompose this into two separated queries in the console and run each of them separatedly.</p>"
+  },
+  {
+    "id": "Yz5bi1yr4atm4ruppw8v",
+    "name": "Extra information",
+    "body": {
+      "content": "<p>While modeling the HOBO metadata, we chose an approach to store any information that is neither common to all generations nor an absolute core information, without which the metadata does not make any sense, into a separated structure. This table is called <strong>details</strong> and it can store arbitraty key-value pairs. This way we can store any additional information and the metadata between two different HOBOs does not have to match. This makes our data model more flexible.</p><p>However, we will need a join to bring the information back to the main table. Further, we need to know about the expected values, or use some more sophisticated SQL and Postgres techniques to organize this data model back into a tabular format. To get started, select all records from <strong>details</strong> with <strong>key='influence'</strong>. This will load all details about radiation influence on the HOBOs' location.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM details WHERE key='influence'",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Ugdgbyu3rfofqf72pllv",
+    "name": "Rebuilding Metadata",
+    "body": {
+      "content": "<p>Bring the extra information from the <strong>details</strong> table back to the main <strong>metadata</strong> table. Their many-to-many relationship is stored in the <strong>nm_metadata_details</strong> table. Select all information from metadata and join a new attribute called <strong>radiation_influence</strong> containing the value from <strong>details</strong> of <code>key='influence'</code>. Limit the result to 10.</p>",
+      "type": "sql"
+    },
+    "solution": {
+      "content": "SELECT\n\td.str_value AS radiation_influence,\n\tm.*\nFROM metadata m\nJOIN nm_metadata_details nm ON nm.meta_id=m.id\nJOIN details d ON d.id=nm.detail_id\nWHERE key='influence'\nLIMIT 10",
+      "type": "sql"
+    },
+    "hint": "<p></p>"
+  },
+  {
+    "id": "Irwftjll7r30qw4sflat",
+    "name": "Radiation influence bias",
+    "body": {
+      "content": "<p>A major question to ask with radiation influence metadata in the database is:</p><p><i>Does the radiation influence impose a bias on the <strong>raw</strong> data?</i></p><p>This question is harder to answer as you might expect, as the radiation influence is expected to affect the measurements in a very different way, depending on the radiation itself. But as a first number, we can calculate the <strong>average</strong> temperature across all HOBO sensors for each term, grouped by the infulence.<br>Select the <strong>full_name</strong> of the term, <strong>radiation_influence</strong> and <strong>t_avg</strong></p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\tt.full_name,\n\trad.radiation_influence,\n\tavg(value) as t_avg\nFROM raw_data r\nJOIN metadata m ON r.meta_id=m.id\nJOIN terms t ON t.id=m.term_id\nJOIN (\n\tSELECT m.id, d.str_value as radiation_influence\n\tFROM metadata m\n\tJOIN nm_metadata_details nm ON nm.meta_id=m.id\n\tJOIN details d ON nm.detail_id=d.id\n\tWHERE key='influence'\n) AS rad ON rad.id=m.id\nWHERE variable_id=1\nGROUP BY t.full_name, rad.radiation_influence",
+      "type": "sql",
+      "prefill": "SELECT\n\td.str_value AS radiation_influence,\n\tm.*\nFROM metadata m\nJOIN nm_metadata_details nm ON nm.meta_id=m.id\nJOIN details d ON d.id=nm.detail_id\nWHERE key='influence'\nLIMIT 10"
+    },
+    "hint": "<p>First, implement the aggreation without a grouping for radiation influence, just group by term. Then, join a subquery to the command, which basically implements the solution of the last exercise, but without limit. Finally, add the newly created radiation_influence attribute to the group statement.</p>"
+  },
+  {
+    "id": "Fb6synubpvv1y0dfv5rv",
+    "name": "Radiation influence bias #2",
+    "body": {
+      "content": "<p>We ask the same question as in the last exercise</p><p><i>Does the radiation influence impose a bias on the data?</i></p><p>Now, run the same query as for the last exercise again, but replace <i>raw_data</i> with the quality checked <strong>data</strong>. Finally, turn both queries into two subberies and select from their join on <strong>full_name</strong> and <strong>radiation_influence</strong>. Rename <i>t_avg</i> to <i>t_avg_raw</i> and <i>t_avg_data</i>. This is a nice overview, if and how the the quality correction procedures affect the more influenced HOBOs more, than the protected ones. For ease of interpreting, add a <storng>third</strong> attribute called <strong>difference</strong>, which is <code>t_avg_raw - t_avg_data</code>.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\traw.full_name,\n\traw.radiation_influence,\n\traw.t_avg AS t_avg_raw,\n\tqual.t_avg AS t_avg_data,\n\traw.t_avg - qual.t_avg AS difference\nFROM\n(\n\tSELECT\n\t\tt.full_name,\n\t\trad.radiation_influence,\n\t\tavg(value) as t_avg\n\tFROM raw_data r\n\tJOIN metadata m ON r.meta_id=m.id\n\tJOIN terms t ON t.id=m.term_id\nJOIN (\n\t\tSELECT m.id, d.str_value as radiation_influence\n\t\tFROM metadata m\n\t\tJOIN nm_metadata_details nm ON nm.meta_id=m.id\n\t\tJOIN details d ON nm.detail_id=d.id\n\t\tWHERE key='influence'\n\t) AS rad ON rad.id=m.id\n\tWHERE variable_id=1\n\tGROUP BY t.full_name, rad.radiation_influence\n\t) raw\nJOIN\n(\n\tSELECT\n\t\tt.full_name,\n\t\trad.radiation_influence,\n\t\tavg(value) as t_avg\n\tFROM data r\n\tJOIN metadata m ON r.meta_id=m.id\n\tJOIN terms t ON t.id=m.term_id\n\tJOIN (\n\t\tSELECT m.id, d.str_value as radiation_influence\n\t\tFROM metadata m\n\t\tJOIN nm_metadata_details nm ON nm.meta_id=m.id\n\t\tJOIN details d ON nm.detail_id=d.id\n\t\tWHERE key='influence'\n\t) AS rad ON rad.id=m.id\n\tWHERE variable_id=1\n\tGROUP BY t.full_name, rad.radiation_influence\n) qual\nON raw.full_name=qual.full_name AND raw.radiation_influence=qual.radiation_influence",
+      "type": "sql",
+      "prefill": "SELECT\n\tt.full_name,\n\trad.radiation_influence,\n\tavg(value) as t_avg\nFROM raw_data r\nJOIN metadata m ON r.meta_id=m.id\nJOIN terms t ON t.id=m.term_id\nJOIN (\n\tSELECT m.id, d.str_value as radiation_influence\n\tFROM metadata m\n\tJOIN nm_metadata_details nm ON nm.meta_id=m.id\n\tJOIN details d ON nm.detail_id=d.id\n\tWHERE key='influence'\n) AS rad ON rad.id=m.id\nWHERE variable_id=1\nGROUP BY t.full_name, rad.radiation_influence"
+    },
+    "hint": "<p>This exercise is neither complicated nor difficult. You have the solution already there. It is just a lot of typing. Use the solution if you run into too many typing errors.<br>A analysis like this should already be split into different views.</p>"
   }
 ]

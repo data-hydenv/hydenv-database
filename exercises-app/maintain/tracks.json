@@ -268,5 +268,71 @@
       },
       "storeResults": false
     }
+  },
+  {
+    "id": "hobo",
+    "name": "HOBO data",
+    "sessions": [
+      {
+        "name": "In-Depth Statistics",
+        "description": "<p>This session makes use of the multi-temporal, multi-spatial domain approach of the HOBO dataset to focus on reductions and statistics. You need at least 2 terms of HOBO data. Use the hydenv CLI to load:</p><pre><code>python -m hydenv examples hobo --terms=[WT19,WT20,WT21]</code></pre>",
+        "exercises": [
+          {
+            "id": "St6jnvfg5nyvqffclheq",
+            "mandatory": false,
+            "order": 10
+          },
+          {
+            "id": "Wuxpm3nyfauzlazsuyfg",
+            "mandatory": true,
+            "order": 20
+          },
+          {
+            "id": "Mmprw5o9mdirjbh8zrfj",
+            "mandatory": true,
+            "order": 30
+          },
+          {
+            "id": "Hnxrrcmlzgsl1czbet38",
+            "mandatory": true,
+            "order": 40
+          },
+          {
+            "id": "Yz5bi1yr4atm4ruppw8v",
+            "mandatory": false,
+            "order": 50
+          },
+          {
+            "id": "Ugdgbyu3rfofqf72pllv",
+            "mandatory": true,
+            "order": 60
+          },
+          {
+            "id": "Irwftjll7r30qw4sflat",
+            "mandatory": true,
+            "order": 61
+          },
+          {
+            "id": "Fb6synubpvv1y0dfv5rv",
+            "mandatory": true,
+            "order": 62
+          }
+        ]
+      }
+    ],
+    "description": "<p>Work on recent and/or historic temperature data collected in Freiburg since 2017. That data was collected by students during the Data collection, -management and -visualization lecture. Handle changing metadata and data of different quality within this track. This track will focus on: <ul><li>metadata</li><li>aggregations</li><li>filtering</li><li>spatial queries</li></ul></p>",
+    "admins": [
+      "modche",
+      "mmaelicke"
+    ],
+    "options": {
+      "login": true,
+      "paidBackend": false,
+      "image": {
+        "src": "https://www.forestry-suppliers.com/Images/Original/8406_89474_p2.jpg",
+        "type": "http"
+      },
+      "storeResults": false
+    }
   }
 ]
