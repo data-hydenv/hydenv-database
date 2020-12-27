@@ -1,7 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, ForeignKey, UniqueConstraint
 from sqlalchemy import Integer, BigInteger, String, DateTime, Numeric, Boolean, REAL
-from sqlalchemy.orm import relationship, Session
+from sqlalchemy.orm import relationship, Session, object_session
 from geoalchemy2 import Geometry
 
 from datetime import datetime as dt
@@ -49,7 +49,7 @@ class Metadata(Base):
     term = relationship('Term', back_populates='data')
     details = relationship('Detail', secondary='nm_metadata_details', back_populates='meta', cascade='all,delete')
 
-    def __init__(self, **kwargs):
+    def __init__(self, session=None, **kwargs):
         # extract the column names of this model
         column_names = [col.name for col in Metadata.__table__.columns]
 
@@ -61,7 +61,7 @@ class Metadata(Base):
         super(Metadata, self).__init__(**in_names)
 
         # add details
-        self.set_details(out_names)
+        self.set_details(out_names, session)
 
     def get_details(self):
         details = dict()
@@ -69,9 +69,10 @@ class Metadata(Base):
             detail.to_dict(add_to=details)
         return details
 
-    def set_details(self, details: dict):
+    def set_details(self, details: dict, session=None):
+        # append all details
         for k,v in details.items():
-            self.details.append(Detail(k, v))
+            self.details.append(Detail.get_or_init(session, k, v))
 
 
 class Variable(Base):
@@ -177,18 +178,38 @@ class Detail(Base):
     # relationships
     meta = relationship('Metadata', secondary='nm_metadata_details', back_populates='details')
 
+    @classmethod
+    def _field_name(cls, value):
+        if isinstance(value, str):
+            return 'str_value'
+        elif isinstance(value, int):
+            return 'int_value'
+        elif isinstance(value, float):
+            return 'float_value'
+        elif isinstance(value, bool):
+            return 'bool_value'
+        else:
+            return 'str_value'
+    
+    @classmethod
+    def get_or_init(cls, session, key, value):
+        val_attr = getattr(cls, cls._field_name(value))
+
+        # find
+        if session is None:
+            instance = None
+        else:
+            instance = session.query(Detail).filter(Detail.key==key).filter(val_attr==value).first()
+
+        # if Detail does not exist, create it
+        if instance is None:
+            instance = Detail(key, value)
+        
+        return instance
+
     def __init__(self, key, value):
         self.key = key
-        if isinstance(value, str):
-            self.str_value = value
-        elif isinstance(value, int):
-            self.int_value = value
-        elif isinstance(value, float):
-            self.float_value = value
-        elif isinstance(value, bool):
-            self.bool_value = value
-        else:
-            self.str_value = str(value)
+        setattr(self, self._field_name(value), value)
 
     def to_dict(self, add_to=None):
         if add_to is None:

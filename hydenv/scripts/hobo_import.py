@@ -144,12 +144,16 @@ class HydenvHoboImporter:
 		df['sensor_id'] = hobo.id
 
 		# upload
-		try:
-			self.session.add_all([Metadata(**d) for d in df.to_dict('records')])
-			self.session.commit()
-		except Exception as e:
-			self.session.rollback()
-			raise e
+		for d in df.to_dict('records'):
+			try:
+				self.session.add(Metadata(session=self.session, **d))
+				self.session.commit()
+			except Exception as e:
+				self.session.rollback()
+				if quiet:
+					raise e
+				else:
+					print('[ERROR]: %s' % str(e))
 
 	def upload_raw_data(self, filename: str, meta_id: int, variable=None):
 		"""
