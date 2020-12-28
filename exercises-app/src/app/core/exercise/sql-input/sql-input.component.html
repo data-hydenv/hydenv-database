@@ -21,8 +21,8 @@
   </div>
 </div>
 
-<div style="height: 50vh; min-height: 450px;">
-  <ngx-monaco-editor style="height: 100%;" [options]="{theme: 'vs-dark', language: 'sql'}" (ngModelChange)="onChange($event)" [ngModel]="defaultSql"></ngx-monaco-editor>
+<div style="height: 40vh; min-height: 350px; max-height: 80vh">
+  <ngx-monaco-editor style="height: 100%;" [options]="{theme: 'vs-dark', language: 'sql'}" (ngModelChange)="onChange($event)" [ngModel]="sql"></ngx-monaco-editor>
 </div>
 
 
