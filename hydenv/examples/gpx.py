@@ -121,7 +121,7 @@ class HydenvGPXExample:
             if ex.name is None or not ex.name.startswith('ns3:'):
                 continue
             gpx.extras.append(models.GPXExtra(
-                tag_value=ex.name[4:],
+                tag_name=ex.name[4:],
                 value=float(ex.decode_contents())
             ))
         
