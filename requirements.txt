@@ -10,3 +10,6 @@ barnum
 overpy
 shapely
 requests
+beautifulsoup4
+lxml
+python-dateutil

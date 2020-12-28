@@ -15,6 +15,9 @@ from hydenv import __version__ as hydenv_version
 app = Flask(__name__)
 CORS(app)
 
+# do not cache assets
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
 
 @app.route('/<path:path>', methods=['GET'])
 def static_files(path: str):

@@ -11,4 +11,5 @@ pip install hydenv
 
 ## Docs
 
-Documentation can be found here: https://data-hydenv.github.io/hydenv-database
+~Documentation can be found here: https://data-hydenv.github.io/hydenv-database~
+This will be replaced at some point

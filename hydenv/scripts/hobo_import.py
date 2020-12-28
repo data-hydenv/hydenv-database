@@ -18,7 +18,7 @@ from hydenv.models import Metadata
 def read_file(fname, txtfmt=False):
 	if txtfmt:
 		# HOBO TXT format
-		df = pd.read_csv(fname, skiprows=2, header=None, sep='\s+', thousands=',', na_values='Logged')
+		df = pd.read_csv(fname, skiprows=2, header=None, sep=r'\s+', thousands=',', na_values='Logged')
 		try:
 			df['tstamp'] = [dt.strptime(row[1] + ' ' + row[2], '%d-%m-%y %H:%M:%S') for i, row in df.iterrows()]
 		except Exception as e:
@@ -80,7 +80,7 @@ class HydenvHoboImporter:
 		Session = sessionmaker(bind=self.engine)
 		self.session = Session()
 
-	def metadata(self, url: str, term: str = None, if_exists='append'):
+	def metadata(self, url: str, term: str = None, if_exists='append', quiet=True):
 		"""
 		Copy metadata from google tables.\n
 		Make sure that the URL format is correct. Open the correct sheet and copy the url,
@@ -98,13 +98,34 @@ class HydenvHoboImporter:
 		if not 'format=csv' in url:
 			url += '&format=csv'
 
-		# download
+		# download and make a copy
 		df = pd.read_csv(url, skiprows=1)
+		orig = df.copy()
 
+		# remove clear names
+		if 'name' in df.columns:
+			df.drop('name', axis=1, inplace=True)
+		
+		# remove anything without device id
+		df.rename({'hobo_id': 'device_id'}, axis=1, inplace=True)
+		df = df.where(~df.device_id.isnull()).dropna(how='all')
+		df['device_id'] = df.device_id.astype(int)
+
+		# convert lon lat
+		df = df.where(~df.longitude.isnull()).dropna(how='all')
+		df = df.where(~df.latitude.isnull()).dropna(how='all')
 		df['location'] = df[['longitude', 'latitude']].apply(lambda r: 'SRID=4326;POINT (%s %s)' % (r[0], r[1]), axis=1)
 		df.drop(['longitude', 'latitude'], axis=1, inplace=True)
+		
+		# drop any empty row
 		df.dropna(axis=1, how='all', inplace=True)
-		df.rename({'hobo_id': 'device_id'}, axis=1, inplace=True)
+		
+		# print the dropped entries
+		if not quiet:
+			if len(df) != len(orig):
+				print('Some entries are missing metadata:\n----------------------------------')
+				print(orig.iloc[[i for i in orig.index if i not in df.index],].to_string())
+
 
 		# check if the sensor 'hobo' exists
 		cli = HydenvMeasurements(self.__connection)
@@ -123,12 +144,16 @@ class HydenvHoboImporter:
 		df['sensor_id'] = hobo.id
 
 		# upload
-		try:
-			self.session.add_all([Metadata(**d) for d in df.to_dict('records')])
-			self.session.commit()
-		except Exception as e:
-			self.session.rollback()
-			raise e
+		for d in df.to_dict('records'):
+			try:
+				self.session.add(Metadata(session=self.session, **d))
+				self.session.commit()
+			except Exception as e:
+				self.session.rollback()
+				if quiet:
+					raise e
+				else:
+					print('[ERROR]: %s' % str(e))
 
 	def upload_raw_data(self, filename: str, meta_id: int, variable=None):
 		"""

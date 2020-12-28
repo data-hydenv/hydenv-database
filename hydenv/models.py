@@ -1,7 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, ForeignKey, UniqueConstraint
 from sqlalchemy import Integer, BigInteger, String, DateTime, Numeric, Boolean, REAL
-from sqlalchemy.orm import relationship, Session
+from sqlalchemy.orm import relationship, Session, object_session
 from geoalchemy2 import Geometry
 
 from datetime import datetime as dt
@@ -42,14 +42,17 @@ class Metadata(Base):
     device_id = Column(String, nullable=False)
     sensor_id = Column(Integer, ForeignKey('sensors.id'))
     term_id = Column(Integer, ForeignKey('terms.id'))
-    location = Column(Geometry('POINT', srid=4326), nullable=False)
+    location = Column(Geometry('POINT', srid=4326), nullable=True)
     description = Column(String, nullable=True)
 
     # relationships
     term = relationship('Term', back_populates='data')
     details = relationship('Detail', secondary='nm_metadata_details', back_populates='meta', cascade='all,delete')
+    sensor  = relationship('Sensor', back_populates='meta')
+    raw_data = relationship('RawData', back_populates='meta')
+    data = relationship('Data', back_populates='meta')
 
-    def __init__(self, **kwargs):
+    def __init__(self, session=None, **kwargs):
         # extract the column names of this model
         column_names = [col.name for col in Metadata.__table__.columns]
 
@@ -61,7 +64,7 @@ class Metadata(Base):
         super(Metadata, self).__init__(**in_names)
 
         # add details
-        self.set_details(out_names)
+        self.set_details(out_names, session)
 
     def get_details(self):
         details = dict()
@@ -69,9 +72,10 @@ class Metadata(Base):
             detail.to_dict(add_to=details)
         return details
 
-    def set_details(self, details: dict):
+    def set_details(self, details: dict, session=None):
+        # append all details
         for k,v in details.items():
-            self.details.append(Detail(k, v))
+            self.details.append(Detail.get_or_init(session, k, v))
 
 
 class Variable(Base):
@@ -86,12 +90,17 @@ class Variable(Base):
     unit = Column(String(30), nullable=False)
     comment = Column(String)
 
+    raw_data = relationship('RawData', back_populates='variable')
+    data = relationship('Data', back_populates='variable')
+
 
 class Sensor(Base):
     __tablename__ = 'sensors'
     
     id = Column(Integer, primary_key=True)
     name = Column(String(), nullable=False)
+
+    meta = relationship('Metadata', back_populates='sensor')
 
 
 class Term(Base):
@@ -150,6 +159,8 @@ class Data(Base):
     value = Column(REAL, nullable=False)
     quality_flag_id = Column(Integer, ForeignKey('quality.id'), nullable=False)
 
+    variable = relationship('Variable', back_populates='data')
+    meta = relationship('Metadata', back_populates='data')
 
 class RawData(Base):
     __tablename__ = 'raw_data'
@@ -161,6 +172,9 @@ class RawData(Base):
     variable_id = Column(Integer, ForeignKey('variables.id'), primary_key=True)
     tstamp = Column(DateTime, primary_key=True)
     value = Column(REAL, nullable=False)
+
+    variable = relationship('Variable', back_populates='raw_data')
+    meta = relationship('Metadata', back_populates='raw_data')
 
 
 class Detail(Base):
@@ -177,18 +191,38 @@ class Detail(Base):
     # relationships
     meta = relationship('Metadata', secondary='nm_metadata_details', back_populates='details')
 
+    @classmethod
+    def _field_name(cls, value):
+        if isinstance(value, str):
+            return 'str_value'
+        elif isinstance(value, int):
+            return 'int_value'
+        elif isinstance(value, float):
+            return 'float_value'
+        elif isinstance(value, bool):
+            return 'bool_value'
+        else:
+            return 'str_value'
+    
+    @classmethod
+    def get_or_init(cls, session, key, value):
+        val_attr = getattr(cls, cls._field_name(value))
+
+        # find
+        if session is None:
+            instance = None
+        else:
+            instance = session.query(Detail).filter(Detail.key==key).filter(val_attr==value).first()
+
+        # if Detail does not exist, create it
+        if instance is None:
+            instance = Detail(key, value)
+        
+        return instance
+
     def __init__(self, key, value):
         self.key = key
-        if isinstance(value, str):
-            self.str_value = value
-        elif isinstance(value, int):
-            self.int_value = value
-        elif isinstance(value, float):
-            self.float_value = value
-        elif isinstance(value, bool):
-            self.bool_value = value
-        else:
-            self.str_value = str(value)
+        setattr(self, self._field_name(value), value)
 
     def to_dict(self, add_to=None):
         if add_to is None:
@@ -253,6 +287,40 @@ class OSMTag(Base):
     key = Column(String(2048), nullable=False)
     value = Column(String(2048), nullable=False)
     nodes = relationship('OSMNode', secondary='nm_nodes_tags', back_populates='raw_tags')
+
+
+class GPX(Base):
+    __tablename__ = 'gpx_points'
+
+    id = Column(BigInteger, primary_key=True)
+    track_id = Column(Integer, ForeignKey('gpx_tracks.id'), nullable=False)
+    geom = Column(Geometry(srid=4326), nullable=False)
+    tstamp = Column(DateTime, nullable=False)
+    elevation = Column(Numeric, nullable=True)
+
+    track = relationship('GPXTrack', back_populates='points')
+    extras = relationship('GPXExtra', back_populates='point')
+
+
+class GPXTrack(Base):
+    __tablename__ = 'gpx_tracks'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(256), nullable=False)
+    tstamp = Column(DateTime, nullable=True)
+
+    points = relationship('GPX', back_populates='track')
+
+
+class GPXExtra(Base):
+    __tablename__ = 'gpx_extra'
+
+    id = Column(BigInteger, primary_key=True)
+    gpx_id = Column(BigInteger, ForeignKey('gpx_points.id'), nullable=False)
+    tag_name = Column(String(20), nullable=False)
+    value = Column(Numeric, nullable=False)
+
+    point = relationship('GPX', back_populates='extras')
 
 
 class WorldBorder(Base):

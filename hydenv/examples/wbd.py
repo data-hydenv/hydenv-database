@@ -19,6 +19,8 @@ class HydenvWorldBorderExample:
         python -m hydenv database init --clean --connection=postgresql://hydenv:hydenv@localhost:5432/hydenv
     :param connection: The database URI following syntax:\n
         postgresql://<user>:<password>@<host>:<port>/<database>
+    :param overwrite_url: string - overwrite the default data url to load other data. 
+    :param quiet: bool - suppresses print output to stdout
 
     """
 

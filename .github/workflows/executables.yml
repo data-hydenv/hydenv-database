@@ -25,7 +25,8 @@ jobs:
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
-  build:
+  build_win:
+    name: Build Windows binaries
     # first create the release
     needs: [release]
     
@@ -62,6 +63,82 @@ jobs:
           asset_path: hydenv_win.tar
           asset_name: hydenv_win.tar
           asset_content_type: application/x-tar
-        
+
+  build_mac:
+    name: Build MacOs binaries
+    # first create the release
+    needs: [release]
+    
+    # Run on MacOS
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
       
+      - name: Install requirements
+        run: pip install -r requirements.txt
+      
+      - name: Install pyinstaller
+        run: pip install pyinstaller
+      
+      - name: Create executable
+        run: pyinstaller hydenv/__main__.py --onefile --distpath ./deploy --name hydenv --add-data "hydenv/exercises-js:exercises-js"
+      
+      - name: Create a tarball
+        run: tar -cvzf hydenv_mac.tar ./deploy
+        
+      - name: Add executable
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: hydenv_mac.tar
+          asset_name: hydenv_mac.tar
+          asset_content_type: application/x-tar
+
+  build_linux:
+    name: Build Linux binaries
+    # first create the release
+    needs: [release]
+    
+    # Run on Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      
+      - name: Install requirements
+        run: pip install -r requirements.txt
+      
+      - name: Install pyinstaller
+        run: pip install pyinstaller
+      
+      - name: Create executable
+        run: pyinstaller hydenv/__main__.py --onefile --distpath ./deploy --name hydenv --add-data "hydenv/exercises-js:exercises-js"
+      
+      - name: Create a tarball
+        run: tar -cvzf hydenv_linux.tar ./deploy
+        
+      - name: Add executable
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: hydenv_linux.tar
+          asset_name: hydenv_linux.tar
+          asset_content_type: application/x-tar      
       

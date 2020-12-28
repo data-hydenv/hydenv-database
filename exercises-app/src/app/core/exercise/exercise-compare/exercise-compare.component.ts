@@ -7,6 +7,7 @@ import { SqlResult } from '../../models/sql-result';
 
 import { isEqual } from 'lodash';
 import { TrackProgressService } from '../../track-progress.service';
+import { AngularFireAnalytics } from '@angular/fire/analytics';
 
 @Component({
   selector: 'app-exercise-compare',
@@ -38,7 +39,7 @@ export class ExerciseCompareComponent implements OnInit {
   showSolution = false;
   showHint = false;
 
-  constructor(private exerciseService: ExerciseService, private progress: TrackProgressService) { }
+  constructor(private exerciseService: ExerciseService, private progress: TrackProgressService, private analytics: AngularFireAnalytics) { }
 
   ngOnInit(): void {
     this.setPrefill();
@@ -90,6 +91,20 @@ export class ExerciseCompareComponent implements OnInit {
       // emit the checked event, after the progress was saved to local storage
       this.checked.emit(this.solutionCorrect);
     });
+  }
+
+  onHintToggle(): void {
+    // only if the hint is shown
+    if (this.showHint) {
+      this.analytics.logEvent('exercise_showHint', {exerciseId: this.exercise.id});
+    }
+  }
+
+  onSolutionToggle(): void {
+    //only if the solution is shown
+    if (this.showSolution) {
+      this.analytics.logEvent('exercise_showSolution', {exerciseId: this.exercise.id});
+    }
   }
 
 }

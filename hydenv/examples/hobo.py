@@ -126,7 +126,7 @@ class HydenvHoboExamples:
             url = self._hobo_table_url + self.__hobo_gid_map[term]
 
             # upload
-            cli.metadata(url=url, term=term)
+            cli.metadata(url=url, term=term, quiet=quiet)
             if not quiet:
                 bar.update(i + 1)
 
