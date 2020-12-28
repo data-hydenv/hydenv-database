@@ -21,8 +21,9 @@
   </div>
 </div>
 
-<div style="height: 40vh; min-height: 350px; max-height: 80vh">
+<div class="resize-container" mwlResizable [enableGhostResize]="true" [style.height.px]="editorHeight" (resizing)="onResize($event)">
   <ngx-monaco-editor style="height: 100%;" [options]="{theme: 'vs-dark', language: 'sql'}" (ngModelChange)="onChange($event)" [ngModel]="sql"></ngx-monaco-editor>
+  <div mwlResizeHandle class="resize" [resizeEdges]="{bottom: true}"></div>
 </div>
 
 

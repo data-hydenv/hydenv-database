@@ -1,3 +1,27 @@
 div.clr-row {
   margin-top: 0.6rem;
 }
+
+mwlResizable {
+  box-sizing: border-box;
+}
+
+.resize-container {
+  min-height: 350px;
+  max-height: 80vh;
+  margin-bottom: 1rem;
+
+  .resize {
+    height: 7px;
+    width: 100%;
+    cursor: row-resize;
+    background-color: #243944;
+    transition-duration: 100ms;
+    z-index: 999;
+
+    &:hover {
+    background-color: #69a0be;
+      transition-delay: 100ms;
+    }
+  }
+}
