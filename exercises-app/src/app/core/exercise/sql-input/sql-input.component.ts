@@ -77,4 +77,8 @@ export class SqlInputComponent implements OnInit {
     this.sql = newSql;
   }
 
+  onReset(): void {
+    this.sql = this.defaultSql;
+  }
+
 }
