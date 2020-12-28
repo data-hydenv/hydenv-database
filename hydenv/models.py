@@ -42,12 +42,15 @@ class Metadata(Base):
     device_id = Column(String, nullable=False)
     sensor_id = Column(Integer, ForeignKey('sensors.id'))
     term_id = Column(Integer, ForeignKey('terms.id'))
-    location = Column(Geometry('POINT', srid=4326), nullable=False)
+    location = Column(Geometry('POINT', srid=4326), nullable=True)
     description = Column(String, nullable=True)
 
     # relationships
     term = relationship('Term', back_populates='data')
     details = relationship('Detail', secondary='nm_metadata_details', back_populates='meta', cascade='all,delete')
+    sensor  = relationship('Sensor', back_populates='meta')
+    raw_data = relationship('RawData', back_populates='meta')
+    data = relationship('Data', back_populates='meta')
 
     def __init__(self, session=None, **kwargs):
         # extract the column names of this model
@@ -87,12 +90,17 @@ class Variable(Base):
     unit = Column(String(30), nullable=False)
     comment = Column(String)
 
+    raw_data = relationship('RawData', back_populates='variable')
+    data = relationship('Data', back_populates='variable')
+
 
 class Sensor(Base):
     __tablename__ = 'sensors'
     
     id = Column(Integer, primary_key=True)
     name = Column(String(), nullable=False)
+
+    meta = relationship('Metadata', back_populates='sensor')
 
 
 class Term(Base):
@@ -151,6 +159,8 @@ class Data(Base):
     value = Column(REAL, nullable=False)
     quality_flag_id = Column(Integer, ForeignKey('quality.id'), nullable=False)
 
+    variable = relationship('Variable', back_populates='data')
+    meta = relationship('Metadata', back_populates='data')
 
 class RawData(Base):
     __tablename__ = 'raw_data'
@@ -162,6 +172,9 @@ class RawData(Base):
     variable_id = Column(Integer, ForeignKey('variables.id'), primary_key=True)
     tstamp = Column(DateTime, primary_key=True)
     value = Column(REAL, nullable=False)
+
+    variable = relationship('Variable', back_populates='raw_data')
+    meta = relationship('Metadata', back_populates='raw_data')
 
 
 class Detail(Base):

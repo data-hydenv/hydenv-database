@@ -6,8 +6,10 @@ from hydenv.examples.customers import HydenvCustomerExamples
 from hydenv.examples.osm import HydenvOSMExamples
 from hydenv.examples.earthquakes import HydenvEarthquakeExamples
 from hydenv.examples.wbd import HydenvWorldBorderExample
+from hydenv.examples.gpx import HydenvGPXExample
+from hydenv.examples.raspi_logger import HydenvRaspiLoggerExample
 
-CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvCustomerExamples, HydenvOSMExamples, HydenvEarthquakeExamples]
+CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvCustomerExamples, HydenvOSMExamples, HydenvEarthquakeExamples, HydenvWorldBorderExample, HydenvGPXExample, HydenvRaspiLoggerExample]
 
 class HydenvExamples:
     r"""
@@ -129,6 +131,43 @@ class HydenvExamples:
         """
         cli = HydenvWorldBorderExample(connection=self.__connection)
         return cli.run(quiet=self.quiet)
+
+    def gpx(self, file_name, path_or_url=None):
+        """
+        Loads a GPX file into the database\n
+        This tool can load any GPX file, either from a local path or a remote URL.
+        The default path is the URL to the `extra/spatial/activity/` folder in the 
+        hydenv data repository on Github.
+        :param file-name: File name of the GPX file
+        """
+        cli = HydenvGPXExample(connection=self.__connection, quiet=self.quiet)
+        return cli.run(fname=file_name)
+
+    def activity(self, day='20201217', only=None):
+        """
+        Activity example.\n
+        Loads activity GPX and corresponding raspi-logger raw dumped temperature 
+        measurement data to the database.
+        :param day: string YYYYMMDD formatted string of the activity day
+        """
+        gpx_fname = '%s_activity.gpx' % day
+        log_fname = '%s_raspi_logger.dump.json' % day
+        
+        if only is None or only == 'gpx':
+            if not self.quiet:
+                print('Loading GPX file')
+            gpx = HydenvGPXExample(connection=self.__connection, quiet=self.quiet)
+            gpx.run(fname=gpx_fname)
+        
+        if only is None or only == 'raspi' or only == 'dump':
+            if not self.quiet:
+                print('Loading Raspi dump')
+            log = HydenvRaspiLoggerExample(connection=self.__connection)
+            log.run(fname=log_fname)
+        
+        if not self.quiet:
+            print('All done.')
+    
 
     def clean(self): 
         """
