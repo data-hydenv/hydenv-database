@@ -155,18 +155,18 @@ class HydenvExamples:
         
         if only is None or only == 'gpx':
             if not self.quiet:
-                print('Loading GPX file\n---------------')
+                print('Loading GPX file')
             gpx = HydenvGPXExample(connection=self.__connection, quiet=self.quiet)
             gpx.run(fname=gpx_fname)
         
         if only is None or only == 'raspi' or only == 'dump':
             if not self.quiet:
-                print('Loading Raspi dump\n----------------')
+                print('Loading Raspi dump')
             log = HydenvRaspiLoggerExample(connection=self.__connection)
             log.run(fname=log_fname)
         
         if not self.quiet:
-            print('--------------\nAll done.\n--------------')
+            print('All done.')
     
 
     def clean(self): 
