@@ -5,6 +5,7 @@ import { ClrLoadingState } from '@clr/angular';
 import { SqlResult } from '../../models/sql-result';
 import { ExerciseService } from '../../exercise.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ResizeEvent } from 'angular-resizable-element';
 
 @Component({
   selector: 'app-sql-input',
@@ -31,6 +32,7 @@ export class SqlInputComponent implements OnInit {
   // component logic
   btnState: ClrLoadingState = ClrLoadingState.DEFAULT;
   errorMessage: string;
+  editorHeight = 360;
 
   @HostListener('window:keydown', ['$event'])
   handleKeypress(event: KeyboardEvent): void {
@@ -75,6 +77,16 @@ export class SqlInputComponent implements OnInit {
 
   onChange(newSql: string): void {
     this.sql = newSql;
+  }
+
+  onReset(): void {
+    this.sql = this.defaultSql;
+  }
+
+  onResize(event: ResizeEvent): void {
+    console.log(event);
+    this.editorHeight = (event.rectangle.height as number);
+    window.dispatchEvent(new Event('resize'));
   }
 
 }

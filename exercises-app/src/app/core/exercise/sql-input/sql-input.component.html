@@ -1,5 +1,5 @@
 <div class="clr-row">
-  <div class="clr-col-6">
+  <div class="clr-col-4">
     <clr-toggle-container>
       <clr-toggle-wrapper>
         <input type="checkbox" clrToggle [(ngModel)]="addExplain">
@@ -7,7 +7,7 @@
       </clr-toggle-wrapper>
     </clr-toggle-container>
   </div>
-  <div class="clr-col-6">
+  <div class="clr-col-4">
     <clr-toggle-container>
       <clr-toggle-wrapper class="tooltip tooltip-md tooltip-top-right">
         <input type="checkbox" clrToggle [(ngModel)]="safeMode" [disabled]="!enableSafeModeTrigger">
@@ -16,8 +16,17 @@
       </clr-toggle-wrapper>
     </clr-toggle-container>
   </div>
+  <div class="clr-col-4">
+    <button class="btn btn-flat btn-sm" style="float: right" [disabled]="sql==defaultSql" (click)="onReset()">RESET</button>
+  </div>
 </div>
-<ngs-code-editor theme="vs-dark" [codeModel]="{language: 'sql', value: defaultSql}" (valueChanged)="onChange($event)"></ngs-code-editor>
+
+<div class="resize-container" mwlResizable [enableGhostResize]="true" [style.height.px]="editorHeight" (resizing)="onResize($event)">
+  <ngx-monaco-editor style="height: 100%;" [options]="{theme: 'vs-dark', language: 'sql'}" (ngModelChange)="onChange($event)" [ngModel]="sql"></ngx-monaco-editor>
+  <div mwlResizeHandle class="resize" [resizeEdges]="{bottom: true}"></div>
+</div>
+
+
 <ng-container *ngIf="errorMessage">
   <clr-alert [clrAlertType]="'danger'" [clrAlertAppLevel]="true">
     <clr-alert-item>
