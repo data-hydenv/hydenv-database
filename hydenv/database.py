@@ -147,6 +147,9 @@ class HydenvDatabase:
         :param safe: If True (default), only a single SELECT is allowed
         :param json: If given, a list of dicts is returned, containing all column names
         """
+        # get rid of comments
+        sql = '\n'.join([line for line in sql.split('\n') if not line.strip().startswith('--')])
+        
         if safe:
             if not sql.lower().strip().startswith('select'):
                 raise AttributeError('[SAFE MODE] only SELECT queries are allowed.')
