@@ -151,7 +151,7 @@ class HydenvDatabase:
         sql = '\n'.join([line for line in sql.split('\n') if not line.strip().startswith('--')])
         
         if safe:
-            if not sql.lower().strip().startswith('select'):
+            if not sql.lower().strip().startswith('select') and not sql.lower().strip().startswith('with'):
                 raise AttributeError('[SAFE MODE] only SELECT queries are allowed.')
             sql = sql.split(';')[0]
         
