@@ -327,7 +327,49 @@
             "id": "St6jnvfg5nyvqffclheq",
             "mandatory": false,
             "order": 10
+          },
+          {
+            "id": "Urb9gy4fbw7atn1rbdan",
+            "mandatory": false,
+            "order": 20
+          },
+          {
+            "id": "Khetns9jgxmd3yesadbs",
+            "order": 30,
+            "mandatory": false
+          },
+          {
+            "id": "P5hqio7uqibvcguwh0hk",
+            "mandatory": true,
+            "order": 40
+          },
+          {
+            "id": "Zflfh20cuwj3d6zctv9i",
+            "mandatory": true,
+            "order": 50
+          },
+          {
+            "id": "Tuqylrly69neajzr9zeh",
+            "mandatory": true,
+            "order": 60
+          },
+          {
+            "id": "Gddypdbca810nzkau2on",
+            "mandatory": false,
+            "order": 61
+          },
+          {
+            "id": "Tyhsjv1nmyvikypqw3eo",
+            "mandatory": true,
+            "order": 65
+          },
+          {
+            "id": "Kzer5exf3y6agsvfomfk",
+            "mandatory": true,
+            "order": 70
           }
+
+
         ]
       }
     ],
