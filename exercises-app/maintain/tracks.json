@@ -318,6 +318,17 @@
             "order": 62
           }
         ]
+      },
+      {
+        "name": "Spatial Analysis",
+        "description": "<p>In this session we will conduct multiple spatial analysis using the HOBO data. You need at least two terms of HOBO data (better three) and you need to load administrative boundaries for the city districts in Freibug im Breisgau. Use the hydenv CLI to load:</p><pre><code>python -m hydenv examples hobo --terms[WT19,WT20,WT21]\npython -m hydenv examples osm city-districts --city=FR</code></pre>",
+        "exercises": [
+          {
+            "id": "St6jnvfg5nyvqffclheq",
+            "mandatory": false,
+            "order": 10
+          }
+        ]
       }
     ],
     "description": "<p>Work on recent and/or historic temperature data collected in Freiburg since 2017. That data was collected by students during the Data collection, -management and -visualization lecture. Handle changing metadata and data of different quality within this track. This track will focus on: <ul><li>metadata</li><li>aggregations</li><li>filtering</li><li>spatial queries</li></ul></p>",

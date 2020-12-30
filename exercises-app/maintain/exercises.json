@@ -102,5 +102,84 @@
       "prefill": "SELECT\n\tt.full_name,\n\trad.radiation_influence,\n\tavg(value) as t_avg\nFROM raw_data r\nJOIN metadata m ON r.meta_id=m.id\nJOIN terms t ON t.id=m.term_id\nJOIN (\n\tSELECT m.id, d.str_value as radiation_influence\n\tFROM metadata m\n\tJOIN nm_metadata_details nm ON nm.meta_id=m.id\n\tJOIN details d ON nm.detail_id=d.id\n\tWHERE key='influence'\n) AS rad ON rad.id=m.id\nWHERE variable_id=1\nGROUP BY t.full_name, rad.radiation_influence"
     },
     "hint": "<p>This exercise is neither complicated nor difficult. You have the solution already there. It is just a lot of typing. Use the solution if you run into too many typing errors.<br>A analysis like this should already be split into different views.</p>"
+  },
+  {
+    "id": "",
+    "name": "Available districts",
+    "body": {
+      "content": "<p>Make sure that the city districts have been loaded to the database. You will find the table <strong>osm_nodes</strong>. The hydenv CLI populated the attribute <strong>node_type</strong> while transforming the data. The CLI endpoint <code>city-districts</code> will use the value <code>'district'</code> here.</p><p>Select all districts from the database</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * from osm_nodes WHERE node_type='district'",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "",
+    "name": "Metadata overview",
+    "body": {
+      "content": "<p>Before we start with spatial operations, let's get a quick overview on the available metadata. Select the first <strong>10</strong> records.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM metadata LIMIT 10",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "",
+    "name": "Enahanced Metadata overview",
+    "body": {
+      "content": "<p>We will work on some enhanced metadata overview for the next execerises. Therefore we will create an enhanced metadata <code>VIEW</code>. Then, we don't have to run the same <code>JOIN</code> statements all the time.</p><p>Create a view on <strong>metadata</strong> called <strong>metadata_full</strong> joining <strong>terms, sensors</strong> and <strong>details</strong>. Include the following attributes:</p><ul><li>metadata: id, device_id, description, location</li><li>terms: full_name as term</li><li>sensors: name as sensor_name</li><li>details: value as influence where <code>key='influnece'</code></li></ul><p>Finally, select the full table</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM metadata_full;",
+      "code": "CREATE OR REPLACE VIEW metadata_full AS\nSELECT\n\tm.id, m.device_id, m.location, m.description,\n\tt.full_name AS term,\n\ts.name AS sensor_name,\n\td.str_value as influence\nFROM metadata m\nJOIN terms t ON t.id=m.term_id\nJOIN sensors s ON s.id=m.sensor_id\nJOIN nm_metadata_details nm ON nm.meta_id=m.id\nJOIN details d ON nm.detail_id=d.id\n\tWHERE d.key='influence';\nSELECT * FROM metadata_full;",
+      "type": "sql"
+    },
+    "disableSafeMode": true
+  },
+  {
+    "id": "",
+    "name": "HOBOs per district",
+    "body": {
+      "content": "<p>How many HOBOs are within each of the city districts in Freiburg?</p><p>Select the <strong>name</strong> and <strong>count</strong>.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "WITH freiburg AS (\n\tSELECT * FROM osm_nodes WHERE node_type='district'\n)\nSELECT freiburg.name, count(metadata.*)\nFROM metadata\nJOIN freiburg ON ST_WITHIN(metadata.location, freiburg.geom)\nGROUP BY freiburg.name",
+      "type": "sql"
+    },
+    "disableSafeMode": true
+  },
+  {
+    "id": "",
+    "name": "Districts with enough HOBOs",
+    "body": {
+      "content": "<p>Reuse the example from the last exercise. Add another level of aggregation to aggregate the overview of districts twice. How many districts have more than <strong>3</strong> HOBOs, how many have only 3 or less?</p><p>Select twice from the statement used in the last exercise and <code>UNION</code> the two results together. Select two attributes: <strong>description</strong> and <strong>count</strong>. Use the two literal descriptions: <code>'HOBO <= 3'</code> and <code>'HOBO > 3'</code>.</p>"
+    },
+    "solution": {
+      "prefill": "WITH freiburg AS (\n\tSELECT * FROM osm_nodes WHERE node_type='district'\n)\nSELECT freiburg.name, count(metadata.*)\nFROM metadata\nJOIN freiburg ON ST_WITHIN(metadata.location, freiburg.geom)\nGROUP BY freiburg.name",
+      "content": "WITH overview AS\n(\n\tWITH freiburg AS (\n\t\tSELECT * FROM osm_nodes WHERE node_type='district'\n\t)\n\tSELECT freiburg.name, count(metadata.*)\n\tFROM metadata\n\tJOIN freiburg ON ST_WITHIN(metadata.location, freiburg.geom)\n\tGROUP BY freiburg.name\n)\nSELECT 'HOBOs > 3' as description, count(*)\nFROM overview WHERE count > 3\nUNION\nSELECT 'HOBO <= 3' as description, count(*)\nFROM overview WHERE count <= 3",
+      "type": "sql"
+    },
+    "disableSafeMode": true
+  },
+  {
+    "id": "",
+    "name": "De-normalizing Overview",
+    "body": {
+      "content": "<p><strong>This exercise is more complicated.</strong></p><p>As a next step, we need the new <code>metadata_full</code> view. The given SQL command in the Editor can be used for that.</p><p>Aggregate the given command, to count the HOBO sensors per district in each available term (2019, 2020, 2021) individually and transpose the result into new attributes using the <code>metadatafull.term</code> value along with the <strong>name</strong> and <strong>geom</strong> from the <code>freiburg</code> sub-query. Finally, use the WKT representation of the district geometries to view them in the application.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "prefill": "WITH\nfreiburg AS (\n\t\tSELECT * FROM osm_nodes WHERE node_type='district'\n),\noverview AS (\n\tSELECT\n\t\tfreiburg.geom,\n\t\tfreiburg.name,\n\t\tmetadata_full.*\n\tFROM metadata_full\n\tJOIN freiburg ON ST_WITHIN(metadata_full.location, freiburg.geom)\n)\nSELECT * FROM overview",
+      "content": "WITH\nfreiburg AS (\n\t\tSELECT * FROM osm_nodes WHERE node_type='district'\n),\noverview AS (\n\tSELECT\n\t\tfreiburg.geom,\n\t\tfreiburg.name,\n\t\tmetadata_full.*\n\tFROM metadata_full\n\tJOIN freiburg ON ST_WITHIN(metadata_full.location, freiburg.geom),\nper_term AS (\n\tSELECT\n\t\to.name, o.geom, count(*) as \"WT19\", 0 as \"WT20\", 0 as \"WT21\"\n\tFROM overview o WHERE term='Winterterm 2019/2020' group by o.name, o.geom\n\tUNION\n\tSELECT\n\t\to.name, o.geom, 0 as \"WT19\", count(*) as \"WT20\", 0 as \"WT21\"\n\tFROM overview o WHERE term='Winterterm 2020/2021' group by o.name, o.geom\n\tUNION\n\tSELECT\n\t\to.name, o.geom, 0 as \"WT19\", 0 as \"WT20\", count(*) as \"WT21\"\n\tFROM overview o WHERE term='Winterterm 2021/2022' group by o.name, o.geom\n\t)\nSELECT\n\tname, ST_AsEWKT(geom) AS \"WKT\",\n\tsum(\"WT19\") AS \"Winterterm 2019/2020\",\n\tsum(\"WT20\") AS \"Winterterm 2020/2021\",\n\tsum(\"WT21\") AS \"Winterterm 2021/2022\"\nFROM per_term GROUP BY name, geom",
+      "type": "sql"
+    },
+    "hint": "<p>Do not change the <code>WITH</code> statement. You can make your adaptions entirely in the main <code>SELECT</code> statement. It is also possible to implement this with sub-queries only.</p>",
+    "disableSafeMode": true
   }
 ]
