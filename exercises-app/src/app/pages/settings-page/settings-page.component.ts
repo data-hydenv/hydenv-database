@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { SettingsService } from 'src/app/core/settings.service';
 import { Subscription } from 'rxjs';
+import { QueryHistoryService } from 'src/app/core/query-history.service';
 
 @Component({
   selector: 'app-settings-page',
@@ -18,7 +19,10 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
   analyticsEnabled = false;
   analyticsSubscription: Subscription;
 
-  constructor(private settings: SettingsService) { }
+  historyEnabled = false;
+  historySubscription: Subscription;
+
+  constructor(private settings: SettingsService, public history: QueryHistoryService) { }
 
   ngOnInit(): void {
     // backend status subscriptions
@@ -33,12 +37,18 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
     this.analyticsSubscription = this.settings.analyticsAllowed.subscribe({
       next: allowed => this.analyticsEnabled = allowed
     });
+
+    // query history subscription
+    this.historySubscription = this.history.enabled.subscribe({
+      next: enabled => this.historyEnabled = enabled
+    });
   }
 
   ngOnDestroy(): void {
     this.backendUrlSubscription.unsubscribe();
     this.backendStatusSubscription.unsubscribe();
     this.analyticsSubscription.unsubscribe();
+    this.historySubscription.unsubscribe();
   }
 
   toggleAnalytics(): void {
@@ -46,6 +56,14 @@ export class SettingsPageComponent implements OnInit, OnDestroy {
       this.settings.rejectGoogleAnalytics();
     } else {
       this.settings.enableGoogleAnalytics();
+    }
+  }
+
+  toggleHistory(): void {
+    if (this.historyEnabled) {
+      this.settings.rejectQueryHistory();
+    } else {
+      this.settings.enabledQueryHistory();
     }
   }
 
