@@ -7,6 +7,7 @@ import { cloneDeep } from 'lodash-es';
 import { QueryRun } from './models/query-run.model';
 import { SqlResult } from './models/sql-result';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -18,13 +19,26 @@ export class QueryHistoryService {
   public history = new BehaviorSubject<QueryRun[]>(this.historyCache);
   public last10 = new BehaviorSubject<QueryRun[]>(this.historyCache);
 
+  // service logic
+  enabled = new BehaviorSubject<boolean>(false);
 
   constructor() {
+  }
+
+  /**
+   * Initialize the Service. This is not done in the constructor
+   * to disable the query history if needed
+   */
+  public init() {
+    this.enabled.next(true);
     // use the .then() if some initialization should happen after the data was loaded
     this.loadAllFromStorage();
   }
 
   public storeQuery(sql: string, result?: SqlResult): Promise<void> {
+    // if not enabled, return
+    if (!this.enabled.getValue()) return Promise.resolve()
+
     // create the entry
     const queryRun = {
       date: new Date(),
@@ -66,6 +80,9 @@ export class QueryHistoryService {
 
 
   private saveAllToStorage(): Promise<void> {
+    // if not enabled, return
+    if (!this.enabled.getValue()) return Promise.resolve()
+
     return localforage.setItem('queryHistory', this.historyCache).then(() => Promise.resolve());
   }
   /**

@@ -13,5 +13,8 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     // check if analytics are allowed
     this.settings.checkGoogleAnalyticsEnabled();
+
+    // check if querHistory is enabled
+    this.settings.checkQueryHistoryEnabled();
   }
 }
