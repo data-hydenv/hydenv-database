@@ -17,7 +17,6 @@ export class QueryHistoryService {
 
   // subjects for all and last 10
   public history = new BehaviorSubject<QueryRun[]>(this.historyCache);
-  public last10 = new BehaviorSubject<QueryRun[]>(this.historyCache);
 
   // service logic
   enabled = new BehaviorSubject<boolean>(false);
@@ -52,7 +51,6 @@ export class QueryHistoryService {
     // append
     this.historyCache.unshift(cloneDeep(queryRun));
     this.history.next(this.historyCache);
-    this.last10.next(this.historyCache.sort((a, b) => +a.date - +b.date).slice(0, 10))
 
     // persist
     return this.saveAllToStorage();
@@ -93,11 +91,9 @@ export class QueryHistoryService {
       // save the new cache
       this.historyCache = history ? history : [];
 
-      const last10 = history.sort((a, b) => +a.date - +b.date).slice(0, 10)
 
       // publish all
       this.history.next(this.historyCache);
-      this.last10.next(last10);
     });
   }
 }

@@ -156,12 +156,18 @@ export class SettingsService {
   }
 
   public enabledQueryHistory(): void {
+    // log an analytics event if the history is enabled
+    this.analytics.logEvent('history_enabled');
+
     // set the storage variable
     localStorage.setItem('hydenv_allow_history', 'allow');
     this.checkQueryHistoryEnabled();
   }
 
   public rejectQueryHistory(): void {
+    // log analyitcs event if history is disabled
+    this.analytics.logEvent('history_disabled', {historyLength: this.history.history.getValue().length});
+
     // remove the storage variable
     localStorage.removeItem('hydenv_allow_history');
     this.history.enabled.next(false);
