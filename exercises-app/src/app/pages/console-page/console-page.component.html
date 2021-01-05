@@ -1,11 +1,33 @@
-<!--<textarea clrTextarea [(ngModel)]="sql"></textarea>
-<button class="btn btn-outline-success btn-block" (click)="onExecute()">Execute</button>-->
-<h1>SQL Console</h1>
+<div class="clr-row wrap-row">
 
-<app-sql-input sql="SELECT count(*) AS amount FROM metadata" (result)="onExecute($event)" [enableSafeModeTrigger]="true"></app-sql-input>
+  <div class="clr-col" style="overflow-y: auto">
+    <h3>SQL Console</h3>
+    <app-sql-input sql="SELECT count(*) AS amount FROM metadata" (result)="onExecute($event)" [enableSafeModeTrigger]="true"></app-sql-input>
+  </div>
 
-<ng-container *ngIf="result">
-  <h2>Results</h2>
-  <hr>
-  <app-sql-result [result]="result"></app-sql-result>
-</ng-container>
+  <div class="clr-col">
+    <div class="clr-row">
+
+
+      <div class="clr-col-12" style="min-height: 50vh">
+        <h3>Results</h3>
+        <ng-container *ngIf="result; else noResult">
+          <app-sql-result [result]="result"></app-sql-result>
+        </ng-container>
+        <ng-template #noResult>
+          <p style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%">
+            <i>run a SQL command first</i>
+          </p>
+        </ng-template>
+      </div>
+
+      <div class="clr-col-12">
+        <h3>Query History</h3>
+        <p style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%">
+          <i>this feature is not implemented yet</i>
+        </p>
+      </div>
+
+    </div>
+  </div>
+</div>

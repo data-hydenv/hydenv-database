@@ -12,7 +12,7 @@ const routes: Routes = [
   },
   {
     path: 'console',
-    component: PageLayoutComponent,
+    component: FullWidthLayoutComponent,
     loadChildren: () => import('./pages/console-page/console-page.module').then(m => m.ConsolePageModule)
   },
   {
