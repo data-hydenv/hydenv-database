@@ -6,6 +6,7 @@ import { SqlResult } from '../../models/sql-result';
 import { ExerciseService } from '../../exercise.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ResizeEvent } from 'angular-resizable-element';
+import { QueryHistoryService } from '../../query-history.service';
 
 @Component({
   selector: 'app-sql-input',
@@ -46,7 +47,7 @@ export class SqlInputComponent implements OnInit {
     }
   }
 
-  constructor(private exerciseService: ExerciseService) { }
+  constructor(private exerciseService: ExerciseService, private queryHistory: QueryHistoryService) { }
 
   ngOnInit(): void {
     // store the default SQL for later (unused so far)
@@ -64,7 +65,12 @@ export class SqlInputComponent implements OnInit {
 
     // execute the SQL command
     this.exerciseService.executeSql(this.sql, explain, !this.safeMode).then((data: SqlResult) => {
+      // emit the result data
       this.result.emit(data);
+
+      // add query to the history - the history will ignore if not enalbed
+      this.queryHistory.storeQuery(this.sql, data);
+
       this.btnState = ClrLoadingState.SUCCESS;
     }).catch((error: HttpErrorResponse) => {
       this.btnState = ClrLoadingState.ERROR;
