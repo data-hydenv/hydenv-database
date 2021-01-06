@@ -36,4 +36,21 @@
   </strong>
 </p>
 
+<h3>Query History</h3>
+<p>
+  The Query History is currently <code>{{ historyEnabled ? 'enabled' : 'disabled' }}</code>.
+</p>
+<button class="btn btn-primary" (click)="toggleHistory()">
+  {{ historyEnabled ? 'DISABLE' : 'ENABLE' }} QUERY HISTORY
+</button>
+<p>
+  You can enable query history for this application. If enabled, the application will store
+  the queries you run and the results of these queries into the local storage of your browser.
+  If there are too many queries, this might slow the application down.
+  You can empty the query history below.
+</p>
+<div *ngIf="historyEnabled">
+  <app-history></app-history>
+</div>
+
 <p></p><p></p><p></p>

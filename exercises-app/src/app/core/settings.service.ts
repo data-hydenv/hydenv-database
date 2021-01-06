@@ -4,6 +4,7 @@ import { BehaviorSubject } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { AngularFireAnalytics } from '@angular/fire/analytics';
+import { QueryHistoryService } from './query-history.service';
 
 export interface VersionInfo {
   app: string;
@@ -35,7 +36,7 @@ export class SettingsService {
   // analytics settings
   analyticsAllowed = new BehaviorSubject<boolean>(false);
 
-  constructor(private http: HttpClient, private analytics: AngularFireAnalytics) {}
+  constructor(private http: HttpClient, private analytics: AngularFireAnalytics, private history: QueryHistoryService) {}
 
   changeBackend(address: string): void {
     if (address.endsWith('api/v1/')) {
@@ -133,5 +134,44 @@ export class SettingsService {
     this.analyticsAllowed.next(false);
 
     console.log('Rejected anonymous statistics...');
+  }
+
+  /**
+   * Check if a hydenv_allow_history is set.
+   * If yes, enable the query history
+   */
+  public checkQueryHistoryEnabled(): void {
+    const h = localStorage.getItem('hydenv_allow_history')
+
+    // check if enabled
+    if (!!h && h === 'allow') {
+      // enable the history
+      this.history.enabled.next(true);
+
+      // load
+      this.history.init();
+
+      console.log('Activated Query History')
+    }
+  }
+
+  public enabledQueryHistory(): void {
+    // log an analytics event if the history is enabled
+    this.analytics.logEvent('history_enabled');
+
+    // set the storage variable
+    localStorage.setItem('hydenv_allow_history', 'allow');
+    this.checkQueryHistoryEnabled();
+  }
+
+  public rejectQueryHistory(): void {
+    // log analyitcs event if history is disabled
+    this.analytics.logEvent('history_disabled', {historyLength: this.history.history.getValue().length});
+
+    // remove the storage variable
+    localStorage.removeItem('hydenv_allow_history');
+    this.history.enabled.next(false);
+
+    console.log('Disabled query history');
   }
 }
