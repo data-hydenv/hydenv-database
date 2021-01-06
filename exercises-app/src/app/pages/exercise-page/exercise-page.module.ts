@@ -4,6 +4,7 @@ import { ExercisePageComponent } from './exercise-page.component';
 import { RouterModule } from '@angular/router';
 import { ExerciseModule } from '../../core/exercise/exercise.module';
 import { SessionsModule } from 'src/app/core/sessions/sessions.module';
+import { ClarityModule } from '@clr/angular';
 
 
 
@@ -14,6 +15,7 @@ import { SessionsModule } from 'src/app/core/sessions/sessions.module';
     RouterModule.forChild([
       {path: ':id', component: ExercisePageComponent}
     ]),
+    ClarityModule,
     ExerciseModule,
     SessionsModule,
   ]

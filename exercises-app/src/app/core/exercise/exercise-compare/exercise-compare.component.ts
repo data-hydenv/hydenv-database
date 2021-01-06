@@ -1,11 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-
+import { isEqual } from 'lodash-es';
 
 import { Exercise } from '../../models/exercise';
 import { ExerciseService } from '../../exercise.service';
 import { SqlResult } from '../../models/sql-result';
 
-import { isEqual } from 'lodash';
 import { TrackProgressService } from '../../track-progress.service';
 import { AngularFireAnalytics } from '@angular/fire/analytics';
 
@@ -16,10 +15,12 @@ import { AngularFireAnalytics } from '@angular/fire/analytics';
 })
 export class ExerciseCompareComponent implements OnInit {
   // store the whole exercise
-  exercise: Exercise;
-  @Input() set useExercise(value: Exercise)  {
-    this.exercise = value;
-    this.setPrefill();
+  @Input() exercise: Exercise;
+
+  @Input() set result(value: SqlResult) {
+    if (value) {
+      this.onUserInput(value);
+    }
   }
 
   // change event - whenever the user checks an exercises, the result is emitted
@@ -28,11 +29,10 @@ export class ExerciseCompareComponent implements OnInit {
   // store the results
   userResult: SqlResult;
   solution: SqlResult;
-  prefill = '';
 
   // store the state of the explain and safe mode trigger
-  explain = false;
-  safeMode = true;
+  @Input() explain = false;
+  @Input() safeMode = true;
 
   // component logic
   solutionCorrect = false;
@@ -42,16 +42,8 @@ export class ExerciseCompareComponent implements OnInit {
   constructor(private exerciseService: ExerciseService, private progress: TrackProgressService, private analytics: AngularFireAnalytics) { }
 
   ngOnInit(): void {
-    this.setPrefill();
   }
 
-  private setPrefill(): void {
-    if (this.exercise && this.exercise.solution.prefill) {
-      this.prefill = this.exercise.solution.prefill;
-    } else {
-      this.prefill = '-- Put your SQL code here.\n-- If you use semicolons, multiple commands or other Queries than SELECT, you have to disable save Mode';
-    }
-  }
 
   /**
    * The user just executed a SQL query to solve the task. Execute

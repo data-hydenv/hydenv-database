@@ -1,19 +1,58 @@
 <ng-container *ngIf="exercise; else notFound">
-  <div class="clr-row">
-    <div class="clr-col-10" style="overflow-x: auto;">
-      <app-exercise-progress-detail [exerciseId]="exerciseId"></app-exercise-progress-detail>
-    </div>
-    <div class="clr-col-2" style="display: flex; flex-direction: column; justify-content: center">
-      <div style="display: flex; flex-direction: row; justify-content: center;">
-        <app-previous-exercise-button [exerciseId]="exerciseId" [btnClasses]="['btn-sm', 'btn-primary']"></app-previous-exercise-button>
-        <app-next-exercise-button [exerciseId]="exerciseId" [btnClasses]="['btn-sm', 'btn-primary']"></app-next-exercise-button>
-      </div>
-    </div>
+<div class="clr-row wrap-row">
+  <div class="clr-col-5">
+    <app-sql-input
+      [sql]="prefill"
+      (result)="onSqlExecuted($event)"
+      [safeMode]="!exercise.disableSafeMode"
+      (addExplainChange)="explain = $event"
+      (safeModeChange)="safeMode = $event"
+    ></app-sql-input>
   </div>
-  <h1>{{ exercise.name }}</h1>
-  <app-exercise-body [body]="exercise.body"></app-exercise-body>
 
-  <app-exercise-compare [useExercise]="exercise"></app-exercise-compare>
+  <div class="clr-col-7">
+
+    <clr-tabs>
+
+      <clr-tab>
+        <button clrTabLink>Task Description</button>
+        <clr-tab-content>
+          <div class="clr-row" style="margin: 0; padding: 0px; max-width: 98%;">
+            <!-- info Panel -->
+            <div class="clr-col-9" style="overflow-x: auto;">
+              <app-exercise-progress-detail [exerciseId]="exerciseId"></app-exercise-progress-detail>
+            </div>
+            <div class="clr-col-3" style="display: flex; flex-direction: column; justify-content: center">
+            <div style="display: flex; flex-direction: row; justify-content: center;">
+              <app-previous-exercise-button [exerciseId]="exerciseId" [btnClasses]="['btn-sm', 'btn-primary']"></app-previous-exercise-button>
+              <app-next-exercise-button [exerciseId]="exerciseId" [btnClasses]="['btn-sm', 'btn-primary']"></app-next-exercise-button>
+            </div>
+          </div>
+          <div class="clr-col-8" style="max-width: 992px;">
+            <h2>{{ exercise.name }}</h2>
+            <app-exercise-body [body]="exercise.body"></app-exercise-body>
+          </div>
+          <div class="clr-col-4" style="border-left: 1px solid black;">
+            <h2>Query History</h2>
+            <p style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%">
+              <i>this feature is not implemented yet</i>
+            </p>
+          </div>
+          </div>
+        </clr-tab-content>
+      </clr-tab>
+
+      <clr-tab>
+        <button clrTabLink>Results</button>
+        <clr-tab-content>
+          <app-exercise-compare [exercise]="exercise" [explain]="explain" [safeMode]="safeMode" [result]="result"></app-exercise-compare>
+        </clr-tab-content>
+      </clr-tab>
+
+    </clr-tabs>
+
+  </div>
+</div>
 
 </ng-container>
 
