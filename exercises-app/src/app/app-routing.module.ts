@@ -12,7 +12,7 @@ const routes: Routes = [
   },
   {
     path: 'console',
-    component: PageLayoutComponent,
+    component: FullWidthLayoutComponent,
     loadChildren: () => import('./pages/console-page/console-page.module').then(m => m.ConsolePageModule)
   },
   {
@@ -22,7 +22,7 @@ const routes: Routes = [
   },
   {
     path: 'e',
-    component: PageLayoutComponent,
+    component: FullWidthLayoutComponent,
     loadChildren: () => import('./pages/exercise-page/exercise-page.module').then(m => m.ExercisePageModule)
   },
   {

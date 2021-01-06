@@ -3,6 +3,7 @@ import { ExerciseService } from '../../core/exercise.service';
 import { ActivatedRoute, Params, ParamMap } from '@angular/router';
 import { Exercise } from '../../core/models/exercise';
 import { Subscription } from 'rxjs';
+import { SqlResult } from 'src/app/core/models/sql-result';
 
 @Component({
   selector: 'app-exercise-page',
@@ -16,6 +17,16 @@ export class ExercisePageComponent implements OnInit, OnDestroy {
   // store the sync status of the exercise service
   isSynced = false;
   syncSubscription: Subscription;
+
+  // passing the sql through to the compare component
+  explain = false;
+  safeMode = true;
+  result: SqlResult;
+  prefill: string;
+
+  onSqlExecuted(value: SqlResult) {
+    this.result = value;
+  }
 
   constructor(private exerciseService: ExerciseService, private route: ActivatedRoute) { }
 
@@ -46,7 +57,16 @@ export class ExercisePageComponent implements OnInit, OnDestroy {
   fetchExerciseDoc(id: string): void {
     this.exerciseService.getExerciseById(id).then(data => {
       this.exercise = data;
+      this.setPrefill();
     });
+  }
+
+  private setPrefill(): void {
+    if (this.exercise && this.exercise.solution.prefill) {
+      this.prefill = this.exercise.solution.prefill;
+    } else {
+      this.prefill = '-- Put your SQL code here.\n-- If you use semicolons, multiple commands or other Queries than SELECT, you have to disable save Mode';
+    }
   }
 
   ngOnDestroy(): void {

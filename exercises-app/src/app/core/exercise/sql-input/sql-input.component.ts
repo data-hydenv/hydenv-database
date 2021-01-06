@@ -32,7 +32,7 @@ export class SqlInputComponent implements OnInit {
   // component logic
   btnState: ClrLoadingState = ClrLoadingState.DEFAULT;
   errorMessage: string;
-  editorHeight = 360;
+  editorHeight = '95%';
 
   @HostListener('window:keydown', ['$event'])
   handleKeypress(event: KeyboardEvent): void {
@@ -85,7 +85,7 @@ export class SqlInputComponent implements OnInit {
 
   onResize(event: ResizeEvent): void {
     console.log(event);
-    this.editorHeight = (event.rectangle.height as number);
+    this.editorHeight = event.rectangle.height + 'px';
     window.dispatchEvent(new Event('resize'));
   }
 

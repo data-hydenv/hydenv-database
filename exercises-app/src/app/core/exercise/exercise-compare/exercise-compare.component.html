@@ -1,10 +1,8 @@
-<app-sql-input
-  [sql]="prefill"
-  (result)="onUserInput($event)"
-  [safeMode]="!exercise.disableSafeMode"
-  (addExplainChange)="explain = $event"
-  (safeModeChange)="safeMode = $event"
-></app-sql-input>
+<ng-container *ngIf="!solution">
+  <p style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 90%">
+    <i>Run your query to view the results here</i>
+  </p>
+</ng-container>
 
 <ng-container *ngIf="solution && solutionCorrect;">
   <div class="clr-row">
