@@ -1,6 +1,6 @@
 <ng-container *ngIf="exercise; else notFound">
 <div class="clr-row wrap-row">
-  <div class="clr-col-5">
+  <div class="clr-col-lg-5 clr-col-md-12">
     <app-sql-input
       [sql]="prefill"
       (result)="onSqlExecuted($event)"
@@ -10,7 +10,7 @@
     ></app-sql-input>
   </div>
 
-  <div class="clr-col-7">
+  <div class="clr-col-lg-7 clr-col-md-12">
 
     <clr-tabs>
 
@@ -28,11 +28,11 @@
               <app-next-exercise-button [exerciseId]="exerciseId" [btnClasses]="['btn-sm', 'btn-primary']"></app-next-exercise-button>
             </div>
           </div>
-          <div class="clr-col-8" style="max-width: 992px;">
+          <div class="clr-col-xl-8 clr-col-lg-12 clr-md-8" style="max-width: 992px;">
             <h2>{{ exercise.name }}</h2>
             <app-exercise-body [body]="exercise.body"></app-exercise-body>
           </div>
-          <div class="clr-col-4" style="border-left: 1px solid black;">
+          <div class="clr-col-xl-4 clr-col-lg-12 clr-md-4" style="border-left: 1px solid black;">
             <h2>Query History</h2>
             <p style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%">
               <i>this feature is not implemented yet</i>
