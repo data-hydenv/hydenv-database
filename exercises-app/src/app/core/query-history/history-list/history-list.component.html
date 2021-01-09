@@ -1,0 +1,17 @@
+<div style="height: 100%; overflow-y: scroll;">
+  <clr-alert *ngFor="let query of queries"
+    [clrAlertClosable]="false"
+    [clrAlertType]="query.result && !query.result.error ? 'info' : 'warning'"
+    [clrAlertAppLevel]="true"
+  >
+    <clr-alert-item>
+      <span class="alert-text">
+        {{ query.body.content.length > 57 ? query.body.content.slice(0, 57) + '...' : query.body.content }}
+      </span>
+      <div class="alert-actions">
+        <button class="btn alert-action" ngxClipboard [cbContent]="query.body.content">COPY</button>
+      </div>
+    </clr-alert-item>
+
+  </clr-alert>
+</div>

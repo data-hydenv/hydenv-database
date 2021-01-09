@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { HistoryTableComponent } from './history-table/history-table.component';
 import { ClarityModule } from '@clr/angular';
 import { ClipboardModule } from 'ngx-clipboard';
+import { HistoryListComponent } from './history-list/history-list.component';
 
 
 
 @NgModule({
   declarations: [
-    HistoryTableComponent
+    HistoryTableComponent,
+    HistoryListComponent
   ],
   imports: [
     CommonModule,
@@ -16,7 +18,8 @@ import { ClipboardModule } from 'ngx-clipboard';
     ClipboardModule,
   ],
   exports: [
-    HistoryTableComponent
+    HistoryTableComponent,
+    HistoryListComponent,
   ]
 })
 export class QueryHistoryModule { }
