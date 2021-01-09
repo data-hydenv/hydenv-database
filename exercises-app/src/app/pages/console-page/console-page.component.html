@@ -22,13 +22,23 @@
       </div>
 
       <div class="clr-col-12" style="height: 30vh">
-        <h3>Query History</h3>
-        <!--
-          <p style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%">
-            <i>this feature is not implemented yet</i>
-          </p>
-         -->
-        <app-history-table [pageSize]="3" [pageSizeOptions]="[3, 5, 10]"></app-history-table>
+        <h3 style="display: flex; flex-direction: row; justify-content: space-between; margin-bottom: 1.2rem;">
+          <span>Query History</span>
+          <div class="btn-group btn-icon btn-default">
+            <button class="btn" (click)="historyUseList = true" [disabled]="historyUseList">
+              <clr-icon shape="view-list"></clr-icon>
+              </button>
+            <button class="btn" (click)="historyUseList = false" [disabled]="!historyUseList">
+              <clr-icon shape="table"></clr-icon>
+              </button>
+          </div>
+        </h3>
+         <ng-container *ngIf="historyUseList">
+          <app-history-list></app-history-list>
+         </ng-container>
+         <ng-container *ngIf="!historyUseList">
+          <app-history-table [pageSize]="3" [pageSizeOptions]="[3, 5, 10]"></app-history-table>
+         </ng-container>
       </div>
 
     </div>

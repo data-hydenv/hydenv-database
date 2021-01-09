@@ -12,6 +12,9 @@ export class ConsolePageComponent implements OnInit {
   // result object
   result: SqlResult;
 
+  // trigger for selecting query history layout
+  historyUseList = true;
+
   constructor(private exercise: ExerciseService) { }
 
   ngOnInit(): void {
