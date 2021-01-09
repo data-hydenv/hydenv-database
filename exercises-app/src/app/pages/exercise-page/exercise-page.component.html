@@ -28,15 +28,9 @@
               <app-next-exercise-button [exerciseId]="exerciseId" [btnClasses]="['btn-sm', 'btn-primary']"></app-next-exercise-button>
             </div>
           </div>
-          <div class="clr-col-xl-8 clr-col-lg-12 clr-md-8" style="max-width: 992px;">
+          <div class="clr-col-12" style="max-width: 992px;">
             <h2>{{ exercise.name }}</h2>
             <app-exercise-body [body]="exercise.body"></app-exercise-body>
-          </div>
-          <div class="clr-col-xl-4 clr-col-lg-12 clr-md-4" style="border-left: 1px solid black;">
-            <h2>Query History</h2>
-            <p style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%">
-              <i>this feature is not implemented yet</i>
-            </p>
           </div>
           </div>
         </clr-tab-content>
@@ -46,6 +40,29 @@
         <button clrTabLink>Results</button>
         <clr-tab-content>
           <app-exercise-compare [exercise]="exercise" [explain]="explain" [safeMode]="safeMode" [result]="result"></app-exercise-compare>
+        </clr-tab-content>
+      </clr-tab>
+
+      <clr-tab>
+        <button clrTabLink>Query History</button>
+        <clr-tab-content>
+          <h2 style="display: flex; flex-direction: row; justify-content: space-between; margin-bottom: 1.2rem;">
+            <span>Query History</span>
+            <div class="btn-group btn-icon btn-default">
+              <button class="btn" (click)="historyUseList = true" [disabled]="historyUseList">
+                <clr-icon shape="view-list"></clr-icon>
+                </button>
+              <button class="btn" (click)="historyUseList = false" [disabled]="!historyUseList">
+                <clr-icon shape="table"></clr-icon>
+                </button>
+            </div>
+          </h2>
+          <ng-container *ngIf="historyUseList">
+            <app-history-list></app-history-list>
+           </ng-container>
+           <ng-container *ngIf="!historyUseList">
+            <app-history-table [pageSize]="10" [pageSizeOptions]="[3, 5, 10, 25]"></app-history-table>
+           </ng-container>
         </clr-tab-content>
       </clr-tab>
 

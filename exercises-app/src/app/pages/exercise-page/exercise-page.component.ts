@@ -24,6 +24,9 @@ export class ExercisePageComponent implements OnInit, OnDestroy {
   result: SqlResult;
   prefill: string;
 
+  // trigger for switching the QueryHistory
+  historyUseList = false;
+
   onSqlExecuted(value: SqlResult) {
     this.result = value;
   }

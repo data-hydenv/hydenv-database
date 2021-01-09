@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { ExerciseModule } from '../../core/exercise/exercise.module';
 import { SessionsModule } from 'src/app/core/sessions/sessions.module';
 import { ClarityModule } from '@clr/angular';
+import { QueryHistoryModule } from 'src/app/core/query-history/query-history.module';
 
 
 
@@ -18,6 +19,7 @@ import { ClarityModule } from '@clr/angular';
     ClarityModule,
     ExerciseModule,
     SessionsModule,
+    QueryHistoryModule,
   ]
 })
 export class ExercisePageModule { }

@@ -1,4 +1,4 @@
-<div style="height: 100%; overflow-y: scroll;">
+<div style="height: 85%; overflow-y: auto;">
   <clr-alert *ngFor="let query of queries"
     [clrAlertClosable]="false"
     [clrAlertType]="query.result && !query.result.error ? 'info' : 'warning'"
