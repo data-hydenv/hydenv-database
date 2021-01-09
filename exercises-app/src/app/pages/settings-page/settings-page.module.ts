@@ -3,23 +3,25 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 import { ClarityModule } from '@clr/angular';
-import { ClipboardModule } from 'ngx-clipboard';
 
 import { SettingsPageComponent } from './settings-page.component';
 import { VersionComponent } from './version/version.component';
-import { HistoryComponent } from './history/history.component';
+import { QueryHistoryModule } from 'src/app/core/query-history/query-history.module';
 
 
 
 @NgModule({
-  declarations: [SettingsPageComponent, VersionComponent, HistoryComponent],
+  declarations: [
+    SettingsPageComponent,
+    VersionComponent
+  ],
   imports: [
     CommonModule,
     RouterModule.forChild([
       {path: '', component: SettingsPageComponent, pathMatch: 'full'}
     ]),
     ClarityModule,
-    ClipboardModule
+    QueryHistoryModule,
   ]
 })
 export class SettingsPageModule { }
