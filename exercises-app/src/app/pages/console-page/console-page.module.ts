@@ -6,6 +6,7 @@ import { ClarityModule } from '@clr/angular';
 
 import { ConsolePageComponent } from './console-page.component';
 import { ExerciseModule } from '../../core/exercise/exercise.module';
+import { QueryHistoryModule } from 'src/app/core/query-history/query-history.module';
 
 
 
@@ -19,6 +20,7 @@ import { ExerciseModule } from '../../core/exercise/exercise.module';
     FormsModule,
     ClarityModule,
     ExerciseModule,
+    QueryHistoryModule,
   ]
 })
 export class ConsolePageModule { }

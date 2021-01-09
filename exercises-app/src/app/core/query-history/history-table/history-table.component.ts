@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 
 import { QueryRun } from '../../models/query-run.model';
@@ -13,6 +13,10 @@ export class HistoryTableComponent implements OnInit, OnDestroy {
   // store queries locally
   queries: QueryRun[] = [];
   queriesSubscription: Subscription;
+
+  // controlling the table
+  @Input() pageSize = 25;
+  @Input() pageSizeOptions = [10, 25, 50, 100];
 
   constructor(private history: QueryHistoryService) { }
 

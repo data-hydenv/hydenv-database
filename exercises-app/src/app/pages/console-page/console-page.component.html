@@ -9,7 +9,7 @@
     <div class="clr-row">
 
 
-      <div class="clr-col-12" style="min-height: 60vh">
+      <div class="clr-col-12" style="min-height: 50vh">
         <h3>Results</h3>
         <ng-container *ngIf="result; else noResult">
           <app-sql-result [result]="result"></app-sql-result>
@@ -21,11 +21,14 @@
         </ng-template>
       </div>
 
-      <div class="clr-col-12" style="height: 20vh">
+      <div class="clr-col-12" style="height: 30vh">
         <h3>Query History</h3>
-        <p style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%">
-          <i>this feature is not implemented yet</i>
-        </p>
+        <!--
+          <p style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%">
+            <i>this feature is not implemented yet</i>
+          </p>
+         -->
+        <app-history-table [pageSize]="3" [pageSizeOptions]="[3, 5, 10]"></app-history-table>
       </div>
 
     </div>

@@ -4,7 +4,7 @@
   <clr-dg-column>Result</clr-dg-column>
   <clr-dg-column>Actions</clr-dg-column>
 
-  <clr-dg-row *ngFor="let query of queries">
+  <clr-dg-row *clrDgItems="let query of queries">
     <clr-dg-cell>{{ query.date | date:'d. MMM yyyy HH:mm' }}</clr-dg-cell>
     <clr-dg-cell>{{ query.body.content.length > 37 ? query.body.content.slice(0, 37) + '...' : query.body.content  }}</clr-dg-cell>
     <clr-dg-cell *ngIf="query.result">{{ query.result.data.length }} rows returned</clr-dg-cell>
@@ -18,9 +18,9 @@
   </clr-dg-row>
 
   <clr-dg-footer>
-    <clr-dg-pagination #pagination [clrDgPageSize]="25">
-      <clr-dg-page-size [clrPageSizeOptions]="[10,25,50,100]">Show</clr-dg-page-size>
-      {{ pagination.firstItem + 1 }} - {{pagination.lastItem + 1}} of {{ pagination.totalItems }} queries
+    <clr-dg-pagination #pagination [clrDgPageSize]="pageSize" [clrDgTotalItems]="queries.length">
+      <clr-dg-page-size [clrPageSizeOptions]="pageSizeOptions" >Show</clr-dg-page-size>
+      {{ pagination.firstItem + 1 }} - {{pagination.lastItem + 1}} of {{ queries.length }} queries
     </clr-dg-pagination>
     <button class="btn btn-link" (click)="onDeleteHistory()">DELETE ALL</button>
   </clr-dg-footer>
