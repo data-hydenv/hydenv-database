@@ -15,6 +15,9 @@ from hydenv import __version__ as hydenv_version
 app = Flask(__name__)
 CORS(app)
 
+BASEPATH = os.path.abspath(os.path.dirname(__file__))
+EXERCISE_APP = os.path.abspath(os.path.join(BASEPATH, 'exercises-js'))
+
 # do not cache assets
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
@@ -22,12 +25,13 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 @app.route('/<path:path>', methods=['GET'])
 def static_files(path: str):
     if path.endswith('js'):
-        return send_from_directory('./exercises-js/', path, mimetype='application/javascript')
-    return send_from_directory('./exercises-js/', path)
+        return send_from_directory(EXERCISE_APP, path, mimetype='application/javascript')
+    return send_from_directory(EXERCISE_APP, path)
 
 @app.route('/')
 def index():
-    return send_from_directory('./', 'index.html')
+    print(EXERCISE_APP)
+    return send_from_directory(EXERCISE_APP, 'index.html')
 
 @app.route('/api/v1/ping', methods=['GET'])
 def ping():
@@ -36,7 +40,8 @@ def ping():
         'version': {
             'python': '%d.%d.%d' % sys.version_info[:3],
             'python_text': sys.version,
-            'hydenv': hydenv_version
+            'hydenv': hydenv_version,
+            'APP': EXERCISE_APP
         }
     }), 200
 
