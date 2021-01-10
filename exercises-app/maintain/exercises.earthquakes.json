@@ -45,7 +45,7 @@
       "type": "html"
     },
     "solution": {
-      "content": "SELECT date_part('year', datum) AS year, count(*) FROM earthquakes\nGROUP BY year\nORDERBY BY year ASC",
+      "content": "SELECT date_part('year', datum) AS year, count(*) FROM earthquakes\nGROUP BY year\nORDER BY year ASC",
       "type": "sql"
     }
   },
