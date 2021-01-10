@@ -38,7 +38,7 @@
 
       <clr-tab>
         <button clrTabLink>Results</button>
-        <clr-tab-content>
+        <clr-tab-content *clrIfActive="forceResultTab">
           <app-exercise-compare [exercise]="exercise" [explain]="explain" [safeMode]="safeMode" [result]="result"></app-exercise-compare>
         </clr-tab-content>
       </clr-tab>

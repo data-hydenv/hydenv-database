@@ -31,8 +31,14 @@ export class ExercisePageComponent implements OnInit, OnDestroy {
   // Subscription to queryRun clipboard
   clipboardSubscription: Subscription;
 
+  // component logic
+  forceResultTab = false;      // put in the name of a tab to force-open it
+
   onSqlExecuted(value: SqlResult) {
     this.result = value;
+
+    // force the result tab
+    this.forceResultTab = true;
   }
 
   constructor(private exerciseService: ExerciseService, private route: ActivatedRoute, private history: QueryHistoryService) { }
