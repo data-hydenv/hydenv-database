@@ -25,5 +25,6 @@ setup(
     long_description_content_type='text/markdown',
     install_requires=requirements(),
     packages=find_packages(),
+    include_package_data=True,
     zip_safe=False
 )
