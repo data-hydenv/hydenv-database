@@ -2,5 +2,4 @@ include README.md
 include LICENSE
 include VERSION
 include requirements.txt
-include hydenv/exercises-js/*
-include hydenv/exercises-js/**/*
+graft hydenv/exercises-js
