@@ -4,6 +4,7 @@ import { ActivatedRoute, Params, ParamMap } from '@angular/router';
 import { Exercise } from '../../core/models/exercise';
 import { Subscription } from 'rxjs';
 import { SqlResult } from 'src/app/core/models/sql-result';
+import { QueryHistoryService } from 'src/app/core/query-history.service';
 
 @Component({
   selector: 'app-exercise-page',
@@ -27,11 +28,14 @@ export class ExercisePageComponent implements OnInit, OnDestroy {
   // trigger for switching the QueryHistory
   historyUseList = false;
 
+  // Subscription to queryRun clipboard
+  clipboardSubscription: Subscription;
+
   onSqlExecuted(value: SqlResult) {
     this.result = value;
   }
 
-  constructor(private exerciseService: ExerciseService, private route: ActivatedRoute) { }
+  constructor(private exerciseService: ExerciseService, private route: ActivatedRoute, private history: QueryHistoryService) { }
 
   ngOnInit(): void {
     // subscribe to sync status of exercises
@@ -54,7 +58,19 @@ export class ExercisePageComponent implements OnInit, OnDestroy {
       }
     });
 
-//    this.exerciseService.getExerciseById('Ydw6xp14NiHexPZz3nmD').then(data => console.log(data));
+    // subscribe to clipboard copies
+    this.clipboardSubscription = this.history.clipboard.subscribe({
+      next: queryRun => {
+        if (queryRun) {
+          // set the prefill
+          this.prefill = queryRun.body.content;
+
+          if (queryRun.result) {
+            this.result = queryRun.result;
+          }
+        }
+      }
+    });
   }
 
   fetchExerciseDoc(id: string): void {
@@ -74,5 +90,6 @@ export class ExercisePageComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.syncSubscription.unsubscribe();
+    this.clipboardSubscription.unsubscribe();
   }
 }
