@@ -1,6 +1,6 @@
 sqlalchemy
 geoalchemy2
-psycopg2
+psycopg2-binary
 flask
 flask-cors
 fire
