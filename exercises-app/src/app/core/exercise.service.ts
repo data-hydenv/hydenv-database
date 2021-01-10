@@ -196,7 +196,7 @@ export class ExerciseService {
    * @param query - SQL query.
    */
   public executeSql(query: string, explain?: string, disableSafeMode?: boolean): Promise<any> {
-    const opt = {params: {sql: query, safe: !!disableSafeMode ? 'False' : 'True'}};
+    const opt = {params: {sql: query.replace('+', '%2B'), safe: !!disableSafeMode ? 'False' : 'True'}};
     // TODO: for now, only text output EXPLAINs are included
     if (explain) {
       (opt.params as any).explain = explain;

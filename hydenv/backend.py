@@ -58,7 +58,7 @@ def execute():
         safe = False
     else:
         safe = True
-    sql = data.get('sql')
+    sql = data.get('sql').replace('%2B', '+')
     explain = data.get('explain', False)
     if sql is None:
         return jsonify({'message': 'No SQL query given.'}), 404
