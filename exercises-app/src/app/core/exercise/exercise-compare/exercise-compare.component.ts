@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { isEqual } from 'lodash-es';
+import { isEqual, isEqualWith, isNumber } from 'lodash-es';
 
 import { Exercise } from '../../models/exercise';
 import { ExerciseService } from '../../exercise.service';
@@ -7,6 +7,15 @@ import { SqlResult } from '../../models/sql-result';
 
 import { TrackProgressService } from '../../track-progress.service';
 import { AngularFireAnalytics } from '@angular/fire/analytics';
+
+
+function rowCustomizer(objValue, othValue) {}
+
+function cellCustomizer(objValue, othValue) {
+  if (isNumber(objValue)) {
+    return Math.abs(objValue - othValue) < 0.01;
+  }
+}
 
 @Component({
   selector: 'app-exercise-compare',
@@ -71,7 +80,8 @@ export class ExerciseCompareComponent implements OnInit {
    */
   private compare(): void {
     // update the component state
-    if (isEqual(this.userResult.data, this.solution.data)) {
+//    if (isEqual(this.userResult.data, this.solution.data)) {
+    if (isEqualWith(this.userResult.data, this.solution.data, cellCustomizer)) {
       this.solutionCorrect = true;
       this.showSolution = true;
     } else {
