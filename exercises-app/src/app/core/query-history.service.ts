@@ -15,8 +15,11 @@ export class QueryHistoryService {
   // main container for queries
   private historyCache: QueryRun[] = [];
 
-  // subjects for all and last 10
+  // subjects for all
   public history = new BehaviorSubject<QueryRun[]>(this.historyCache);
+
+  // clipboard-like subject for only one QueryRun
+  public clipboard = new BehaviorSubject<QueryRun>(null);
 
   // service logic
   enabled = new BehaviorSubject<boolean>(false);
