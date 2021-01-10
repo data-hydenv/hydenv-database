@@ -4,13 +4,15 @@ import { HistoryTableComponent } from './history-table/history-table.component';
 import { ClarityModule } from '@clr/angular';
 import { ClipboardModule } from 'ngx-clipboard';
 import { HistoryListComponent } from './history-list/history-list.component';
+import { CopyQueryRunComponent } from './copy-query-run/copy-query-run.component';
 
 
 
 @NgModule({
   declarations: [
     HistoryTableComponent,
-    HistoryListComponent
+    HistoryListComponent,
+    CopyQueryRunComponent
   ],
   imports: [
     CommonModule,
@@ -20,6 +22,7 @@ import { HistoryListComponent } from './history-list/history-list.component';
   exports: [
     HistoryTableComponent,
     HistoryListComponent,
+    CopyQueryRunComponent,
   ]
 })
 export class QueryHistoryModule { }

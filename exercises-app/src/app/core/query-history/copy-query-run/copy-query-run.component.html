@@ -1,0 +1,8 @@
+<button type="button" class="tooltip tooltip-md" [ngClass]="btnClasses" role="tooltip" [disabled]="!queryRun">
+  <clr-icon *ngIf="useIcon; else noIcon" shape="copy"></clr-icon>
+  <span class="tooltip-content">Copy SQL and Result</span>
+</button>
+
+<ng-template #noIcon>
+  {{ label }}
+</ng-template>
