@@ -2,7 +2,7 @@
 
   <div class="clr-col-lg-6 clr-offset-lg-0 clr-col-md-10 clr-offset-md-1" style="overflow-y: auto">
     <h3>SQL Console</h3>
-    <app-sql-input sql="SELECT count(*) AS amount FROM metadata" (result)="onExecute($event)" [enableSafeModeTrigger]="true"></app-sql-input>
+    <app-sql-input [sql]="prefill" (result)="onExecute($event)" [enableSafeModeTrigger]="true"></app-sql-input>
   </div>
 
   <div class="clr-col-lg-6 clr-offset-lg-0 clr-col-md-10 clr-offset-md-1">

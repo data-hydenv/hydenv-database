@@ -15,6 +15,9 @@ export class ConsolePageComponent implements OnInit {
   // trigger for selecting query history layout
   historyUseList = true;
 
+  // property to store default sql
+  prefill = 'SELECT count(*) AS amount FROM metadata';
+
   constructor(private exercise: ExerciseService) { }
 
   ngOnInit(): void {
