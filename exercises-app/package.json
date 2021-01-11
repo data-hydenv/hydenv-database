@@ -1,6 +1,6 @@
 {
   "name": "exercises-app",
-  "version": "0.8.10",
+  "version": "0.8.11",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
