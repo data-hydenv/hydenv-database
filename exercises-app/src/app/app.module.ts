@@ -6,6 +6,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ClarityModule } from '@clr/angular';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAnalyticsModule, ScreenTrackingService, CONFIG, COLLECTION_ENABLED, DEBUG_MODE, APP_NAME, APP_VERSION } from '@angular/fire/analytics';
+import { AngularFirePerformanceModule, PerformanceMonitoringService } from '@angular/fire/performance';
 import { MonacoEditorModule } from 'ngx-monaco-editor';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -27,6 +28,7 @@ import { environment } from 'src/environments/environment';
     ClarityModule,
     AngularFireModule.initializeApp(environment.firebase),
     AngularFireAnalyticsModule,
+    AngularFirePerformanceModule,
     BrowserAnimationsModule,
     MonacoEditorModule.forRoot(),
     LayoutsModule,
@@ -38,7 +40,8 @@ import { environment } from 'src/environments/environment';
     {provide: COLLECTION_ENABLED,useValue: true},
     {provide: DEBUG_MODE, useValue: true},
     {provide: APP_NAME, useValue: environment.firebase.projectId},
-    {provide: APP_VERSION, useValue: environment.version}
+    {provide: APP_VERSION, useValue: environment.version},
+    PerformanceMonitoringService
   ],
   bootstrap: [AppComponent]
 })
