@@ -41,7 +41,7 @@
     "id": "Rcroefdo4qdvd9xjpids",
     "name": "Trend over time",
     "body": {
-      "content": "<p>Is there a trend over time?</p><p>I am not a seismologist, but I would not expect any natural or antropogene explanation for increasing numbers. The increase itself is nevertheless expected, as the measuring equippment should have become more sensitve in the past 70 years.</p><p>Does the number of earthquakes per year change? Reduce the <strong>earthquakes</strong> table to an yearly count time series. Name the attributes <strong>year</strong> and </strong>conut</strong> and order them ascending.</p><p>You can use the plotting tab to quickly plot the result.</p>",
+      "content": "<p>Is there a trend over time?</p><p>I am not a seismologist, but I would not expect any natural or antropogene explanation for increasing numbers. The increase itself is nevertheless expected, as the measuring equippment should have become more sensitve in the past 70 years.</p><p>Does the number of earthquakes per year change? Reduce the <strong>earthquakes</strong> table to an yearly count time series. Name the attributes <strong>year</strong> and </strong>count</strong> and order them ascending.</p><p>You can use the plotting tab to quickly plot the result.</p>",
       "type": "html"
     },
     "solution": {
