@@ -53,7 +53,7 @@
     "id": "Ytpdel2hizwend3zdyg9",
     "name": "Shaky day",
     "body": {
-      "content": "<p>Which is the day at which most earthquakes were observed? Select their <strong>count</strong>, <strong>datum</strong> and the <strong>magnitudes</strong> themselves as an array of <code>double pricision[]</code>. Check out the correct casting function in the Postgres documentation.</p>",
+      "content": "<p>Which is the day at which most earthquakes were observed? Select their <strong>count</strong>, <strong>datum</strong> and the <strong>magnitudes</strong> themselves as an array of <code>double pricision[]</code>. Check out the Postgres documentation, to find the correct function that can aggregate many values into an array.</p>",
       "type": "html"
     },
     "solution": {
