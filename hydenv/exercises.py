@@ -18,8 +18,9 @@ class HydenvExercises:
     :param backend: The backend server to process the SQL.\n
         defaults to 'local', to run on localhost. Can be overwritten by a
         remote API server.
+    :param port: Overwrite the default port (5000)
     """
-    def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}", backend='local'):
+    def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}", backend='local', port=5000):
         self.connection = env.build_connection(connection=connection)
 
         # backend settings
@@ -27,12 +28,13 @@ class HydenvExercises:
         self.allow_external = False     
         self._backend_proc = None
         self._backend_thread = None
+        self.port = port
 
         if backend == 'local':
-            self.backend = 'http://localhost:5000/'
+            self.backend = 'http://localhost:%d/' % port
             self.backend_use_debug = True
         elif backend == 'extern' or backend == 'external':
-            self.backend = 'http://localhost:5000/'
+            self.backend = 'http://localhost:%d/' % port
             self.backend_use_debug = False
             self.allow_external = True
         else:
@@ -70,7 +72,7 @@ class HydenvExercises:
         # add the database connection to evironment variables
 
         # build command
-        cmds = ['python', BACKEND, '--db_uri=%s' % self.connection]
+        cmds = ['python', BACKEND, '--db_uri=%s' % self.connection, '--port=%d' % self.port]
         if self.backend_use_debug:
             cmds.append('--debug')
         if self.allow_external:
