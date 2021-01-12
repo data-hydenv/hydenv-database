@@ -49,7 +49,7 @@ jobs:
         run: pip install pyinstaller
       
       - name: Create executable
-        run: pyinstaller hydenv/__main__.py --onefile --distpath ./deploy --name hydenv --add-data "hydenv/exercises-js;exercises-js"
+        run: pyinstaller hydenv/__main__.py --onefile --hidden-import cmath --distpath ./deploy --name hydenv --add-data "hydenv/exercises-js;exercises-js"
       
       - name: Create a tarball
         run: tar -cvzf hydenv_win.tar ./deploy
@@ -88,7 +88,7 @@ jobs:
         run: pip install pyinstaller
       
       - name: Create executable
-        run: pyinstaller hydenv/__main__.py --onefile --distpath ./deploy --name hydenv --add-data "hydenv/exercises-js:exercises-js"
+        run: pyinstaller hydenv/__main__.py --onefile --hidden-import cmath --distpath ./deploy --name hydenv --add-data "hydenv/exercises-js:exercises-js"
       
       - name: Create a tarball
         run: tar -cvzf hydenv_mac.tar ./deploy
@@ -127,7 +127,7 @@ jobs:
         run: pip install pyinstaller
       
       - name: Create executable
-        run: pyinstaller hydenv/__main__.py --onefile --distpath ./deploy --name hydenv --add-data "hydenv/exercises-js:exercises-js"
+        run: pyinstaller hydenv/__main__.py --onefile --hidden-import cmath --distpath ./deploy --name hydenv --add-data "hydenv/exercises-js:exercises-js"
       
       - name: Create a tarball
         run: tar -cvzf hydenv_linux.tar ./deploy
