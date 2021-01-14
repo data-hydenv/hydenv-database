@@ -157,5 +157,5 @@ class HydenvHoboExamples:
             if data == 'all' or data == 'quality':
                 # quality checked data
                 p = os.path.join(path, self.__hobo_data_map[term], 'hourly')
-                cli.folder(path=p, match=r'[0-9]+_Th\.(tsv)', is_quality=True, term=term, quiet=quiet)
+                cli.folder(path=p, match=r'[0-9]+_Th\.(tsv|csv)', is_quality=True, term=term, quiet=quiet)
             

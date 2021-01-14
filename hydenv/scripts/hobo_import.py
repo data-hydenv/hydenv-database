@@ -60,6 +60,13 @@ def read_hourly_file(fname):
 		# drop old index
 		df.drop(['date', 'hour'], axis=1, inplace=True)
 		df.columns = ['value', 'origin', 'tstamp']
+	elif fname.endswith('.csv'):
+		# read the file
+		df = pd.read_csv(fname)
+
+		# rename the columns
+		df.columns = [s.lower() for s in df.columns]
+		df.rename(columns={'th': 'value', 'date': 'tstamp'}, inplace=True)
 	else:
 		raise AttributeError('The file format is not yet supported.')
 	return df
