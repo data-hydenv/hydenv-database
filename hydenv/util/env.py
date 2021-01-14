@@ -1,5 +1,6 @@
 import os
 import json
+from stdiomask import getpass
 
 NAME_MAP = dict(
     usr='POSTGRES_USER',
@@ -47,8 +48,8 @@ def build_connection(connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"
         args['dbname'] = os.environ.get('POSTGRES_DBNAME', fargs.get('POSTGRES_DBNAME', 'hydenv'))
     if '{pw}' in connection:
         pw = os.environ.get('POSTGRES_PASSWORD', fargs.get('POSTGRES_PASSWORD'))
-        if pw is not None:
-            pw = input('Please enter %s password: ' % args['usr'])
+        if pw is None:
+            pw = getpass('PostgreSQL user %s password: ' % args['usr'])
         args['pw'] = pw
 
         
