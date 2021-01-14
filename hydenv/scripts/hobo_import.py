@@ -67,6 +67,9 @@ def read_hourly_file(fname):
 		# rename the columns
 		df.columns = [s.lower() for s in df.columns]
 		df.rename(columns={'th': 'value', 'date': 'tstamp'}, inplace=True)
+
+		# convert datetime
+		df['tstamp'] = [dt.strptime(_, '%Y-%m-%d %H:%M:%S') for _ in df.tstamp]
 	else:
 		raise AttributeError('The file format is not yet supported.')
 	return df
