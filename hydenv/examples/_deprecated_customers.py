@@ -3,7 +3,7 @@ from io import StringIO
 
 import pandas as pd
 from sqlalchemy import create_engine
-from barnum import gen_data
+# from barnum import gen_data
 
 from hydenv.util import env
 
@@ -86,53 +86,54 @@ class HydenvCustomerExamples:
     def run(self, quiet=True, k=500, normalize=False):
         """
         """
+        pass
         # 3% different stores - max 60
-        maxs = 60 if int(0.03 * k) > 60 else int(0.03 * k) 
-        stores = [gen_data.create_company_name() for _ in range(maxs)]
+        # maxs = 60 if int(0.03 * k) > 60 else int(0.03 * k) 
+        # stores = [gen_data.create_company_name() for _ in range(maxs)]
 
-        # 2% different locations - max 21
-        maxs = 21 if int(0.02 * k) > 21 else int(0.02 * k)
-        locations = [gen_data.create_city_state_zip() for _ in range(maxs)]
+        # # 2% different locations - max 21
+        # maxs = 21 if int(0.02 * k) > 21 else int(0.02 * k)
+        # locations = [gen_data.create_city_state_zip() for _ in range(maxs)]
 
-        # 8% different products - 1200 max 
-        maxs = 1200 if int(0.08 * k) > 1200 else int(0.08 * k)
-        products = [(int(random() * 10**8), gen_data.create_nouns(choices([1,2,3], weights=[0.7, 0.2, 0.1], k=1)[0])) for _ in range(maxs)]
+        # # 8% different products - 1200 max 
+        # maxs = 1200 if int(0.08 * k) > 1200 else int(0.08 * k)
+        # products = [(int(random() * 10**8), gen_data.create_nouns(choices([1,2,3], weights=[0.7, 0.2, 0.1], k=1)[0])) for _ in range(maxs)]
 
-        # 60% different customers
-        customer_ids = choices(list(range(int(0.6 * k))), k=k)
+        # # 60% different customers
+        # customer_ids = choices(list(range(int(0.6 * k))), k=k)
 
-        csv = "customer_id,purchase\n"
+        # csv = "customer_id,purchase\n"
 
-        for customer_id in customer_ids:
-            # new dataset
-            p = '%s - %s' % choice(products)
-            loc = ' - '.join(choice(locations))
-            line = '%s,%s' % (customer_id, ' | '.join([p, loc, choice(stores)]))
+        # for customer_id in customer_ids:
+        #     # new dataset
+        #     p = '%s - %s' % choice(products)
+        #     loc = ' - '.join(choice(locations))
+        #     line = '%s,%s' % (customer_id, ' | '.join([p, loc, choice(stores)]))
             
-            csv += line + '\n'
+        #     csv += line + '\n'
         
-        # build buffer
-        buf = StringIO()
-        buf.write(csv)
-        buf.seek(0)
+        # # build buffer
+        # buf = StringIO()
+        # buf.write(csv)
+        # buf.seek(0)
 
-        df = pd.read_csv(buf)
+        # df = pd.read_csv(buf)
 
-        if not quiet:
-            print('Uploading...')
+        # if not quiet:
+        #     print('Uploading...')
         
-        # save to database
-        with self.engine.connect() as con:
-            con.execute('DROP TABLE IF EXISTS purchases CASCADE;COMMIT;')
-        df.to_sql('purchases', self.engine, index=None, if_exists='replace')
+        # # save to database
+        # with self.engine.connect() as con:
+        #     con.execute('DROP TABLE IF EXISTS purchases CASCADE;COMMIT;')
+        # df.to_sql('purchases', self.engine, index=None, if_exists='replace')
 
-        if normalize:
-            if not quiet:
-                print('Normalizing data scheme...')
-            self._normalize()
+        # if normalize:
+        #     if not quiet:
+        #         print('Normalizing data scheme...')
+        #     self._normalize()
 
-        if not quiet:
-            print('Done.')
+        # if not quiet:
+        #     print('Done.')
 
     def _normalize(self):
         with self.engine.connect() as con:

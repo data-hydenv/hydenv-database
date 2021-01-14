@@ -2,14 +2,14 @@ from progressbar import ProgressBar
 
 from hydenv.examples.hobo import HydenvHoboExamples
 from hydenv.examples.space import HydenvSpaceExamples
-from hydenv.examples.customers import HydenvCustomerExamples
+# from hydenv.examples.customers import HydenvCustomerExamples
 from hydenv.examples.osm import HydenvOSMExamples
 from hydenv.examples.earthquakes import HydenvEarthquakeExamples
 from hydenv.examples.wbd import HydenvWorldBorderExample
 from hydenv.examples.gpx import HydenvGPXExample
 from hydenv.examples.raspi_logger import HydenvRaspiLoggerExample
 
-CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvCustomerExamples, HydenvOSMExamples, HydenvEarthquakeExamples, HydenvWorldBorderExample, HydenvGPXExample, HydenvRaspiLoggerExample]
+CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvOSMExamples, HydenvEarthquakeExamples, HydenvWorldBorderExample, HydenvGPXExample, HydenvRaspiLoggerExample]
 
 class HydenvExamples:
     r"""
@@ -62,11 +62,13 @@ class HydenvExamples:
         :param k: number of purchases to create
         :param normalize: If True, the normalized scheme will be added as well.
         """
-        cli = HydenvCustomerExamples(connection=self.__connection)
-        return cli.run(quiet=self.quiet, k=k, normalize=normalize)
+        # cli = HydenvCustomerExamples(connection=self.__connection)
+        # return cli.run(quiet=self.quiet, k=k, normalize=normalize)
+        return 'The customers CLI has been deprecated.\nA re-implementation is planned for v1.0.0.'
 
     def customer(self, **kwargs):
-        return self.customers(**kwargs)
+        #return self.customers(**kwargs)
+        return 'The customers CLI has been deprecated.\nA re-implementation is planned for v1.0.0.'
 
     def osm(self, action, *args, **kwargs):
         """
