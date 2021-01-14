@@ -1,0 +1,30 @@
+<clr-tree *ngIf="isOnline; else notConnected">
+
+  <!-- Schema level -->
+  <clr-tree-node *ngFor="let schema of tree | keyvalue" [clrExpanded]="schema.key==='public'">
+    <clr-icon shape="folder"></clr-icon>
+    {{ schema.key }}
+
+    <!-- Table level -->
+    <clr-tree-node *ngFor="let table of schema.value | keyvalue">
+      {{ table.key }}
+
+      <!-- Column level -->
+      <clr-tree-node *ngFor="let column of table.value | keyvalue">
+        {{ column.key }} [{{ column.value.type }}]
+      </clr-tree-node>
+    </clr-tree-node>
+  </clr-tree-node>
+
+</clr-tree>
+
+<ng-template #notConnected>
+  <div class="clr-row">
+    <div class="clr-row-12" style="display: flex; flex-direction: column; justify-content: center; height: 100%; text-align: center;">
+      <div>
+        <i>The backend is not securely connected&nbsp;</i>
+      <button class="btn btn-link" (click)="connectBackend()">click here to connect</button>
+      </div>
+    </div>
+  </div>
+</ng-template>
