@@ -87,7 +87,7 @@ class HydenvHoboImporter:
 		Session = sessionmaker(bind=self.engine)
 		self.session = Session()
 
-	def metadata(self, url: str, term: str = None, if_exists='append', quiet=True):
+	def metadata(self, url: str, term: str = None, if_exists='append', quiet=True, dry=False):
 		"""
 		Copy metadata from google tables.\n
 		Make sure that the URL format is correct. Open the correct sheet and copy the url,
@@ -116,7 +116,8 @@ class HydenvHoboImporter:
 		# remove anything without device id
 		df.rename({'hobo_id': 'device_id'}, axis=1, inplace=True)
 		df = df.where(~df.device_id.isnull()).dropna(how='all')
-		df['device_id'] = df.device_id.astype(int)
+		# df['device_id'] = df.device_id.astype(int)
+		df['device_id'] = ['%d' % int(_) for _ in df.device_id]
 
 		# convert lon lat
 		df = df.where(~df.longitude.isnull()).dropna(how='all')
@@ -150,6 +151,12 @@ class HydenvHoboImporter:
 		# add sensor info
 		df['sensor_id'] = hobo.id
 
+		if dry:
+			if not quiet:
+				return df.to_markdown()
+			else:
+				return df
+		
 		# upload
 		for d in df.to_dict('records'):
 			try:
