@@ -2,6 +2,7 @@ import os
 import sys
 import json
 
+from stdiomask import getpass
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -22,10 +23,23 @@ class HydenvDatabase:
         postgresql://<user>:<password>@<host>:<port>/<database>
     """
     def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"):
-        self.__connection = env.build_connection(connection=connection)
-        self.engine = create_engine(self.__connection)
-        Session = sessionmaker(self.engine)
-        self.session = Session()
+        self.__connection = connection
+        self._engine = None
+        self._session = None
+
+    @property
+    def engine(self):
+        if self._engine is None:
+            self.__connection = env.build_connection(connection=self.__connection)
+            self._engine = create_engine(self.__connection)
+        return self._engine
+
+    @property
+    def session(self):
+        if self._session is None:
+            Session = sessionmaker(self.engine)
+            self._session = Session()   
+        return self._session
 
     def save(self, user='hydenv', password='hydenv', host='localhost', port='5432', dbname='hydenv'):
         """
@@ -46,7 +60,60 @@ class HydenvDatabase:
         """
         return env.read_file()
 
-    def install(self, db_name='hydenv', user='hydenv', password='hydenv', skip_init=False):
+    def install(self, i=False, db_name='hydenv', user='hydenv', password='hydenv', skip_init=False):
+        r"""
+        Install the database\n
+        You can run the installation interactively by just passing the -i
+        flag, **this will ignore all other flags**.
+        The connection passed needs to have granted privileges to create
+        new database instances. Please note that the Postgis library 
+        has to be installed.\n
+        The tool will export the connection info to the current command line 
+        session. This behavior can be overwritten.
+        This behavior 
+        :param i: Interactive installation - this ignores all other parameter
+        :param db_name: database name
+        :param role: The user for the new database instance
+        :param password: The users password, HAS TO BE SET
+        :param skip_init: Skip init step to run with other user
+        :param env: Either 'suppress', 'export' or 'file'\n
+            - suppress will do nothing
+            - export will expose connection params as environement variables
+            - file will write them to an .env file.
+        :raises AttributeError: if the password was not given
+        """
+        if i:
+            self.install_interactive()
+        else:
+            self.install_silent(db_name=db_name, user=user, password=password, skip_init=skip_init)
+
+    def install_interactive(self):
+        from simple_term_menu import TerminalMenu
+        menu = TerminalMenu(['use default settings [localhost:5432]', 'changed settings'])
+        print('Interactive installer.\n-----------\nDid you change the defaults during PostgreSQL installation?')
+        ans = menu.show()
+        if ans == 0:
+            self.__connection = 'postgresql://postgres:{pw}@localhost:5432/postgres'
+        elif ans == 1:
+            print('Please enter the settings you changed during installation (defaults):')
+            host = input('[Postgres] host         (localhost): ') or 'localhost'
+            port = input('[Postgres] port              (5432): ') or '5432'
+            usr =  input('[Postgres] *superuser*   (postgres): ') or 'postgres'
+            self.__connection = 'postgresql://%s:{pw}@%s:%s/postgres' % (usr, host, port)
+
+        print('Now you need to specify the **NEW** database and user:')
+        hyd_db =   input('[Hydenv] database name (hyenv): ') or 'hydenv'
+        hyd_usr =  input('[Hydenv] username     (hydenv): ') or 'hydenv'
+        hyd_pw = getpass('[Hydenv] password: ')
+
+        smenu = TerminalMenu(['yes [Recommended]', 'no [experts]'])
+        print('Do you want to initialize the database?')
+        ans = smenu.show()
+        skip_init = ans == 1
+        
+        self.install_silent(db_name=hyd_db, user=hyd_usr, password=hyd_pw, skip_init=skip_init)
+
+    def install_silent(self, db_name='hydenv', user='hydenv', password='hydenv', skip_init=False):
         """
         Install the database\n
         The connection passed needs to have granted privileges to create
