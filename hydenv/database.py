@@ -143,7 +143,7 @@ class HydenvDatabase:
         # create the SQL and commit
         with self.engine.connect() as con:
             con.execute('commit')
-            con.execute('CREATE DATABASE %s' % db_name)
+            con.execute("CREATE DATABASE %s ENCODING 'UTF8' TEMPLATE 'template0';" % db_name)
 
         # grant 
         with self.engine.connect() as con:
@@ -153,10 +153,10 @@ class HydenvDatabase:
         # build the connection to the new database
         chunks = self.__connection.split('/')
         uri = ''.join([chunks[0], '//', chunks[2], '/', db_name])
-        self.engine = create_engine(uri)
+        engine = create_engine(uri)
 
         # connect and install postgis
-        with self.engine.connect() as con:
+        with engine.connect() as con:
             con.execute('CREATE EXTENSION postgis;')
             res = con.execute('Select PostGis_Full_Version();').scalar()
             
