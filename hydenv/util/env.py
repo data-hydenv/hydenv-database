@@ -49,7 +49,8 @@ def build_connection(connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"
     if '{pw}' in connection:
         pw = os.environ.get('POSTGRES_PASSWORD', fargs.get('POSTGRES_PASSWORD'))
         if pw is None:
-            pw = getpass('PostgreSQL user %s password: ' % args['usr'])
+            curr_user = args['usr'] if 'usr' in args else ''
+            pw = getpass('PostgreSQL user %s password: ' % curr_user)
         args['pw'] = pw
 
         
