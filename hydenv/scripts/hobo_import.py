@@ -154,6 +154,20 @@ class HydenvHoboImporter:
 		# add sensor info
 		df['sensor_id'] = hobo.id
 
+		# check if the hobo ids already exist
+		check_sql = 'SELECT device_id FROM metadata WHERE %s device_id IN (%s)' % (
+			'term_id=%d AND ' % semester.id if semester.id is not None else '',
+			','.join(["'%s'" % str(_) for _ in df.device_id.values])
+			)
+		with self.engine.connect() as con:
+			available_ids = [_[0] for _ in con.execute(check_sql)]
+			# filter df
+			df = df.where(~df.device_id.isin(available_ids)).dropna()
+			if df.empty:
+				print('[Warning]: All HOBO ids are already in the database. Remove them first for re-uploading.')
+				return
+
+		# on dry run - return or print
 		if dry:
 			if not quiet:
 				return df.to_markdown()

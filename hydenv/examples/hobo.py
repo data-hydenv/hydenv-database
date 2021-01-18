@@ -59,7 +59,7 @@ class HydenvHoboExamples:
             'WT21': 'hobo/2021/'
         }
     
-    def run(self, terms='all', data_path='download', only=None, quiet=True):
+    def run(self, terms='all', data_path='download', only=None, quiet=True, dry=False):
         if only is None or only == 'metadata':
             # Get the metadata
             if not quiet:
@@ -100,9 +100,9 @@ class HydenvHoboExamples:
                     shutil.rmtree(data_path)
         
         if not quiet:
-                print('Done.')
+                print('\nDone.')
         
-    def _upload_hobo(self, terms='all', quiet=True):
+    def _upload_hobo(self, terms='all', quiet=True, dry=False):
         # if all years, are requested, build the list
         if terms == 'all':
             terms = ['WT17', 'WT18', 'WT19', 'WT20', 'WT21']
@@ -126,7 +126,7 @@ class HydenvHoboExamples:
             url = self._hobo_table_url + self.__hobo_gid_map[term]
 
             # upload
-            cli.metadata(url=url, term=term, quiet=quiet)
+            cli.metadata(url=url, term=term, quiet=quiet, dry=dry)
             if not quiet:
                 bar.update(i + 1)
 
