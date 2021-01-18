@@ -6,42 +6,55 @@
   </div>
 
   <div class="clr-col-lg-6 clr-offset-lg-0 clr-col-md-10 clr-offset-md-1">
-    <div class="clr-row">
+    <clr-tabs>
 
+      <clr-tab>
+        <button clrTabLink>Results</button>
+        <clr-tab-content>
+          <ng-container *ngIf="result; else noResult">
+            <app-sql-result [result]="result"></app-sql-result>
+          </ng-container>
+          <ng-template #noResult>
+            <p style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 90%">
+              <i>run a SQL command first</i>
+            </p>
+          </ng-template>
+        </clr-tab-content>
+      </clr-tab>
 
-      <div class="clr-col-12" style="min-height: 50vh">
-        <h3>Results</h3>
-        <ng-container *ngIf="result; else noResult">
-          <app-sql-result [result]="result"></app-sql-result>
-        </ng-container>
-        <ng-template #noResult>
-          <p style="text-align: center; display: flex; flex-direction: column; justify-content: center; height: 100%">
-            <i>run a SQL command first</i>
-          </p>
-        </ng-template>
-      </div>
+      <clr-tab>
+        <button clrTabLink>QueryHistory</button>
+        <clr-tab-content>
+          <clr-tab-content>
+            <h2 style="display: flex; flex-direction: row; justify-content: space-between; margin-bottom: 1.2rem;">
+              <span>Query History</span>
+              <div class="btn-group btn-icon btn-default">
+                <button class="btn" (click)="historyUseList = true" [disabled]="historyUseList">
+                  <clr-icon shape="view-list"></clr-icon>
+                  </button>
+                <button class="btn" (click)="historyUseList = false" [disabled]="!historyUseList">
+                  <clr-icon shape="table"></clr-icon>
+                  </button>
+              </div>
+            </h2>
+            <ng-container *ngIf="historyUseList">
+              <app-history-list></app-history-list>
+             </ng-container>
+             <ng-container *ngIf="!historyUseList">
+              <app-history-table [pageSize]="10" [pageSizeOptions]="[3, 5, 10, 25]"></app-history-table>
+             </ng-container>
+          </clr-tab-content>
+        </clr-tab-content>
+      </clr-tab>
 
-      <div class="clr-col-12" style="height: 30vh">
-        <h3 style="display: flex; flex-direction: row; justify-content: space-between; margin-bottom: 1.2rem;">
-          <span>Query History</span>
-          <div class="btn-group btn-icon btn-default">
-            <button class="btn" (click)="historyUseList = true" [disabled]="historyUseList">
-              <clr-icon shape="view-list"></clr-icon>
-              </button>
-            <button class="btn" (click)="historyUseList = false" [disabled]="!historyUseList">
-              <clr-icon shape="table"></clr-icon>
-              </button>
-          </div>
-        </h3>
-         <ng-container *ngIf="historyUseList">
-          <app-history-list></app-history-list>
-         </ng-container>
-         <ng-container *ngIf="!historyUseList">
-          <app-history-table [pageSize]="3" [pageSizeOptions]="[3, 5, 10]"></app-history-table>
-         </ng-container>
-      </div>
+      <clr-tab>
+        <button clrTabLink>Database Information</button>
+        <clr-tab-content>
+          <app-schema-inspector></app-schema-inspector>
+        </clr-tab-content>
+      </clr-tab>
 
-    </div>
+    </clr-tabs>
   </div>
 
 </div>

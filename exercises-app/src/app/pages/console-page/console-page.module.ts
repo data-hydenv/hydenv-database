@@ -7,6 +7,7 @@ import { ClarityModule } from '@clr/angular';
 import { ConsolePageComponent } from './console-page.component';
 import { ExerciseModule } from '../../core/exercise/exercise.module';
 import { QueryHistoryModule } from 'src/app/core/query-history/query-history.module';
+import { DatabaseModule } from 'src/app/core/database/database.module';
 
 
 
@@ -21,6 +22,7 @@ import { QueryHistoryModule } from 'src/app/core/query-history/query-history.mod
     ClarityModule,
     ExerciseModule,
     QueryHistoryModule,
+    DatabaseModule,
   ]
 })
 export class ConsolePageModule { }
