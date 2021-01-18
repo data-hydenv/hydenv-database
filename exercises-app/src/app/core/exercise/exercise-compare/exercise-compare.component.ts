@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { isEqual, isEqualWith, isNumber } from 'lodash-es';
 
 import { Exercise } from '../../models/exercise';
@@ -22,9 +22,13 @@ function cellCustomizer(objValue, othValue) {
   templateUrl: './exercise-compare.component.html',
   styleUrls: ['./exercise-compare.component.scss']
 })
-export class ExerciseCompareComponent implements OnInit {
+export class ExerciseCompareComponent implements OnInit, OnDestroy {
   // store the whole exercise
   @Input() exercise: Exercise;
+
+  // store a timer - to get an estimate for solved
+  private startTime = new Date();
+  private didUpdate = false;
 
   @Input() set result(value: SqlResult) {
     if (value) {
@@ -88,8 +92,16 @@ export class ExerciseCompareComponent implements OnInit {
       this.solutionCorrect = false;
     }
 
+    // everything is checked - get the time
+    const tEnd = new Date();
+    const took = tEnd.getTime() - this.startTime.getTime();
+
+    // save that we stored a result
+    this.didUpdate = true;
+    this.startTime = new Date();  // if the user starts a new attempt now.
+
     // publish to progress Serice
-    this.progress.update(this.exercise.id, this.solutionCorrect).then(() => {
+    this.progress.update(this.exercise.id, this.solutionCorrect, took).then(() => {
       // emit the checked event, after the progress was saved to local storage
       this.checked.emit(this.solutionCorrect);
     });
@@ -106,6 +118,19 @@ export class ExerciseCompareComponent implements OnInit {
     //only if the solution is shown
     if (this.showSolution) {
       this.analytics.logEvent('exercise_showSolution', {exerciseId: this.exercise.id});
+    }
+  }
+
+  ngOnDestroy(): void {
+    // If the user leaves the exercise without trying to solve it
+    // we log an event with this.
+    if (!this.didUpdate) {
+      const tEnd = new Date();
+      const took = tEnd.getTime() - this.startTime.getTime();
+      this.analytics.logEvent('exercise_no_attempt', {
+        exerciseId: this.exercise.id,
+        time: took
+      });
     }
   }
 

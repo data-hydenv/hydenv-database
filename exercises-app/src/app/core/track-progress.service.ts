@@ -27,7 +27,7 @@ export class TrackProgressService {
    * @param id string - id of the exercise the assignment is for
    * @param wasCorrect boolean - indicate if the result was correct.
    */
-  public update(id: string, wasCorrect: boolean): Promise<void> {
+  public update(id: string, wasCorrect: boolean, timeTook?: number): Promise<void> {
     // check if the assignment has already an entry
     const assignIdx = this.progressCache.findIndex(a => a.exerciseId === id);
     const current = new Date();
@@ -55,10 +55,14 @@ export class TrackProgressService {
       if (wasCorrect) {
         this.analytics.logEvent('exercise_solved', {
           exerciseId: id,
-          onFirst: assignIdx === -1
+          onFirst: assignIdx === -1,
+          solveTimeSec: timeTook ? timeTook : 0
         });
       } else {
-        this.analytics.logEvent('exercise_attempt', {exerciseId: id});
+        this.analytics.logEvent('exercise_attempt', {
+          exerciseId: id,
+          solveTimeSec: timeTook ? timeTook : 0
+        });
       }
     }
 
