@@ -6,11 +6,19 @@ from stdiomask import getpass
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from sqlalchemy.schema import DropTable
+from sqlalchemy.ext.compiler import compiles
+
 from hydenv.models import Base, Term, Variable, Quality
 from hydenv.examples.space import HydenvSpaceExamples
 from hydenv.examples.examples import HydenvExamples
 from hydenv.util import env
 
+
+# Overwriting the sqlalchemy's PostgreSQL compiler to run all DROP statements as DROP ... CASCADE by default.
+@compiles(DropTable, 'postgresql')
+def _drop_tables_cascade(element, compiler, **kwargs):
+    return compiler.visit_drop_table(element) + ' CASCADE'
 
 class HydenvDatabase:
     """
