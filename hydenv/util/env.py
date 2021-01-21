@@ -2,6 +2,9 @@ import os
 import json
 from stdiomask import getpass
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
+
 NAME_MAP = dict(
     usr='POSTGRES_USER',
     pw='POSTGRES_PASSWORD',
@@ -9,6 +12,7 @@ NAME_MAP = dict(
     port='POSTGRES_PORT',
     dbname='POSTGRES_DBNAME'
 )
+
 
 def store_file(**kwargs):
     fname = os.path.abspath(os.path.join(os.path.expanduser('~'), 'hydenv.env'))
@@ -20,6 +24,7 @@ def store_file(**kwargs):
     with open(fname, 'w') as f:
         json.dump(config, f)
 
+
 def read_file() -> dict:
     fname = os.path.abspath(os.path.join(os.path.expanduser('~'), 'hydenv.env'))
     if os.path.exists(fname):
@@ -28,6 +33,7 @@ def read_file() -> dict:
     else:
         config = dict()
     return config
+
 
 def expose(**kwargs):
     for k,v in kwargs.items():
@@ -58,3 +64,10 @@ def build_connection(connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"
     return connection.format(**args)
 
 
+def get_session(connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}") -> Session:
+    uri = build_connection(connection=connection)
+
+    engine = create_engine(uri)
+    SessionCls = sessionmaker(bind=engine)
+
+    return SessionCls()
