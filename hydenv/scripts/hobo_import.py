@@ -12,11 +12,12 @@ from progressbar import ProgressBar
 
 from hydenv.util import env
 from hydenv.measurements import HydenvMeasurements
-from hydenv.models import Metadata
+from hydenv.models import Metadata, Term
 
 
-def read_file(fname, txtfmt=False):
-	if txtfmt:
+def read_file(fname, txtfmt=False, dayfirst=False):
+#	if txtfmt:
+	if fname.lower().endswith('.txt'):
 		# HOBO TXT format
 		df = pd.read_csv(fname, skiprows=2, header=None, sep=r'\s+', thousands=',', na_values='Logged')
 		try:
@@ -28,12 +29,15 @@ def read_file(fname, txtfmt=False):
 				raise e
 		df.drop([0,1,2], axis=1, inplace=True)
 		df.columns = ['temperature', 'light', 'tstamp']
-	else:
+#	else:
+	elif fname.lower().endswith('.csv'):
 		# HOBO CSV format
-		df = pd.read_csv(fname, skiprows=2, header=None, parse_dates=[1], usecols=[1,2,3])
+		df = pd.read_csv(fname, skiprows=2, header=None, parse_dates=[1], usecols=[1,2,3], dayfirst=dayfirst)
 		#df.drop(0, axis=1, inplace=True)
 		df.dropna(inplace=True)
 		df.columns = ['tstamp', 'temperature', 'light']
+	else:
+		raise ValueError('Only csv and txt raw data files supported right now.')
 
 	# make sure temperature and light are floats
 	df.temperature = df.temperature.astype(float)
@@ -186,7 +190,7 @@ class HydenvHoboImporter:
 				else:
 					print('[ERROR]: %s' % str(e))
 
-	def upload_raw_data(self, filename: str, meta_id: int, variable=None):
+	def upload_raw_data(self, filename: str, meta_id: int, variable=None, dry=False):
 		"""
 		Upload an Hobo file to the database. 
 		:param filename: Path to the file for upload
@@ -198,10 +202,13 @@ class HydenvHoboImporter:
 			self.upload_raw_data(filename, meta_id, 'light')
 			return
 		
+		# figure out the term
+		term_name = self.session.query(Term.short).join(Metadata).filter(Metadata.id==meta_id).scalar()
+		dayfirst = term_name == 'WT21'
+
 		# load the file
-		txtfmt = filename.endswith('.txt')
 		try:
-			data = read_file(filename, txtfmt=txtfmt)
+			data = read_file(filename, dayfirst=dayfirst)
 		except Exception as e:
 			print("Parsing file '%s' was not successfull.\nDo not edit the files by hand!\nError: %s " % (filename, str(e)))
 			return
@@ -217,6 +224,9 @@ class HydenvHoboImporter:
 		temp.columns = ['tstamp', 'value']
 		temp['meta_id'] = meta_id
 		temp['variable_id'] = var_t.id
+
+		if dry:
+			return temp
 
 		# create database engine
 		engine = create_engine(self.__connection)
