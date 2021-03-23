@@ -14,3 +14,4 @@ lxml
 python-dateutil
 pandas
 stdiomask
+simple_term_menu
