@@ -8,8 +8,9 @@ from hydenv.examples.earthquakes import HydenvEarthquakeExamples
 from hydenv.examples.wbd import HydenvWorldBorderExample
 from hydenv.examples.gpx import HydenvGPXExample
 from hydenv.examples.raspi_logger import HydenvRaspiLoggerExample
+from hydenv.examples.owm import HydenvOWMExample
 
-CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvOSMExamples, HydenvEarthquakeExamples, HydenvWorldBorderExample, HydenvGPXExample, HydenvRaspiLoggerExample]
+CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvOSMExamples, HydenvEarthquakeExamples, HydenvWorldBorderExample, HydenvGPXExample, HydenvRaspiLoggerExample, HydenvOWMExample]
 
 class HydenvExamples:
     r"""
@@ -112,6 +113,21 @@ class HydenvExamples:
         else:
             print("'%s' is not a supported OSM example." % action)
 
+    def owm(self, save: str = None, fmt='json', variable=['temp', 'humidity'], repo_path='extra/weather/data', pattern='*_raw_dump.json',):
+        """
+        Import OpenWeatherMap example data.\n
+        This high level script downloads data from the OpenWeatherMap database and 
+        exports the data to the given save path. Currently, the direct upload to the 
+        database is not yet supported.
+        :param save: The path to save the data to.
+        :param fmt: The format of the data. Currently, only json and csv is supported.
+        :param variable: The variable to download. Defaults temperature and humidity.
+        :param repo_path: The path to the data *inside* the remote repository. Ususally you don't need to change this.
+        :param pattern: The pattern to find the data dumps. Usually you don't need to change this.
+        """
+        cli = HydenvOWMExample(connection=self.__connection)
+        return cli.run(quiet=self.quiet, fmt=fmt, save=save, variable=variable, repo_path=repo_path, pattern=pattern)
+        
     def earthquake(self, normalize=False):
         """
         Import Earthquakes example data.\n
