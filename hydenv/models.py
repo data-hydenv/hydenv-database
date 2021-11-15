@@ -102,7 +102,7 @@ class Variable(Base):
 
 class Sensor(Base):
     __tablename__ = 'sensors'
-    __prepolulate__ = [
+    __prepopulate__ = [
         dict(name='OWM observation', comment='OWM observations are a composite product of remote sensing, modelling and in-situ observatrion products.'),
         dict(name='OWM short forecast', comment='OWM forecast < 24 hrs. Composite product of global and local weather models.'),
         dict(name='OWM long forecast', comment='OWM forecast > 24 hrs and < 48 hrs. Composite product of global and local weather models.')
