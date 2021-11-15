@@ -6,11 +6,16 @@ import os
 import shutil
 import glob
 import json
+import hashlib
 from collections import defaultdict
 import pandas as pd
 from datetime import datetime as dt
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from hydenv.util import env
+from hydenv import models
 
 
 class HydenvOWMExample:
@@ -27,8 +32,9 @@ class HydenvOWMExample:
     """
     def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"):
         # substitute the connection string
-        # self.__connection = env.build_connection(connection=connection)
-        
+        self.__connection = env.build_connection(connection=connection)
+        self.engine = create_engine(self.__connection)
+
         # set some urls
         self._data_url = "https://github.com/data-hydenv/data/archive/master.zip"
         
@@ -68,6 +74,9 @@ class HydenvOWMExample:
             for p in pred:
                 p.update({'from_dt': int(tstamp.timestamp())})
                 forecast[p['dt']].append(p)
+            
+            # update the meta
+            meta.update({k: v for k, v in data.get('historic', {}).items() if k not in ('hourly', 'current')})
         
         # return
         return meta, observ, forecast
@@ -89,6 +98,79 @@ class HydenvOWMExample:
             data.append(obs)
         
         return data
+    
+    def _upload_to_database(self, df: pd.DataFrame, key='temp', meta: dict = {}, if_exists: str = 'replace') -> None:
+        """
+        """
+        # temp is called 'temperature' in the database
+        if key == 'temp':
+            var_key = 'temperature'
+        else:
+            var_key = key
+        
+        # create a database session
+        Session = sessionmaker(bind=self.engine)
+        session = Session()
+
+        # get the variable
+        variable = session.query(models.Variable).filter(models.Variable.name==var_key).one()
+
+        # get the location
+        lon = meta.get('lon')
+        lat = meta.get('lat')
+
+        KEYS = {'OWM observation': key, 'OWM short forecast': 'forecast_1_value', 'OWM long forecast': 'forecast_2_value'}
+        df.reset_index(inplace=True)
+
+        # go for the three products
+        for prod in ['OWM observation', 'OWM short forecast', 'OWM long forecast']:
+            # get the sensors
+            sensor = session.query(models.Sensor).filter(models.Sensor.name == prod).one()
+
+            # derive the device IDs
+            md5 = hashlib.md5(f'{prod}{lon} {lat}'.encode()).hexdigest()
+            device_id = f'OWM_{md5}'
+
+            # check if the metadata exists
+            metadata = session.query(models.Metadata).filter(models.Metadata.device_id==device_id).first()
+            if metadata is None:
+                metadata = models.Metadata(
+                    device_id=device_id,
+                    sensor_id=sensor.id,
+                    location=f'SRID=4326;POINT ({lon} {lat})' if lon is not None and lat is not None else None,
+                )
+                metadata.set_details(details=meta, session=session)
+
+                # save the metadata
+                session.add(metadata)
+                session.commit()
+            elif if_exists == 'raise':
+                raise ValueError('The metadata already exists')
+            elif if_exists == 'replace':
+                with session.bind.connect() as con:
+                    con.execute(f'DELETE FROM raw_data WHERE meta_id={metadata.id};COMMIT;')
+
+            # add the data
+            data = df[['time', KEYS[prod]]].copy()
+            data.columns = ['tstamp', 'value']
+            
+            data['meta_id'] = metadata.id
+            data['variable_id'] = variable.id
+            
+            # drop NA values
+            data.dropna(how='any', inplace=True)
+
+            # check for duplicates
+            imp_data = data.drop_duplicates(['tstamp', 'meta_id', 'variable_id']).copy()
+            if len(imp_data) != len(data):
+                print(f'\n[WARNING]: duplicated rows for {prod} of KEY {key}')
+                data = imp_data
+            
+            # upload
+            data.to_sql('raw_data', session.bind, index=None, if_exists='append')
+        
+        # close the database session again
+        session.close()
     
     def _ordered_data_to_df(self, data: List[dict], key='temp') -> pd.DataFrame:
         # extract only the data we need
@@ -126,7 +208,7 @@ class HydenvOWMExample:
 
         return df
 
-    def run(self, save: str = None, fmt='json', variable=['temp', 'humidity'], repo_path='extra/weather/data', pattern='*_raw_dump.json', dry=False, quiet=True):
+    def run(self, save: str = None, fmt='json', variable=['temp', 'humidity'], if_exists='replace', repo_path='extra/weather/data', pattern='*_raw_dump.json', dry=False, quiet=True):
         # handle variables
         VARIABLES = ['temp', 'feels_like', 'pressure', 'humidity', 'dew_point', 'wind_speed', 'wind_deg', 'clouds']
         if variable == 'all':
@@ -161,9 +243,19 @@ class HydenvOWMExample:
         if os.path.exists('./data-master'):
             shutil.rmtree('./data-master')
 
-        # TODO with database connection this logic has to be changed
+        # upload if needed
         if save is None and dry is False:
-            raise NotImplementedError("Currently, OWM data can't be saved to the hydenv database, sorry.")
+            for v in variable:
+                if not quiet:
+                    print(f'Uploading {v}...', end='')
+                
+                # handle upload
+                df = self._ordered_data_to_df(data=data, key=v)
+                self._upload_to_database(df=df, key=v, meta=meta, if_exists=if_exists)
+            
+                if not quiet:
+                    print('done.')
+            return
 
         # save or return it
         if fmt == 'json':

@@ -113,7 +113,7 @@ class HydenvExamples:
         else:
             print("'%s' is not a supported OSM example." % action)
 
-    def owm(self, save: str = None, fmt='json', variable=['temp', 'humidity'], repo_path='extra/weather/data', pattern='*_raw_dump.json',):
+    def owm(self, save: str = None, fmt='json', variable=['temp', 'humidity'], if_exists='replace', repo_path='extra/weather/data', pattern='*_raw_dump.json',):
         """
         Import OpenWeatherMap example data.\n
         This high level script downloads data from the OpenWeatherMap database and 
@@ -122,11 +122,12 @@ class HydenvExamples:
         :param save: The path to save the data to.
         :param fmt: The format of the data. Currently, only json and csv is supported.
         :param variable: The variable to download. Defaults temperature and humidity.
+        :param if_exists: Specifies the action if the data already exists. Can be 'replace', 'raise' or 'ignore'.
         :param repo_path: The path to the data *inside* the remote repository. Ususally you don't need to change this.
         :param pattern: The pattern to find the data dumps. Usually you don't need to change this.
         """
         cli = HydenvOWMExample(connection=self.__connection)
-        return cli.run(quiet=self.quiet, fmt=fmt, save=save, variable=variable, repo_path=repo_path, pattern=pattern)
+        return cli.run(quiet=self.quiet, fmt=fmt, save=save, variable=variable, if_exists=if_exists, repo_path=repo_path, pattern=pattern)
         
     def earthquake(self, normalize=False):
         """
