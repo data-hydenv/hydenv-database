@@ -83,12 +83,13 @@ class Variable(Base):
     __prepopulate__ = [
         dict(name='temperature', unit='deg. Celsius'),
         dict(name='light', unit='intensity', comment='Ambient light intensity (can be converted to lux).'),
-        dict(name='humidity', unit='%'),
+        dict(name='humidity', unit='%', comment='Relative humidity of the atmosphere.'),
         dict(name='feels_like', unit='deg. Celsius', comment='Feels like temperature is an estimate of the temperature, corrected for humidity.'),
         dict(name='dew_point', unit='deg. Celsius', comment='Dew point temperature.'),
         dict(name='pressure', unit='mbar', comment='air pressure.'),
-        dict(name='wind_speed', unit='m/s'),
-        dict(name='wind_direction', unit='deg.')
+        dict(name='wind_speed', unit='m/s', comment='Wind speed at 2 meter in m/s.'),
+        dict(name='wind_deg', unit='deg.', comment='Wind direct in degree.'),
+        dict(name='clouds', unit='%', comment='Cloud coverage in %.')
     ]
 
     id = Column(Integer, primary_key=True)
