@@ -27,7 +27,7 @@ class HydenvOWMExample:
     """
     def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"):
         # substitute the connection string
-        self.__connection = env.build_connection(connection=connection)
+        # self.__connection = env.build_connection(connection=connection)
         
         # set some urls
         self._data_url = "https://github.com/data-hydenv/data/archive/master.zip"
@@ -112,11 +112,11 @@ class HydenvOWMExample:
             deltas = sorted(deltas)[:2]
             
             # add to the main obj
-            obj['forcast_1_delta [hrs]'] = deltas[0] if len(deltas) >= 1 else None
-            obj['forcast_1_value'] = values[0] if len(values) >= 1 else None
-            obj['forecast_2_delta [hrs]'] = deltas[1] if len(deltas) >= 2 else None
+            obj['forecast_1_value'] = values[0] if len(values) >= 1 else None
+            obj['forecast_1_delta [hrs]'] = deltas[0] if len(deltas) >= 1 else None
             obj['forecast_2_value'] = values[1] if len(values) >= 2 else None
-
+            obj['forecast_2_delta [hrs]'] = deltas[1] if len(deltas) >= 2 else None
+            
             # append
             temp.append(obj)
 
