@@ -49,8 +49,8 @@ class Metadata(Base):
     term = relationship('Term', back_populates='data')
     details = relationship('Detail', secondary='nm_metadata_details', back_populates='meta', cascade='all,delete')
     sensor  = relationship('Sensor', back_populates='meta')
-    raw_data = relationship('RawData', back_populates='meta')
-    data = relationship('Data', back_populates='meta')
+    raw_data = relationship('RawData', back_populates='meta', cascade='all,delete')
+    data = relationship('Data', back_populates='meta', cascade='all,delete')
 
     def __init__(self, session=None, **kwargs):
         # extract the column names of this model
@@ -82,7 +82,13 @@ class Variable(Base):
     __tablename__ = 'variables'
     __prepopulate__ = [
         dict(name='temperature', unit='deg. Celsius'),
-        dict(name='light', unit='intensity', comment='Ambient light intensity (can be converted to lux).')
+        dict(name='light', unit='intensity', comment='Ambient light intensity (can be converted to lux).'),
+        dict(name='humidity', unit='%'),
+        dict(name='feels_like', unit='deg. Celsius', comment='Feels like temperature is an estimate of the temperature, corrected for humidity.'),
+        dict(name='dew_point', unit='deg. Celsius', comment='Dew point temperature.'),
+        dict(name='pressure', unit='mbar', comment='air pressure.'),
+        dict(name='wind_speed', unit='m/s'),
+        dict(name='wind_direction', unit='deg.')
     ]
 
     id = Column(Integer, primary_key=True)
@@ -96,9 +102,15 @@ class Variable(Base):
 
 class Sensor(Base):
     __tablename__ = 'sensors'
+    __prepolulate__ = [
+        dict(name='OWM observation', comment='OWM observations are a composite product of remote sensing, modelling and in-situ observatrion products.'),
+        dict(name='OWM short forecast', comment='OWM forecast < 24 hrs. Composite product of global and local weather models.'),
+        dict(name='OWM long forecast', comment='OWM forecast > 24 hrs and < 48 hrs. Composite product of global and local weather models.')
+    ]
     
     id = Column(Integer, primary_key=True)
     name = Column(String(), nullable=False)
+    comment = Column(String(), nullable=True)
 
     meta = relationship('Metadata', back_populates='sensor')
 
