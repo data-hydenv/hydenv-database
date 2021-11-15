@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.schema import DropTable
 from sqlalchemy.ext.compiler import compiles
 
-from hydenv.models import Base, Term, Variable, Quality
+from hydenv.models import Base, Term, Variable, Quality, Sensor
 from hydenv.examples.space import HydenvSpaceExamples
 from hydenv.examples.examples import HydenvExamples
 from hydenv.util import env
@@ -209,6 +209,7 @@ class HydenvDatabase:
             Term.defaults(session=self.session)
             Variable.defaults(session=self.session)
             Quality.defaults(session=self.session)
+            Sensor.defaults(session=self.session)
             cli = HydenvSpaceExamples(connection=self.__connection)
             cli.run(quiet=True)
         
