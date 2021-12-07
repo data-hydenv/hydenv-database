@@ -49,6 +49,10 @@ class HydenvDatabase:
             self._session = Session()   
         return self._session
 
+    @property
+    def unsafe_get_connection(self):
+        self.__connection
+
     def save(self, user='hydenv', password='hydenv', host='localhost', port='5432', dbname='hydenv'):
         """
         Store the connection information to a file.\n
