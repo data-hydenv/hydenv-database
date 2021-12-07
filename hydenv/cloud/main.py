@@ -16,7 +16,7 @@ def get_token(request):
     
     # check if password is given
     passw = os.environ['PASSWORD']
-    if request_json.get['password'] != passw:
+    if request_json['password'] != passw:
         return {'error': 'Wrong password'}, 401
     
     # else get a token

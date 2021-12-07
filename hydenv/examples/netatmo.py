@@ -35,7 +35,7 @@ class HydenvNetatmoExample:
         
         # get the new token
         try:
-            resp = requests.get(self._token_url, json={'password': self._password}, headers={'Content-Type': 'application/json'})
+            resp = requests.post(self._token_url, json={'password': self._password}, headers={'Content-Type': 'application/json'})
             resp.raise_for_status()
             print('done.')
         except Exception as e:
