@@ -1,0 +1,152 @@
+[
+  {
+    "id": "Lxisln4xiesevdta6kid",
+    "name": "Earthquake overview",
+    "body": {
+      "content": "<p>To get started, we need a quick overview on the earthquake data in the database.</p><p>Select the first 10 rows from the <strong>earthquakes</strong> table.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM earthquakes LIMIT 10",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Jyzsmapa2bqpesjzafrh",
+    "name": "Magnitude Range",
+    "body": {
+      "content": "<p>What is the <strong>magnitude</strong> range of the earthquakes stored in the database? Select the <strong>strongest</strong> and <strong>weakest</strong> earthquake magnitude.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT min(magnitude) AS weakest, max(magnitude) as strongest FROM earthquakes",
+      "type": "sql"
+    },
+    "hint": "<p>You need to aggregate on the same attribute twice using two different functions.</p>"
+  },
+  {
+    "id": "Cldef9b0bdhmz2ql8wwj",
+    "name": "Earthquake depths",
+    "body": {
+      "content": "<p>Produce an overview on available depth data for earthquakes. Select <strong>four</strong> rows from <strong>earthquakes</strong>. Each record should have a <strong>description</strong> and <strong>value</strong> attribute. Use the <code>UNION</code> statement to merge the records together. Query the following information:</p><ul><li>deepest - the largest depth at which an earthquake was recorded.<li><li>mean - the average depth at which earthquakes occur</li><li>total - the total amount of records</li><li>'with depth' - the total amount of records with a depth of more than 0</li></ul>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT 'deepest' AS description, max(depth) AS value FROM earthquakes\nUNION\nSELECT 'mean' AS description, avg(depth) AS value FROM earthquakes\nUNION\nSELECT 'total' AS description, count(*) AS value FROM earthquakes\nUNION\nSELECT 'with depth' AS description, count(*) AS value FROM earthquakes WHERE depth > 0",
+      "type": "sql"
+    },
+    "hint": "<p>Build each of the four queries separately and union them at the end. In this exercise we do <storng>not</strong> filter for the earthquake type.</p>"
+  },
+  {
+    "id": "Rcroefdo4qdvd9xjpids",
+    "name": "Trend over time",
+    "body": {
+      "content": "<p>Is there a trend over time?</p><p>I am not a seismologist, but I would not expect any natural or antropogene explanation for increasing numbers. The increase itself is nevertheless expected, as the measuring equippment should have become more sensitve in the past 70 years.</p><p>Does the number of earthquakes per year change? Reduce the <strong>earthquakes</strong> table to an yearly count time series. Name the attributes <strong>year</strong> and </strong>count</strong> and order them ascending.</p><p>You can use the plotting tab to quickly plot the result.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT date_part('year', datum) AS year, count(*) FROM earthquakes\nGROUP BY year\nORDER BY year ASC",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Ytpdel2hizwend3zdyg9",
+    "name": "Shaky day",
+    "body": {
+      "content": "<p>Which is the day at which most earthquakes were observed? Select their <strong>count</strong>, <strong>datum</strong> and the <strong>magnitudes</strong> themselves as an array of <code>double pricision[]</code>. Check out the Postgres documentation, to find the correct function that can aggregate many values into an array.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT datum, count(*), array_agg(magnitude) AS magnitudes FROM earthquakes\nGROUP BY date_trunc('day', datum), datum\nORDER BY count DESC\nLIMIT 1",
+      "type": "sql"
+    },
+    "hint": "<p>To turn the single magnitudes into an array of magnitudes, you need a cast function: <a href=\"https://www.postgresql.org/docs/12/functions-aggregate.html\" target=\"_blank\">https://www.postgresql.org/docs/12/functions-aggregate.html</a>.</p>"
+  },
+  {
+    "id": "Qrjjoyz8mnzrzdzoc3mm",
+    "name": "Earthquake types",
+    "body": {
+      "content": "<p>There is a lookup table about different types of earthquakes called <strong>earthquake_types</strong>. Check out the table and reduce the <strong>earthquakes</strong> to the type <strong>name</strong> followed by the <strong>amount</strong> of data associated to that type.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT t.name, count(*) as amount FROM earthquakes e\nJOIN earthquake_types t ON e.type_id=t.type_id\nGROUP BY t.name",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Dtplestcjwl4s9tddhbn",
+    "name": "Massive explosions",
+    "body": {
+      "content": "<p>To learn a bit more about the earthquake types, it would be interesing, if nuclear explosions are stronger than earthquakes. We cannot compare the number directly (by i.e. averaging) as the sample sizes are very different. Rank the nuclear explosions by the caused magnitude and calculate the ratio of nuclear explosions that are within the 2300 (~10%) strongest events. Call that attribute <strong>strong_ratio</strong></p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "WITH r AS (\n\tSELECT CASE WHEN ranks < 2300 THEN 1 ELSE 0 END AS in_upper_10, type_id \n\tFROM\n\t(\n\t\tSELECT rank() OVER (ORDER BY magnitude DESC) AS ranks, type_id \n\t\tFROM earthquakes\n\t) t\n\tWHERE type_id=3\n)\nSELECT \n\tsum(r.in_upper_10)::real / count(r.in_upper_10)::real as strong_ratio\nFROM r",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "RgirAlrr8tM3hCfMx5dY",
+    "name": "Earthquake location",
+    "body": {
+      "content": "<p>Find the <strong>datum, magnitude</strong> and <strong>wkt</strong> of the 100 strongest earthquakes. The wkt should be a WKT representation of the <i>geom</i> attribute. You can use the Map plotting tool below to learn about the spatial distribution.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT datum, ST_AsEWKT(geom) as wkt, magnitude FROM earthquakes\nORDER BY magnitude DESC\nLIMIT 100",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Gz0ufloz6dhoud2j5t2n",
+    "name": "World borders",
+    "body": {
+      "content": "<p>Our main goal is to group and reduce the earthquake dataset to per-country statistics. For this, we can use the World Border Dataset, which the hydenv cli is able to load to the database. To get an overview, load the <strong>wkt</strong> of the <i>geom</i> attribute along with the <strong>name</strong> of all datasets.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT ST_AsEWKT(geom) as wkt, name FROM world_borders",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Sqq1dr84ysipkeajzwj4",
+    "name": "Shaky countries",
+    "body": {
+      "content": "<p>Which country suffered most from the earthquake records in the database?</p><p>Query the database for the country <strong>name</strong> and the amount of <strong>earthquakes</strong>?</p><p>Be aware that depending on your hydenv CLI version and hardware, this query can take a couple of seconds.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\twb.name,\n\tcount(e.*) as earthquakes\nFROM earthquakes e\nJOIN world_borders wb ON st_within(e.geom, wb.geom)\nGROUP BY wb.name",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Ujf068qvp3kmfudsorjo",
+    "name": "Checking our results",
+    "body": {
+      "content": "<p>The last exercise was a really nice result. But was it <i>correct</i>?</p><p>From a technical perspective, yes, it was correct. But was it what you actually expected?</p><p>Count all earthquakes that are <i>within</i> the border of a country. Query this result with two attributes: <strong>description</strong> and <strong>count</strong>. The description should contain the string <code>within country</code>. Then <code>Union</code> the count of <code>all</code> earthquakes as a second record</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT 'within country' as description, sum(earthquakes) FROM\n(\n\tSELECT\n\t\twb.name,\n\t\tcount(e.*) as earthquakes\n\tFROM earthquakes e\n\tJOIN world_borders wb ON st_within(e.geom, wb.geom)\n\tGROUP BY wb.name\n) s1\nUNION\nSELECT 'all' as description, count(*) FROM earthquakes",
+      "type": "sql",
+      "prefill": "SELECT\n\twb.name,\n\tcount(e.*) as earthquakes\nFROM earthquakes e\nJOIN world_borders wb ON st_within(e.geom, wb.geom)\nGROUP BY wb.name"
+    },
+    "hint": "<p>Build a sub-query around the result of the last exercise and alias the attributes as given in the text.</p>"
+  },
+  {
+    "id": "Wz7tt3y64pszotr219cu",
+    "name": "Taking proximity into account",
+    "body": {
+      "content": "<p><strong>This exercise is a challenging one. The final query can take many minutes!</strong></p><p>With the last exercise you learned, that most earthquake records were not tracked by our <i>analysis query</i> (let's just call it an analysis). The most obvious reason is, that most earthquakes seem to occur in the ocean. Therefore, we will now assign each earthquake to the closest country.</p><p>Open the postgres documentation and lear about the <code>JOIN LATERAL</code> statement. You can think of this join like an forearch loop. This will join to each queried row the result of a subquery. Use this concept to select the closest country in the JOIN subquery. This can be achieved by sorting and <code>LIMIT</code>ing to only one row.</p><p>Instead of querying the <strong>earthquakes</strong> table directly,  query a sub-query that just includes the 100 strongest earthquakes to speed the query up.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\twb.name,\n\tcount(e.geom) as earthquakes\nFROM (SELECT geom FROM earthquakes ORDER BY magnitude DESC LIMIT 100) AS e\nJOIN LATERAL\n(\n\tSELECT name FROM world_borders w\n\tORDER BY st_distance(e.geom, w.geom)\n\tLIMIT 1\n) AS wb ON true\nGROUP BY wb.name",
+      "type": "sql",
+      "prefill": "SELECT\n\twb.name,\n\tcount(e.geom) as earthquakes\nFROM (SELECT geom FROM earthquakes ORDER BY magnitude DESC LIMIT 100) AS e\nJOIN LATERAL\n(\n\t-- PUT YOUR CODE HERE\n\tSELECT\n\tFROM\n) AS wb ON true\nGROUP BY wb.name"
+    }
+  }
+]

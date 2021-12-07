@@ -1,0 +1,391 @@
+[
+  {
+    "id": "introductionSpace",
+    "name": "Introduction to SQL",
+    "sessions": [
+      {
+        "name": "Introduction to space",
+        "exercises": [
+          {
+            "order": 10,
+            "mandatory": true,
+            "id": "Ydw6xp14NiHexPZz3nmD"
+          },
+          {
+            "order": 20,
+            "mandatory": true,
+            "id": "Lgggxqz9on2zmfr3dzwx"
+          },
+          {
+            "id": "Xqbc9bq5j9yunyhvlitk",
+            "mandatory": false,
+            "order": 30
+          },
+          {
+            "id": "Xppvvdzrr1vawpbrs5ox",
+            "mandatory": false,
+            "order": 50
+          },
+          {
+            "id": "Yxj4xswvtly8qmxokqlu",
+            "mandatory": true,
+            "order": 40
+          },
+          {
+            "id": "Wvzjwzsndnwwa3czz5fm",
+            "mandatory": false,
+            "order": 70
+          },
+          {
+            "id": "Jihyjoyq0aro6no8nmhj",
+            "mandatory": true,
+            "order": 60
+          },
+          {
+            "id": "Uqcibrvdtgapnqtponq7",
+            "mandatory": true,
+            "order": 80
+          }
+        ],
+        "description": "<p>Introductory exercises using the <i>Space Missions</i> dataset. If there is no filled <code>raw_data</code> table, use this command to load the data:</p><pre><code>python -m hydenv examples space</code></pre>"
+      },
+      {
+        "name": "Normalizing space",
+        "exercises": [
+          {
+            "order": 10,
+            "mandatory": false,
+            "id": "Re17spqhvt1eqo1lx2iq"
+          },
+          {
+            "order": 20,
+            "mandatory": false,
+            "id": "Hapf1kuc0mdqucqizfkl"
+          },
+          {
+            "order": 30,
+            "mandatory": false,
+            "id": "Xmlodfh8ra0t92efnjri"
+          },
+          {
+            "order": 40,
+            "mandatory": true,
+            "id": "A0axp5bdwllverbsspsr"
+          },
+          {
+            "order": 50,
+            "mandatory": false,
+            "id": "Tycbjvkmyc70166o3t4a"
+          },
+          {
+            "order": 60,
+            "mandatory": false,
+            "id": "Bbuug56sdhyuaaovyrvv"
+          },
+          {
+            "order": 70,
+            "mandatory": true,
+            "id": "Ozoulne7yuvypjghrgut"
+          },
+          {
+            "order": 80,
+            "mandatory": false,
+            "id": "Yc6uvec9w7szpkotdis2"
+          },
+          {
+            "order": 90,
+            "mandatory": true,
+            "id": "Neovznujhn4hx7sktpjt"
+          },
+          {
+            "order": 100,
+            "mandatory": true,
+            "id": "Q8advnnubahbgrgs1vgv"
+          }
+        ],
+        "description": "<p>After learning and using the space dataset, it is time to improve it structurally. This paves the way for more sophisticated exercises</p><p>It is recommended to solve the <i>Introduction to space</i> session first.</p>"
+      },
+      {
+        "name": "Working on relations",
+        "exercises": [
+          {
+            "order": 10,
+            "mandatory": false,
+            "id": "Sjx9zc8x6gn7uyh51y2z"
+          },
+          {
+            "order": 20,
+            "mandatory": true,
+            "id": "Cd8qa5c3ae4c6mee57vd"
+          },
+          {
+            "order": 30,
+            "mandatory": true,
+            "id": "Qohftwehlhohpqv3rskd"
+          },
+          {
+            "order": 31,
+            "mandatory": true,
+            "id": "Fnnmsdplfydbtdfstjj4"
+          },
+          {
+            "order": 40,
+            "mandatory": true,
+            "id": "X0qbytpiqib2qkmn9dfh"
+          },
+          {
+            "order": 60,
+            "mandatory": false,
+            "id": "Jkupteq3xvkumvpvmyho"
+          },
+          {
+            "order": 70,
+            "mandatory": true,
+            "id": "Qndbemjjfzhjaq52hvin"
+          },
+          {
+            "order": 71,
+            "mandatory": true,
+            "id": "Purcdm6g42bbn8igz9ka"
+          },
+          {
+            "order": 72,
+            "mandatory": true,
+            "id": "Y82grpaqjuogxcrrjhmh"
+          },
+          {
+            "order": 72,
+            "mandatory": true,
+            "id": "Fhoxc12junlqf6e5tp4l"
+          }
+        ],
+        "description": "<p><With a newly created and normalized space missions database, we will dive into some more advanced concepts of SQL in this session. This includes <code>JOIN</code> and sub-queries along with more powerful grouping concepts.</p><p>You need the normalized version of the space mission database, created in the last session. If you didn't finish, or skipped the session, you can load the needed data with hydenv CLI:</p><pre><code>python -m hydenv examples space --normalize</code></pre>"
+      }
+    ],
+    "description": "<p>Learn the basics of the SQL language</p><p>You will go through the most basic tasks and queries using a dataset of all space missions launched between 1957 and August 2020. This track covers:</p><ul><li>simple SELECT statements</li><li>data grouping and reductions</li><li>Filters</li><li>database normalization</li><li>Joins, sub-queries and views</li></ul>",
+    "admins": [
+      "modche",
+      "mmaelicke"
+    ],
+    "options": {
+      "login": true,
+      "paidBackend": false,
+      "image": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/ORBCOMM-2_%2823282658734%29.jpg/800px-ORBCOMM-2_%2823282658734%29.jpg",
+        "type": "http"
+      },
+      "storeResults": false
+    }
+  },
+  {
+    "id": "earthquakes",
+    "name": "Earthquake data",
+    "sessions": [
+      {
+        "name": "Getting Started",
+        "exercises": [
+           {
+             "mandatory": false,
+             "order": 10,
+             "id": "Lxisln4xiesevdta6kid"
+           },
+           {
+             "mandatory": true,
+             "order": 20,
+             "id": "Jyzsmapa2bqpesjzafrh"
+           },
+           {
+             "mandatory": true,
+             "order": 30,
+             "id": "Cldef9b0bdhmz2ql8wwj"
+           },
+           {
+             "mandatory": true,
+             "order": 40,
+             "id": "Rcroefdo4qdvd9xjpids"
+           },
+           {
+             "mandatory": true,
+             "order": 50,
+             "id": "Ytpdel2hizwend3zdyg9"
+           },
+           {
+             "mandatory": true,
+             "order": 60,
+             "id": "Qrjjoyz8mnzrzdzoc3mm"
+           },
+           {
+             "mandatory": false,
+             "order": 70,
+             "id": "Dtplestcjwl4s9tddhbn"
+           }
+        ],
+        "description": "<p>In this session, you gather an basic overview on the earthquake data to be prepared for the more sophisticated sessions. Load the needed data as using the hydenv CLI: <pre><code>python -m hydenv examples earthquake --normalize</code></pre></p>"
+      },
+      {
+        "name": "Answering the 'WHERE'",
+        "description": "<p>In this sesison we will run some spatial queries on the earthquake data using the world border dataset. Load the needed data as using the hydenv CLI: <pre><code>python -m hydenv examples earthquake --normalize\npython -m hydenv examples world-borders</code></pre></p>",
+        "exercises": [
+          {
+            "mandatory": true,
+            "order": 10,
+            "id": "RgirAlrr8tM3hCfMx5dY"
+          },
+          {
+            "mandatory": false,
+            "order": 20,
+            "id": "Gz0ufloz6dhoud2j5t2n"
+          },
+          {
+            "mandatory": true,
+            "order": 30,
+            "id": "Sqq1dr84ysipkeajzwj4"
+          },
+          {
+            "mandatory": true,
+            "order": 31,
+            "id": "Ujf068qvp3kmfudsorjo"
+          },
+          {
+            "mandatory": false,
+            "order": 32,
+            "id": "Wz7tt3y64pszotr219cu"
+          }
+        ]
+      }
+    ],
+    "description": "<p>Work on a small dataset of global earthquake occurences. This short track will recap some fundamental concepts:</p><ul><li>aggregation</li><li>filters</li><li>spatial queries</li></ul>",
+    "admins": [
+      "modche",
+      "mmaelicke"
+    ],
+    "options": {
+      "login": true,
+      "paidBackend": false,
+      "image": {
+        "src": "https://cdn.pixabay.com/photo/2018/02/20/13/46/earthquake-3167693_960_720.jpg",
+        "type": "http"
+      },
+      "storeResults": false
+    }
+  },
+  {
+    "id": "hobo",
+    "name": "HOBO data",
+    "sessions": [
+      {
+        "name": "In-Depth Statistics",
+        "description": "<p>This session makes use of the multi-temporal, multi-spatial domain approach of the HOBO dataset to focus on reductions and statistics. You need at least 2 terms of HOBO data. Use the hydenv CLI to load:</p><pre><code>python -m hydenv examples hobo --terms=[WT19,WT20,WT21]</code></pre>",
+        "exercises": [
+          {
+            "id": "St6jnvfg5nyvqffclheq",
+            "mandatory": false,
+            "order": 10
+          },
+          {
+            "id": "Wuxpm3nyfauzlazsuyfg",
+            "mandatory": true,
+            "order": 20
+          },
+          {
+            "id": "Mmprw5o9mdirjbh8zrfj",
+            "mandatory": true,
+            "order": 30
+          },
+          {
+            "id": "Hnxrrcmlzgsl1czbet38",
+            "mandatory": true,
+            "order": 40
+          },
+          {
+            "id": "Yz5bi1yr4atm4ruppw8v",
+            "mandatory": false,
+            "order": 50
+          },
+          {
+            "id": "Ugdgbyu3rfofqf72pllv",
+            "mandatory": true,
+            "order": 60
+          },
+          {
+            "id": "Irwftjll7r30qw4sflat",
+            "mandatory": true,
+            "order": 61
+          },
+          {
+            "id": "Fb6synubpvv1y0dfv5rv",
+            "mandatory": true,
+            "order": 62
+          }
+        ]
+      },
+      {
+        "name": "Spatial Analysis",
+        "description": "<p>In this session we will conduct multiple spatial analysis using the HOBO data. You need at least two terms of HOBO data (better three) and you need to load administrative boundaries for the city districts in Freibug im Breisgau. Use the hydenv CLI to load:</p><pre><code>python -m hydenv examples hobo --terms[WT19,WT20,WT21]\npython -m hydenv examples osm city-districts --city=FR</code></pre>",
+        "exercises": [
+          {
+            "id": "St6jnvfg5nyvqffclheq",
+            "mandatory": false,
+            "order": 10
+          },
+          {
+            "id": "Urb9gy4fbw7atn1rbdan",
+            "mandatory": false,
+            "order": 20
+          },
+          {
+            "id": "Khetns9jgxmd3yesadbs",
+            "order": 30,
+            "mandatory": false
+          },
+          {
+            "id": "P5hqio7uqibvcguwh0hk",
+            "mandatory": true,
+            "order": 40
+          },
+          {
+            "id": "Zflfh20cuwj3d6zctv9i",
+            "mandatory": true,
+            "order": 50
+          },
+          {
+            "id": "Tuqylrly69neajzr9zeh",
+            "mandatory": true,
+            "order": 60
+          },
+          {
+            "id": "Gddypdbca810nzkau2on",
+            "mandatory": false,
+            "order": 61
+          },
+          {
+            "id": "Tyhsjv1nmyvikypqw3eo",
+            "mandatory": true,
+            "order": 65
+          },
+          {
+            "id": "Kzer5exf3y6agsvfomfk",
+            "mandatory": true,
+            "order": 70
+          }
+
+
+        ]
+      }
+    ],
+    "description": "<p>Work on recent and/or historic temperature data collected in Freiburg since 2017. That data was collected by students during the Data collection, -management and -visualization lecture. Handle changing metadata and data of different quality within this track. This track will focus on: <ul><li>metadata</li><li>aggregations</li><li>filtering</li><li>spatial queries</li></ul></p>",
+    "admins": [
+      "modche",
+      "mmaelicke"
+    ],
+    "options": {
+      "login": true,
+      "paidBackend": false,
+      "image": {
+        "src": "https://www.forestry-suppliers.com/Images/Original/8406_89474_p2.jpg",
+        "type": "http"
+      },
+      "storeResults": false
+    }
+  }
+]
