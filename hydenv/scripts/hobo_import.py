@@ -204,7 +204,7 @@ class HydenvHoboImporter:
 		
 		# figure out the term
 		term_name = self.session.query(Term.short).join(Metadata).filter(Metadata.id==meta_id).scalar()
-		dayfirst = term_name == 'WT21'
+		dayfirst = term_name in ('WT21', 'WT22')
 
 		# load the file
 		try:
