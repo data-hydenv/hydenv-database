@@ -7,7 +7,7 @@ from typing import List, Union
 import requests
 import progressbar
 import pandas as pd
-import tabulate
+from dateutil.parser import parse as date_parse
 
 
 class HydenvNetatmoExample:
@@ -142,6 +142,14 @@ class HydenvNetatmoExample:
         # get some main settings
         scale = kwargs.get('scale', '30min')
 
+        # check if a start date was set
+        start_date = kwargs.get('start', None)
+        if start_date is not None:
+            start_date = date_parse(str(start_date))
+        end_date = kwargs.get('end', None)
+        if end_date is not None:
+            end_data = date_parse(str(end_date))
+        
         # go for each module id
         for module_id, measure in measures.items():
             if 'type' not in measure:
@@ -153,15 +161,29 @@ class HydenvNetatmoExample:
             # build the params for this round
             PARAMS = dict(device_id=device_id, module_id=module_id, scale=scale, type=type_)
 
+            # check if we use a start data
+            if start_date is not None:
+                PARAMS['date_begin'] = start_date.timestamp()
+            if end_date is not None:
+                PARAMS['date_end'] = end_date.timestamp()
+
             # do the request
             try:
                 response = requests.get(self._netatmo_data_url, headers=HEADER, params=PARAMS)
                 response.raise_for_status()
+                
+                # check if data was actually returned
+                if len(response.json()['body'].get('value')) == 0:
+                    print(f"No data found for {device_id}/{module_id}")
+                    continue
 
                 # add data
                 if 'data' not in station:
                     station['data'] = {}
+
+                # add the data
                 station['data'][module_id] = response.json()['body']
+
             except Exception as e:
                 if not self.quiet:
                     print(f"[Error]: Module {module_id} failed: {str(e)}")
@@ -195,9 +217,13 @@ class HydenvNetatmoExample:
         if not self.quiet:
             print("Done.")
 
-        return stations
+        # check if stations without data should be removed
+        if kwargs.get('clean', False):
+            return [station for station in stations if 'data' in station]
+        else:
+            return stations
 
-    def run(self, bbox=None, city=None, **kwargs):
+    def run(self, bbox=None, city=None, save=None, **kwargs):
         """
         BBOX shape is [lat_ne, lon_ne, lat_sw, lon_sw]
         """
@@ -222,7 +248,19 @@ class HydenvNetatmoExample:
             lat_ne, lon_ne, lat_sw, lon_sw = bbox
         
         # run
-        return self.get_data(lat_ne=lat_ne, lon_ne=lon_ne, lat_sw=lat_sw, lon_sw=lon_sw, **kwargs)
+        if kwargs.get('metadata_only', False):
+            result = self.get_stations(lat_ne=lat_ne, lon_ne=lon_ne, lat_sw=lat_sw, lon_sw=lon_sw, **kwargs)
+        else:
+            result = self.get_data(lat_ne=lat_ne, lon_ne=lon_ne, lat_sw=lat_sw, lon_sw=lon_sw, **kwargs)
+        
+        # check if we want to save to file
+        if save is not None:
+            with open(save, 'w') as f:
+                json.dump(result, f, indent=4)
+            if not self.quiet:
+                print(f"Saved to {save}.")
+        else:
+            return result
 
     def parse(self, fname: Union[str, List[dict]], use_type: str, fmt='dataframe'):
         """

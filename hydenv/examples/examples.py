@@ -1,3 +1,4 @@
+from typing import List
 from progressbar import ProgressBar
 
 from hydenv.examples.hobo import HydenvHoboExamples
@@ -9,8 +10,9 @@ from hydenv.examples.wbd import HydenvWorldBorderExample
 from hydenv.examples.gpx import HydenvGPXExample
 from hydenv.examples.raspi_logger import HydenvRaspiLoggerExample
 from hydenv.examples.owm import HydenvOWMExample
+from hydenv.examples.netatmo import HydenvNetatmoExample
 
-CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvOSMExamples, HydenvEarthquakeExamples, HydenvWorldBorderExample, HydenvGPXExample, HydenvRaspiLoggerExample, HydenvOWMExample]
+CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvOSMExamples, HydenvEarthquakeExamples, HydenvWorldBorderExample, HydenvGPXExample, HydenvRaspiLoggerExample, HydenvOWMExample, HydenvNetatmoExample]
 
 class HydenvExamples:
     r"""
@@ -128,7 +130,49 @@ class HydenvExamples:
         """
         cli = HydenvOWMExample(connection=self.__connection)
         return cli.run(quiet=self.quiet, fmt=fmt, save=save, variable=variable, if_exists=if_exists, repo_path=repo_path, pattern=pattern)
-        
+
+    def netatmo(self, action: str, password: str = None, city: str = None, bbox: List[float] = None, load: str = None, use_type='temperature', fmt='latex', **kwargs):
+        """
+        Download Netatmo personal weather station data.\n
+        This high level script downloads data from the Netatmo API and exports
+        it into a raw JSON dump file. The stations can be queried by BBox or a predifined
+        city name. Additionally, the API can parse the JSON dump into columnar
+        data formats. Upload to the database is not yet supported.
+        The supported actions are:
+
+        * get-data: download raw data dump
+        * metadata: donload only the station metadata
+        * parse: parse a raw data dump
+
+        :param action: One of ['get-data', 'metadata', 'parse']
+        :param password: The password to receive a Netatmo token from hydrocode. 
+            Ignored for 'action=parse'.
+        :param city: The city to download data for. Ignored for 'action=parse'.
+        :param bbox: The bounding box to download data for. Ignored for 'action=parse'.
+        :param required-data: Filter to query only stations, which include this measure.
+            Defaults to 'temperature'. Ignored for 'action=parse'.
+        :param save: The path to save the data to. Ignored for 'action=parse'.
+        :param load: The filename of the raw data-dump. Only valid for 'action=parse'.
+        :param use_type: The Netatmo measure type to extract from the dump.
+            Defaults to 'temperature'. Only valid for 'action=parse'.
+        :param fmt: The format of the data. Can be one of ['markdown', 'html', 'latex', 'csv'].
+            Only valid for 'action=parse'.
+        """
+        # build the cli
+        cli = HydenvNetatmoExample(password=password, quiet=self.quiet)
+
+        # switch the action
+        if action.lower() == 'get-data':
+            return cli.run(bbox=bbox, city=city, **kwargs)
+        elif action.lower() == 'metadata':
+            kwargs['metadata_only'] = True
+            return cli.run(bbox=bbox, city=city, **kwargs)
+        elif action.lower() == 'parse':
+            return cli.parse(fname=load, use_type=use_type, fmt=fmt, **kwargs)
+        else:
+            print('[ERROR] Unknown action: %s' % action)
+            return
+   
     def earthquake(self, normalize=False):
         """
         Import Earthquakes example data.\n
