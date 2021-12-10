@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+from tabulate import tabulate
 
 from stdiomask import getpass
 from sqlalchemy import create_engine
@@ -243,7 +244,6 @@ class HydenvDatabase:
         else:
             return result.fetchall()
         
-
     def explain(self, sql: str, path=None, fmt='json', full=False, suppress_rollback=False) -> dict:
         """
         Analyse an sql query.\n
@@ -329,6 +329,33 @@ class HydenvDatabase:
         else:
             with open(path, 'w') as f:
                 json.dump(explain, f, indent=4)    
+
+    def table(self, name: str = None, list: bool = False, fmt: str = 'github'):
+        """
+        List all tables in the database.\n
+        You can either pass a name of a table to get the structure of
+        that table or pass the --list flag to list all tables.
+        :param name: Name of the table to get the structure of
+        :param list: If True, list all tables
+        :param fmt: One of ['json', 'markdown', 'github']. Output format.
+        """
+        if name is None and not list:
+            print('[ERROR] You need to specify a table name or use the --list flag.')
+            return
+        
+        # build the query
+        if list:
+            sql = "SELECT table_name as name, table_type as type FROM information_schema.tables WHERE table_schema = 'public';"
+        else:
+            sql = f"SELECT column_name as name, data_type as type, is_nullable as nullable, column_default as default, ordinal_position FROM information_schema.columns WHERE table_name = '{name}' ORDER BY ordinal_position;"   
+
+        # reun
+        result = self.execute(sql, json=True)
+
+        if fmt.lower() == 'json':
+            return result
+        else:
+            return tabulate(tabular_data=result, headers='keys', tablefmt=fmt)
 
     def __expose_con(self, action, **kwargs):
         if action.lower() == 'suppress':
