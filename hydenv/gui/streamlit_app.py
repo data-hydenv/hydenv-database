@@ -1,8 +1,10 @@
 import glob
 import os
+import sys
 import json
 import hashlib
 import time
+from io import StringIO
 from datetime import datetime as dt
 from datetime import timedelta as td
 from random import choice
@@ -14,6 +16,7 @@ from streamlit_ace import st_ace, THEMES
 from universal_analytics import Tracker, HTTPRequest
 
 from hydenv.database import HydenvDatabase
+from hydenv.examples.examples import HydenvExamples
 
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
 WELCOME = """
@@ -418,35 +421,111 @@ def example_page(db: HydenvDatabase):
 
     # CHECK queries
     CHECK = {
-        'hobo': "SELECT full_name as \"Term\", count(*) AS amount FROM metadata m JOIN terms ON terms.id=m.term_id WHERE sensor_id=1 GROUP BY full_name;"
+        'hobo': "SELECT short as \"Identifier\", full_name as \"Term\", count(*) AS \"HOBO Metadata\" FROM metadata m JOIN terms ON terms.id=m.term_id JOIN sensors s ON m.sensor_id=s.id WHERE s.name='hobo' GROUP BY full_name, short;"
     }
+    CMD = {
+        'hobo': 'python -m hydenv examples hobo'
+    }
+    cmd = CMD[example]
 
+    # show the title
     st.title('Example {}'.format(example.upper()))
+    
+    # show the tables
     if example in CHECK:
         st.markdown('### Existing tables\n Please make sure that the examples data is not listed below. Most example APIs will create dublicates if you run them twice.')
         overview_data = db.execute(CHECK[example], json=True)
         st.table(overview_data)
 
+    st.sidebar.markdown('### API options')
+    
+    # example-specific code
     if example == 'hobo':
-        pass
+        # terms
+        terms = st.sidebar.multiselect('Terms', options=['WT18', 'WT19', 'WT20', 'WT21', 'WT22'])
+        if len(terms) == 0:
+            st.warning('It is recommended to explicitly select the terms. Otherwise all terms will be selected.')
+            args = {}
+        else:
+            args = {'terms': terms}
+        
+        # handle only flag
+        ONLYS = {'all':'Import all at once', 'metadata': 'HOBO Metadata', 'raw-data': 'HOBO raw data', 'quality-data': 'HOBO quality checked data'}
+        only = st.sidebar.radio('Import only', options=list(ONLYS.keys()), index=0, format_func=lambda k: ONLYS[k])
+
+        if only != 'all':
+            args['only'] = only
+
+        for k, v in args.items():
+            cmd += f' --{k}={v}'
+    
     else:
         st.info('This example dataset is not yet implemented')
+    
+    # ARGS are build now - build the API
+    api = HydenvExamples(connection=db.unsafe_get_connection, quiet=False)
+    runner = getattr(api, example)
+
+    # show the command
+    st.markdown('### CLI command\nThe command below is the corresponding CLI command for the specified API call.')
+    st.code(cmd, language='bash')
+
+    # start buttions
+    but1 = st.button('RUN CLI', key='but1')
+    but2 = st.sidebar.button('RUN CLI', key='but2')
+
+    if but1 or but2:
+         # create the classes to handle output
+        console_output = st.empty()
+        def callback(output):
+            console_output.code(output, language='bash')
+        
+        class Console(StringIO):
+            backlog = ""
+            def write(self, s):
+                self.backlog += s
+                super(Console, self).write(s)
+                callback(self.backlog)
+        
+        # handle StdOut
+        try:
+            orginial_stdout = sys.stdout
+            sys.stdout = Console()
+            with st.spinner('Executing API call...'):
+                runner(**args)
+        except Exception as e:
+            st.warning('Something went wrong: {}'.format(e))
+            st.exception(e)
+        finally:
+            # restore original StdOut
+            sys.stdout = orginial_stdout
+        
+        st.success('Finished')
     st.stop()
 
-def home_page():
+def home_page(db: HydenvDatabase):
     st.title('Hydenv CLI overview')
     st.markdown('All Hydenv CLI endpoints which are implemented are available here. You find a short explanation with the call signature and a link to the GUI, if available.')
 
     # install
     with st.expander('HYDENV DATABASE', expanded=True):
+        # INSTALL COMMAND
         st.markdown('Can be used to install new database instance, connect exising ones on the same host or remote and to clean up and re-initialize the database.')
         il, ir = st.columns((9, 1))
         il.code('# install new database\npython -m hydenv database install -i', language='bash')
-        il.code('# clean and re-init\npython -m hydenv database init --clean', language='bash')
         iopen = ir.button('OPEN IN GUI', key='open_install')
         if iopen:
             st.session_state.page_name = 'install'
             st.experimental_rerun()
+        
+        # INIT COMMAND
+        st.warning('This will delete all data in the database!')
+        il2, ir2 = st.columns((9, 1))
+        il2.code('# clean and re-init\npython -m hydenv database init --clean', language='bash')
+        ir2_run = ir2.button('RUN HERE', key='run_init')
+        if ir2_run:
+            db.init(clean=True)
+            il2.success('Successfully cleaned and re-initialized the database.')
     
     # exercises
     with st.expander('EXERCISES', expanded=True):
@@ -553,7 +632,7 @@ def main_app(connection=None, measurementId="G-RLF2LDRQSR", debug=False):
             st.experimental_rerun()
 
     if page_name == 'home':
-        home_page()
+        home_page(db)
     elif page_name == 'exercise':
         # load the list of solved exercises
         load_solved_list()
