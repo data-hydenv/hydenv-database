@@ -1,0 +1,364 @@
+[
+  {
+    "id": "Ydw6xp14NiHexPZz3nmD",
+    "name": "Count records",
+    "body": {
+      "content": "<p>To get a very basic overview of a table's content, you can simply count all records contained in the table. This is the number of space missions between 1957 and Aug. 2020. Count them and name the result <i>launches</i>.</p><p>How many <strong>launches</strong> are in the <strong>space_raw</strong> table?</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT count(*) as launches FROM space_raw;",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Lgggxqz9on2zmfr3dzwx",
+    "name": "First space mission",
+    "body": {
+      "content": "<p>When did the first space mission take place? Where did it start and what are the mission details?</p><p>Query <strong>only</strong> the requested information from the database</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT datum, location, detail FROM space_raw ORDER BY datum ASC LIMIT 1;",
+      "type": "sql"
+    },
+    "hint": "<p>The needed attributes are: <code>datum, location, detail</code></p>"
+  },
+  {
+    "id": "Xqbc9bq5j9yunyhvlitk",
+    "name": "First NASA Mission",
+    "body": {
+      "content": "<p>In the last exercise, you loaded the first space mission details from the database. This event started the space race in 1957. When did NASA join?</p><p>Load all available data of the first NASA mision.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM space_raw WHERE company_name='NASA' ORDER BY datum ASC LIMIT 1;",
+      "type": "sql"
+    },
+    "hint": "<p>The company or organization operating a space mission is stored in the <code>company_name</code> attribute.</p>"
+  },
+  {
+    "id" : "Xppvvdzrr1vawpbrs5ox",
+    "name": "Companies",
+    "body": {
+      "content": "<p>How many different companies and organisations started a space mission?</p><p>Count the number of <strong>different</strong> companies and name the result <strong>companies</strong>.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT count(DISTINCT company_name) as companies FROM space_raw;",
+      "type": "sql"
+    },
+    "hint": "<p>You can solve this with a <code>GROUP BY</code> over only one column. Easier and faster is to learn about the <code>DISTINCT</code> command.</p>"
+  },
+  {
+    "id" : "Yxj4xswvtly8qmxokqlu",
+    "name": "Spaceports",
+    "body": {
+      "content": "<p>From how many different spaceports were space missions started?</p><p>Count the number of <strong>different</strong> spaceports and name the result <code>spaceports</code></p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT count(DISTINCT location) as space_ports FROM space_raw;",
+      "type": "sql"
+    },
+    "hint": "<p>You can solve this with a <code>GROUP BY</code> over only one column. Easier and faster is to learn about the <code>DISTINCT</code> command.</p>"
+  },
+  {
+    "id" : "Wvzjwzsndnwwa3czz5fm",
+    "name": "Most active company",
+    "body": {
+      "content": "<p>Which <strong>five</strong> of the different companies launched the most space missions?</p><p>Group the missions by company and reduce the result to the total amount of missions. Name the needed two attributes <code>company, missions</code></p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT company_name as company, count(company_name) as missions FROM space_raw GROUP BY company_name ORDER BY missions DESC LIMIT 5;",
+      "type": "sql"
+    }
+  },
+  {
+    "id" : "Jihyjoyq0aro6no8nmhj",
+    "name": "Most frequent space port",
+    "body": {
+      "content": "<p>Which <strong>five</strong> of the different space ports launched the most space missions?</p><p>Group the missions by location and reduce the result to the total amount of missions. Name the needed two attributes <code>location, missions</code></p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT location, count(location) as missions FROM space_raw GROUP BY location ORDER BY missions DESC LIMIT 5;",
+      "type": "sql"
+    }
+  },
+  {
+    "id" : "Uqcibrvdtgapnqtponq7",
+    "name": "Historic most frequent space port",
+    "body": {
+      "content": "<p>Which <strong>five</strong> of the different space ports launched the most space missions during the first <strong>10 years</strong> of the space race (1957 - 1967)?</p><p>Group the missions by location and reduce the result to the total amount of missions. Name the needed two attributes <code>location, missions</code></p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\tlocation,\n\tcount(location) as missions \nFROM space_raw \nWHERE datum < '1968-01-01 00:00:00'\nGROUP BY location\nORDER BY missions DESC\nLIMIT 5;",
+      "type": "sql"
+    },
+    "hint": "<p>Filtering data using <code>WHERE</code> can not only compare two attributes, but also an attribute and a static value. Datetimes can be given as a ISO-8601 string or locale, without explicit type case. An example is: <code>'2013-09-24 11:23'</code>.</p>"
+  },
+  {
+    "id": "Re17spqhvt1eqo1lx2iq",
+    "name": "Space insights",
+    "body": {
+      "content": "<p>For a recall on the avaliable information select <strong>all</strong> attributes from <code>space_raw</code>. Instead of querying and returning all rows, <code>LIMIT</code> the result to <strong>5</strong> rows.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM space_raw LIMIT 5;",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Hapf1kuc0mdqucqizfkl",
+    "name": "Distinct companies",
+    "body": {
+      "content": "<p>For companies and organisations starting space missions, we need a lookup table. To prepare this step, select a list of distinct <strong>company names</strong>, ordered alphabetically.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT DISTINCT company_name from space_raw ORDER BY company_name ASC;",
+      "type": "sql"
+    },
+    "hint": "<p>Use the <code>DISTINCT</code> keyword after the <code>SELECT</code> command.</p>"
+  },
+  {
+    "id": "Xmlodfh8ra0t92efnjri",
+    "name": "Company lookup table",
+    "body": {
+      "content": "<p>To only reference the executing company in the resulting normalized database, the <i>selection</i> from the last exercise needs an additional primary key. For this, we can enhance the distinct selection by the row number.</p><p>Check out the documentation of the <a href=\"https://www.postgresql.org/docs/12/functions-window.html\" target=\"_blank\"><code>row_number</code></a> function. The correct application of window function <a href=\"https://www.postgresql.org/docs/12/tutorial-window.html\" target=\"\">can be found here</a>.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\trow_number() over (order by company_name) as id,\n\tcompany_name\nFROM (SELECT DISTINCT company_name FROM space_raw) AS companies;",
+      "type": "sql"
+    },
+    "hint": "<p>You need to <strong>first</strong> sub-query the distinct companies and then select each unique company along with its row number.</p>"
+  },
+  {
+    "id": "A0axp5bdwllverbsspsr",
+    "name": "Create a company lookup",
+    "body": {
+      "content": "<p>Any result from a <code>SELECT</code> query can be persisted into a new <code>TABLE</code> or <code>VIEW</code>. Instead of defining the attributes of a new table, it is also possible to infer them from the query result. The syntax looks like: <pre><code>CREATE TABLE tablename AS SELECT ...</code></pre>.</p><p>Create a table called <strong>companies</strong> with an <strong>company_id</strong> and a <strong>company_name</strong> field, of all unique company names. Select the first 5 rows to verify that everything worked.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM companies LIMIT 5",
+      "type": "sql",
+      "code": "DROP TABLE IF EXISTS companies CASCADE;\nCREATE TABLE companies as\nSELECT\n\trow_number() OVER (ORDER BY company_name) AS company_id,\n\tcompany_name\nFROM (SELECT DISTINCT company_name FROM space_raw) AS companies;\nALTER TABLE companies ADD CONSTRAINT pkey_companies PRIMARY KEY (id);\nSELECT * FROM companies LIMIT 5;"
+    },
+    "disableSafeMode": true
+  },
+  {
+    "id": "Tycbjvkmyc70166o3t4a",
+    "name": "Find all Rockets",
+    "body": {
+      "content": "<p>The creation of a rocket type lookup table involves one more step. The needed information is contained in the <code>detail</code> attribute, which is not atomic. You need to extract the information and select all distinct rockets as <strong>rocket_name</strong>.",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT DISTINCT split_part(detail, ' | ', 1) as rocket_name FROM space_raw",
+      "type": "sql"
+    },
+    "hint": "</p><p>Have a look at the <code>split_part</code> function. While choosing the split string, be sure to include <strong>all</strong> necessary letters.</p>"
+  },
+  {
+    "id": "Bbuug56sdhyuaaovyrvv",
+    "name": "Add the rocket status",
+    "body": {
+      "content": "<p>Besides the rocket names contained in the <code>detail</code> attribute, there is a <code>status_rocket</code> available. It actually only contains two distinctive values.</p><p>Use a <code>CASE WHEN [...]</code> construct to turn status_rocket into a <code>boolean</code> attribute called <strong>is_active</strong> and add it to the result of the last exercise.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT DISTINCT\n\tsplit_part(detail, ' | ', 1) as rocket_name,\n\tCASE WHEN status_rocket='StatusActive' THEN true ELSE false END as is_active\nFROM space_raw;",
+      "type":"sql",
+      "code":"-- First find the two distinct values:\nSELECT DISTINCT status_rocket FROM space_raw\n\n-- Now run the actual solution:\nSELECT DISTINCT\n\tsplit_part(detail, ' | ', 1) as rocket_name,\n\tCASE WHEN status_rocket='StatusActive' THEN true ELSE false END as is_active\nFROM space_raw;"
+    }
+  },
+  {
+    "id": "Ozoulne7yuvypjghrgut",
+    "name": "Create a rocket lookup",
+    "body": {
+      "content": "<p>Recall the last two exercises. You created an overview of all rocket names along with the active status. Now, turn this into a lookup table called <strong>rockets</strong>, with an added integer primary key called <storng>rocket_id</strong> and select the first <strong>5</strong> rows after creation.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM rockets LIMIT 5",
+      "type": "sql",
+      "code": "DROP TABLE IF EXISTS rockets CASCADE;\nCREATE TABLE rockets AS\nSELECT row_number() OVER (ORDER BY t.rocket_name) AS rocket_id, t.rocket_name, is_active FROM\n(SELECT DISTINCT\n\tsplit_part(detail, ' | ', 1) as rocket_name,\n\tCASE WHEN status_rocket='StatusActive' THEN true ELSE false END as is_active\nFROM space_raw) t;\nALTER TABLE rockets ADD CONSTRAINT pkey_rockets PRIMARY KEY (rocket_id);\n\nSELECT * FROM rockets LIMIT 5;"
+    },
+    "disableSafeMode": true
+  },
+  {
+    "id": "Yc6uvec9w7szpkotdis2",
+    "name": "Extract location information",
+    "body": {
+      "content": "<p>On the one hand, extracting the information of rocket launch location from the <code>space_raw</code> table works exactly like for the <strong>rockets</strong> and <strong>companies</strong> tables. On the other hand, there is some more data wrangling that we have to take care of.</p><p>Select the first <strong>20</strong> <code>location</code> values from the <code>space_raw</code> and split the available information into the attributes <strong>identifier, location_name</strong> and <strong>country</strong>.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\tsplit_part(location, ', ', 1) AS identifier.\n\tsplit_part(location, ', ', 2) AS location_name,\n\tsplit_part(location, ', ', 3) AS country\nFROM space_raw\nLIMIT 20;",
+      "type": "sql"
+    },
+    "hint": "</p><p>Have a look at the <code>split_part</code> function. While choosing the split string, be sure to include <strong>all</strong> necessary letters.</p>"
+  },
+  {
+    "id": "Neovznujhn4hx7sktpjt",
+    "name": "Solving location issues",
+    "body": {
+      "content": "<p>After exploring the different non-atomic values of the <strong>location</strong> in the <code>space_raw</code> table, it's time to normalize it. First, implement a query that extracts <strong>four</strong> new attributes from <code>space_raw</code>: <strong>identifier, location_name, state</strong> and <strong>country</strong>. If the location does not contain a state information, it should contain just a <code>NULL</code> value.</p><p>In a second step, create the actual lookup table called <strong>locations</strong>, with an added integer primary key called <strong>location_id</strong>. Finally, select the first <strong>5</strong> rows of the newly created table.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM locations LIMIT 5;",
+      "type": "sql",
+      "code": "DROP TABLE IF EXISTS locations CASCADE;\nCREATE TABLE locations AS\nSELECT row_number() OVER (ORDER BY identifier) AS location_id, t.* FROM\n(SELECT DISTINCT\n\tsplit_part(location, ', ', 1) as identifier,\n\tsplit_part(location, ', ', 2) as location_name,\n\tCASE WHEN split_part(location, ', ', 4) = '' THEN null ELSE split_part(location, ', ', 3) END as state,\n\tCASE WHEN split_part(location, ', ', 4) = '' THEN split_part(location, ', ', 3) ELSE split_part(location, ', ', 4) END AS country\nFROM space_raw) t;\nALTER TABLE locations ADD CONSTRAINT pkey_locations PRIMARY KEY (location_id);\n\nSELECT * FROM locations LIMIT 5;"
+    },
+    "disableSafeMode": true
+  },
+  {
+    "id": "Q8advnnubahbgrgs1vgv",
+    "name": "Normalizing space",
+    "body": {
+      "content": "<p>With the last few couple of exercises, all non-atomic, duplicated and transitive dependent information was extracted from <code>space_raw</code> and stored into newly created lookup tables. Finally, only the <code>space_raw</code> table itself is missing.</p><p>Identify the information, that is unique to each rocket launch. Remember that besides attributes like <strong>datum</strong>, there is the non-atomic information on the mission itself in <strong>detail</strong>, that is unique and should be stored into a new attribute called <strong>mission_detail</strong>. Isolate this information and add various foreign keys called <strong>company_id, location_id</strong> and <strong>rocket_id</strong> to relate the correct lookup table records.</p><p>Select the first <strong>5</strong> records to check that the table creation worked fine.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM space LIMIT 5;",
+      "type": "sql",
+      "code": "DROP TABLE IF EXISTS space CASCADE;\nCREATE TABLE space AS\nSELECT\n\tid, datum,\n\t(SELECT company_id FROM companies WHERE company_name=space_raw.company_name) as company_id,\n\t(SELECT location_id FROM locations WHERE\n\t\tidentifier=split_part(location, ', ', 1) AND \n\t\tlocation_name=split_part(location, ', ', 2)\n\t) as location_id,\n\t(SELECT rocket_id FROM rockets WHERE rocket_name=split_part(detail, ' | ', 1)) as rocket_id,\n\tsplit_part(detail, ' | ', 2) as mission_detail,\n\tstatus_mission\nFROM space_raw;\n\nALTER TABLE space ADD CONSTRAINT pkey_space PRIMARY KEY (id);\nALTER TABLE space ADD CONSTRAINT fkey_space_location FOREIGN KEY (location_id) REFERENCES locations (location_id);\nALTER TABLE space ADD CONSTRAINT fkey_space_rocket FOREIGN KEY (rocket_id) REFERENCES rockets (rocket_id);\nALTER TABLE space ADD CONSTRAINT fkey_space_company FOREIGN KEY (company_id) REFERENCES companies (company_id);\n\nSELECT * FROM space LIMIT 5;"
+    },
+    "hint": "<p>There are a few <code>identifier</code> <i>'duplicates'</i> in the <strong>locations</strong> table, as several countires used the same identifier system. Only the combination of identifer and location_name makes the entries unique.</p><p>The final attribute names in the <code>space</code> table are: <strong>id, datum, company_id, location_id, rocket_id, mission_detail</strong> and <strong>status_mission</strong></p>",
+    "disableSafeMode": true
+  },
+  {
+    "id": "Sjx9zc8x6gn7uyh51y2z",
+    "name": "Overview",
+    "body": {
+      "content": "<p>To recall the structure and data contained in the normalized <code>space</code> table, SELECT the <strong>first 20</strong> missions that ever took place.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM space ORDER BY datum ASC LIMIT 20;",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Cd8qa5c3ae4c6mee57vd",
+    "name": "Working horse",
+    "body": {
+      "content": "<p>In the <code>space</code> table, you can see that the first two missions were carried by the same rocket, as it is indicated by the <code>rocket_id</code>.</p><p>Which was the working horste of space missions during the first 10 years (until 04. Oct 1967)? Reduce the <strong>rocket_id</strong> and count the starts as <strong>launches</strong> to find the <strong>5</strong> most used rockets.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT rocket_id, count(*) AS launches FROM space WHERE datum <= '1967-04-10' GROUP BY rocket_id ORDER BY launches DESC LIMIT 5;",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Qohftwehlhohpqv3rskd",
+    "name": "Rocket details",
+    "body": {
+      "content": "<p>Now we will take the last exercise a step further. We found the IDs of the rockets, that were most used during the first 10 years. It would be more helpful, to have the rocket names and the status.</p><p><code>JOIN</code> the <code>rockets</code> table to the result and select all available information from the <strong>rockets table</strong> for the 5 most used rockets until 04. Oct 1967</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT horses.*, rockets.* FROM \n(SELECT rocket_id, count(*) AS launches FROM space \n\tWHERE datum <= '1967-04-10' \n\tGROUP BY rocket_id \n\tORDER BY launches DESC \n\tLIMIT 5\n) as horses\nJOIN rockets on horses.rocket_id=rockets.rocket_id;",
+      "type": "sql"
+    },
+    "hint": "<p>There is more than one possible solution for this exercise. In case your result is correct, but your SQL query substantially different, you can run both with the <i>explain</i> trigger active to learn about performance differences.</p>"
+  },
+  {
+    "id": "Fnnmsdplfydbtdfstjj4",
+    "name": "Rocket lifetime",
+    "body": {
+      "content": "<p>Reuse the last example.</p><p>It is possible to create way more metadata from the available tables. E.g., for each of the <strong>20</strong> most used rockets of <strong>all</strong> times, we can add the <storng>first_launch</strong> and <storng>last_launch</strong> along with the total number of <storng>launches</strong> as aggregated attributes. Also select the difference of first and last launch as <strong>lifetime</strong>.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT horses.*, rockets.* FROM \n(SELECT \n\t\trocket_id, \n\t\tcount(*) AS launches,\n\t\tmin(datum) first_start,\n\t\tmax(datum) last_start,\n\t\tmax(datum) - min(datum) as lifetime\n\tFROM space \n\tGROUP BY rocket_id \n\tORDER BY launches DESC \n\tLIMIT 20\n) as horses\nJOIN rockets on horses.rocket_id=rockets.rocket_id;",
+      "type": "sql",
+      "prefill": "SELECT horses.*, rockets.* FROM \n(SELECT rocket_id, count(*) AS launches FROM space \n\tWHERE datum <= '1967-04-10' \n\tGROUP BY rocket_id \n\tORDER BY launches DESC \n\tLIMIT 5\n) as horses\nJOIN rockets on horses.rocket_id=rockets.rocket_id;"
+    }
+  },
+  {
+    "id": "X0qbytpiqib2qkmn9dfh",
+    "name": "More Statistics",
+    "body": {
+      "content": "<p>Read the documentation of the <code>UNION</code> command. It is important, that you name the result attributes <strong>exactly</strong> the same, <strong>in the same order</strong>, to merge the output of many <code>SELECT</code> queries together.</p><p>Create an overview with three attributes, a <strong>label, rocket_name</strong> and a <strong>stat</strong>, for the following statistics:</p><ul><li><code>'longest lifetime'</code> for the rocket with the longest lifetime in days</li><li><code>'most launched'</code> for the rocket that had the most lauchnes</li><li><code>'most frequent'</code> for the rocket that had more than <strong>10</strong> launches and then the <strong>least<strong> days per launch.</li></ul><p>Note: This is a very complex exercerise. You will need more than one try to solve it.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "(\n\tSELECT 'most launched' as label, rocket_name, count(*)::int AS stat FROM space \n\tJOIN rockets on rockets.rocket_id=space.rocket_id\n\tGROUP BY space.rocket_id, rocket_name ORDER BY stat DESC LIMIT 1\n)\nUNION\n(\n\tSELECT 'longest lifetime' as label, rocket_name, date_part('days', max(datum) - min(datum))::int AS stat FROM space \n\tJOIN rockets on rockets.rocket_id=space.rocket_id\n\tGROUP BY space.rocket_id, rocket_name ORDER BY stat DESC LIMIT 1\n)\nUNION\n(\n\tSELECT \n\t\t'most frequent' as label, rocket_name, \n\t\tCASE WHEN count(datum) <= 10 THEN 9999999 ELSE (date_part('days', max(datum) - min(datum)) / count(datum))::int END AS stat\n\tFROM space\n\tJOIN rockets on rockets.rocket_id=space.rocket_id\n\tGROUP BY space.rocket_id, rocket_name ORDER BY stat ASC LIMIT 1\n);",
+      "type": "sql"
+    },
+    "hint": "<p>Solve the three queries for the final <code>UNION</code> one at a time. The final <code>stat</code> column has to be of same data type, as always in SQL.</p><p>If you get an syntax error because there is a <code>LIMIT</code> called before the <code>UNION</code>, use braces to encapsulate the single Selects. Otherwise postgres will try to <code>LIMIT</code> the <strong>result</strong> of the <code>UNION</code></p>"
+  },{
+    "id": "Jkupteq3xvkumvpvmyho",
+    "name": "Natural Join",
+    "body": {
+      "content": "<p>In this exercise we will use another type of <code>JOIN</code>: the <code>NATURAL JOIN</code></p><p>In other exercises, you might have wondered why we prefixed primary keys of lookup tables with their table name. Using this prefix we have the exactly same attribute name in the lookup table and main table. This is what a <code>NATURAL JOIN</code> can make use of, which will save you from specifying the relationship yourself. This can save you some time in management scenarios involving a lot of joins.</p><p>Select the first five entries from <strong>space</strong> with <strong>locations</strong> and <strong>companies</strong> naturally joined.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM space\nNATURAL JOIN locations\nNATURAL JOIN companies LIMIT 5;",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Qndbemjjfzhjaq52hvin",
+    "name": "Space Agencies",
+    "body": {
+      "content": "<p>Which of the space agencies (companies) lauched the <strong>most</strong> starts? Select the first <strong>15 company_name</strong> along with the number of <string>launches</strong>.</p>",
+      "type": "sql"
+    },
+    "solution": {
+      "content": "select\n\tcompany_name,\n\tcount(*) as launches\from space\nnatural join companies\nGROUP BY 1\nORDER BY 2 DESC\nlimit 15",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Purcdm6g42bbn8igz9ka",
+    "name": "Business times for space agencies",
+    "body": {
+      "content": "<p>You can reuse the query of the last exercise.</p><p>Calculate more statistics for all companies. Calculate the total number of rocket launches (called <strong>launches<strong>); Query their first and last operated launch (<strong>first_launch, last_launch</strong>); and calculate the active years as the difference between both by taking the <strong>full</strong> served years (named <strong>active_years</strong>). Create a <strong>full list</strong> of all space companies ordered by their actives years.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\tcompany_name,\n\tcount(*) AS launches,\n\tmin(datum) AS first_launch,\n\tmax(datum) AS last_launch,\n\t(date_part('day', max(datum) - min(datum)) / 365)::INTEGER AS active_years\nFROM space\nNATURAL JOIN companies\nGROUP BY 1\nORDER BY 5 DESC",
+      "type": "sql",
+      "prefill": "select\n\tcompany_name,\n\tcount(*) as launches\from space\nnatural join companies\nGROUP BY 1\nORDER BY 2 DESC\nlimit 15"
+    },
+    "hint": "<p>You can use the <code>date_part('day' ...)</code> function to extract the days of a timestamp interval data type. Make smart use of type casting to obtain <strong>full</strong> years.</p>"
+  },
+  {
+    "id": "Y82grpaqjuogxcrrjhmh",
+    "name": "Full agency statistics",
+    "body": {
+      "content": "<p>You can reuse the query of the last exercise.</p><p>In this exercise, we will add only one more statistic to the result of the last exercise. We calculated the number of launches and the total full active years. Now, we want to calculate how many rocket launches a company operated on average per year. If you try that, you will most likely run into an error. Go ahead and just try it.</p><p>The problem is, that there are companies with <code>0</code> active years, i.e. because there was only a single rocket launch. Figure out a way, how to handle that error and calculated the desired statistic and name it <strong>launches_per_year</strong>. Order the results by this new statistic and query only the top 20.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\tt.*,\n\tlaunches / active_years as launches_per_year\nFROM (\n\tSELECT\n\t\tcompany_name,\n\t\tcount(*) AS launches,\n\t\tmin(datum) AS first_launch,\n\t\tmax(datum) AS last_launch,\n\t\t(date_part('day', max(datum) - min(datum)) / 365)::INTEGER AS active_years\n\tFROM space\n\tNATURAL JOIN companies\n\tGROUP BY 1\n\tORDER BY 5 DESC\n) AS t\nWHERE active_years > 0\nORDER BY launches_per_year DESC\nLIMIT 20",
+      "type": "sql",
+      "prefill": "SELECT\n\tcompany_name,\n\tcount(*) AS launches,\n\tmin(datum) AS first_launch,\n\tmax(datum) AS last_launch,\n\t(date_part('day', max(datum) - min(datum)) / 365)::INTEGER AS active_years\nFROM space\nNATURAL JOIN companies\nGROUP BY 1\nORDER BY 5 DESC"
+    },
+    "hint": "<p>There is more than just one possible solution to this task. You can subquery and filter, or use a <code>CASE WHEN</code>, to get rid of the companies with 0 active years.</p>"
+  },
+  {
+    "id": "Fhoxc12junlqf6e5tp4l",
+    "name": "Who starts from where",
+    "body": {
+      "content": "<p>We will use the query of the last exercise.</p><p>Extend the space agency statistics with another level of aggregation. We calculated an overview of <strong>launches, first_launch, last_launch, active_years</strong> and <strong>launches_per_year</strong> for the <strong>20</strong> companies with most launches per year. Re-create this query, but break the results down to the different launching location <strong>countires</strong> and also add this column to the result set.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\tt.*,\n\tlaunches / active_years as launches_per_year\nFROM (\n\tSELECT\n\t\tcompany_name,\n\t\tcountry,\n\t\tcount(*) AS launches,\n\t\tmin(datum) AS first_launch,\n\t\tmax(datum) AS last_launch,\n\t\t(date_part('day', max(datum) - min(datum)) / 365)::INTEGER AS active_years\n\tFROM space\n\tNATURAL JOIN companies\n\tNATURAL JOIN locations\n\tGROUP BY 1,2\n\tORDER BY 5 DESC\n) AS t\nWHERE active_years > 0\nORDER BY launches_per_year DESC\nLIMIT 20",
+      "type": "sql",
+      "prefill": "SELECT\n\tt.*,\n\tlaunches / active_years as launches_per_year\nFROM (\n\tSELECT\n\t\tcompany_name,\n\t\tcount(*) AS launches,\n\t\tmin(datum) AS first_launch,\n\t\tmax(datum) AS last_launch,\n\t\t(date_part('day', max(datum) - min(datum)) / 365)::INTEGER AS active_years\n\tFROM space\n\tNATURAL JOIN companies\n\tGROUP BY 1\n\tORDER BY 5 DESC\n) AS t\nWHERE active_years > 0\nORDER BY launches_per_year DESC\nLIMIT 20"
+    }
+  }
+]
