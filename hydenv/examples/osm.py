@@ -128,7 +128,11 @@ class HydenvOSMExamples:
                 merged = linemerge([LineString([(p.lon, p.lat) for p in w]) for w in ways])
                 parts = list(polygonize(unary_union(merged)))
                 poly = parts[0] if len(parts) == 1 else MultiPolygon(parts)
-                wkt = 'SRID=4326;%s' % poly.to_wkt() 
+                try:
+                    # with shapely > 1.8 this does not work anymore
+                    wkt = 'SRID=4326;%s' % poly.to_wkt() 
+                except AttributeError:
+                    wkt = f"SRID=4326;{poly.wkt}"
 
                 node = node[0]      # the relation itself
             

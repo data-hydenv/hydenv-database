@@ -442,12 +442,13 @@ def example_page(db: HydenvDatabase):
     st.sidebar.markdown('### API options')
     
     # example-specific code
+    is_defnied = True
+    args = {}
     if example == 'hobo':
         # terms
         terms = st.sidebar.multiselect('Terms', options=['WT18', 'WT19', 'WT20', 'WT21', 'WT22'])
         if len(terms) == 0:
             st.warning('It is recommended to explicitly select the terms. Otherwise all terms will be selected.')
-            args = {}
         else:
             args = {'terms': terms}
         
@@ -457,13 +458,20 @@ def example_page(db: HydenvDatabase):
 
         if only != 'all':
             args['only'] = only
+    
+    elif example == 'osm':
+        # action
+        action = st.sidebar.selectbox('Action', options=['city-districts', 'energiewende', 'node', 'way'])
 
-        for k, v in args.items():
-            cmd += f' --{k}={v}'
-    
+        args = {'action': action}
+
     else:
-        st.info('This example dataset is not yet implemented')
+        is_defnied = False
     
+    # build args
+    for k, v in args.items():
+        cmd += f' --{k}={v}'
+
     # ARGS are build now - build the API
     api = HydenvExamples(connection=db.unsafe_get_connection, quiet=False)
     runner = getattr(api, example)
@@ -471,6 +479,11 @@ def example_page(db: HydenvDatabase):
     # show the command
     st.markdown('### CLI command\nThe command below is the corresponding CLI command for the specified API call.')
     st.code(cmd, language='bash')
+
+    if not is_defnied:
+        st.info('This example dataset is not yet implemented. Try running it using the cli. Maybe the help page will help as well.')
+        st.code(cmd + ' --help', language='bash')
+        st.stop()
 
     # start buttions
     but1 = st.button('RUN CLI', key='but1')
