@@ -223,4 +223,4 @@ class HydenvOSMExamples:
     def counties(self, state="Baden-Württemberg", save=None, quiet=True):
         if not quiet:
             print('Loading all counties in the state %s' % state)
-        self.run('relation', state, attribute=dict(boundary='administrative', admin_level='6'), type_alias='county', quiet=quiet)
+        self.run('relation', state, attribute=dict(boundary='administrative', admin_level='6'), save=save, type_alias='county', quiet=quiet)

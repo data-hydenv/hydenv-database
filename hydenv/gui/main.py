@@ -421,10 +421,12 @@ def example_page(db: HydenvDatabase):
 
     # CHECK queries
     CHECK = {
-        'hobo': "SELECT short as \"Identifier\", full_name as \"Term\", count(*) AS \"HOBO Metadata\" FROM metadata m JOIN terms ON terms.id=m.term_id JOIN sensors s ON m.sensor_id=s.id WHERE s.name='hobo' GROUP BY full_name, short;"
+        'hobo': "SELECT short as \"Identifier\", full_name as \"Term\", count(*) AS \"HOBO Metadata\" FROM metadata m JOIN terms ON terms.id=m.term_id JOIN sensors s ON m.sensor_id=s.id WHERE s.name='hobo' GROUP BY full_name, short;",
+        'osm': "SELECT 'Not implemented yet' as \"Message\";"
     }
     CMD = {
-        'hobo': 'python -m hydenv examples hobo'
+        'hobo': 'python -m hydenv examples hobo',
+        'osm': 'python -m hydenv examples osm'
     }
     cmd = CMD[example]
 
@@ -508,7 +510,7 @@ def home_page(db: HydenvDatabase):
     st.markdown('All Hydenv CLI endpoints which are implemented are available here. You find a short explanation with the call signature and a link to the GUI, if available.')
 
     # install
-    with st.expander('HYDENV DATABASE', expanded=True):
+    with st.expander('HYDENV DATABASE', expanded=False):
         # INSTALL COMMAND
         st.markdown('Can be used to install new database instance, connect exising ones on the same host or remote and to clean up and re-initialize the database.')
         il, ir = st.columns((9, 1))
@@ -531,21 +533,21 @@ def home_page(db: HydenvDatabase):
     with st.expander('EXERCISES', expanded=True):
         st.markdown('One of the main feature of hydenv-database. You can interactively start SQL exercises, which are tested with your **own database copy** and give you feedback.')
         el, er = st.columns((9, 1))
-        el.code('# start exercises\npython -m hydenv exercises start', language='bash')
+        el.code('# start exercises\npython -m hydenv gui', language='bash')
         eopen = er.button('OPEN IN GUI', key='open_exercises')
         if eopen:
             st.session_state.page_name = 'exercise'
             st.experimental_rerun()
         
         st.markdown('There is also a full-featured web-application, that is currently not developed any further. But it is still available')
-        st.code('python -m hydenv exercises start --legacy', language='bash')
+        st.code('python -m hydenv exercises gui --legacy', language='bash')
     
     # examples
     st.markdown('## Examples')
     st.markdown(EXAMPLE_INTRO)
     
     # space
-    with st.expander('SPACE MISSIONS', expanded=True):
+    with st.expander('SPACE MISSIONS', expanded=False):
         st.markdown('The space example set is pre-installed with the package. You don\' need to run this manually.')
         exl, exr = st.columns((9, 1))
         exl.code('# start examples\npython -m hydenv examples space', language='bash')
@@ -564,7 +566,18 @@ def home_page(db: HydenvDatabase):
             st.session_state.page_name = 'example_hobo'
             st.experimental_rerun()
 
-    
+    # osm
+    with st.expander('OpenStreetMap', expanded=False):
+        st.markdown('Hydenv includes some parepared OverpassAPI queries to download infrastructure data from OpenStreetMap.org. These are uploaded into the database, using a slightly different schema.')
+
+        osmr, osml  = st.columns((9, 1))
+        osmr.code('# Download OSM city districts\npython -m hydenv examples osm city-districts --city=FR', language='bash')
+
+        osm_open = osml.button('OPEN IN GUI', key='open_osm')
+        if osm_open:
+            st.session_state.page_name = 'example_osm'
+            st.experimental_rerun()
+
     st.stop()
 
 def event(event_name: str, *args, **kwargs):

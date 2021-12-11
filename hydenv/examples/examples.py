@@ -93,7 +93,7 @@ class HydenvExamples:
         `attribute` and `value` parameters.
         :param action: The CLI action to perfom. See docs above.
         :param boundary: string - Any valid OSM administrative boundary to limit
-            the results to, like `"Baden-Württemberg"` or `"Freiburg im Breisghau"`.
+            the results to, like `"Baden-Württemberg"` or `"Freiburg im Breisgau"`.
         :param attribute: string - Any valid OSM Tag attribute for filtering.
             In most cases, this will be `amenity`.
         :param value: string - filter value. This is the value that the 
