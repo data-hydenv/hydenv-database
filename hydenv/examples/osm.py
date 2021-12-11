@@ -55,9 +55,9 @@ class HydenvOSMExamples:
     def _build_query(self, geometry, boundary, attribute, value=None):
         # build the filter
         if isinstance(attribute, str):
-            filt = '[%s%s]' % (attribute, '~%s' % value if value is not None else '')
+            filt = '[\"%s\"%s]' % (attribute, '~%s' % value if value is not None else '')
         elif isinstance(attribute, dict):
-            filt = ''.join(['[%s%s]' % (attr, '~%s' % val if val is not None else '') for attr, val in attribute.items()])
+            filt = ''.join(['["%s"%s]' % (attr, '~%s' % val if val is not None else '') for attr, val in attribute.items()])
         
         # build the query
         query = BY_AREA.format(obj=geometry, boundary_name=boundary, filter=filt)
@@ -193,11 +193,16 @@ class HydenvOSMExamples:
         
 
     def energiewende(self, boundary="Baden-Württemberg", quiet=True):
-        # run for 
+        # check if this is a predefined city
+        if boundary in CITIES:
+            boundary = CITIES[boundary]
+        
+        # Get the gas stations 
         if not quiet:
             print('Loading all Gas stations in %s' % boundary)
         self.run('node', boundary, 'amenity', 'fuel', quiet=quiet)
 
+        # get the charging stations
         if not quiet:
             print('Loading all charging stations in %s' % boundary)
         self.run('node', boundary, 'amenity', 'charging_station', quiet=quiet)

@@ -17,6 +17,7 @@ from universal_analytics import Tracker, HTTPRequest
 
 from hydenv.database import HydenvDatabase
 from hydenv.examples.examples import HydenvExamples
+from hydenv.examples.osm import CITIES, FEDERAL_STATES
 
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
 WELCOME = """
@@ -421,8 +422,11 @@ def example_page(db: HydenvDatabase):
 
     # CHECK queries
     CHECK = {
-        'hobo': "SELECT short as \"Identifier\", full_name as \"Term\", count(*) AS \"HOBO Metadata\" FROM metadata m JOIN terms ON terms.id=m.term_id JOIN sensors s ON m.sensor_id=s.id WHERE s.name='hobo' GROUP BY full_name, short;",
-        'osm': "SELECT 'Not implemented yet' as \"Message\";"
+        'hobo': ["SELECT short as \"Identifier\", full_name as \"Term\", count(*) AS \"HOBO Metadata\" FROM metadata m JOIN terms ON terms.id=m.term_id JOIN sensors s ON m.sensor_id=s.id WHERE s.name='hobo' GROUP BY full_name, short;"],
+        'osm': [
+            """SELECT node_type as "Node Type", count(*) as "Features" from osm_nodes GROUP BY node_type;""",
+            """select 'Distinct OSM tags' as "Description", count(distinct key) from osm_tags union select 'Total tags on Nodes' as "Description", count(*) from nm_nodes_tags;"""
+        ]
     }
     CMD = {
         'hobo': 'python -m hydenv examples hobo',
@@ -436,8 +440,9 @@ def example_page(db: HydenvDatabase):
     # show the tables
     if example in CHECK:
         st.markdown('### Existing tables\n Please make sure that the examples data is not listed below. Most example APIs will create dublicates if you run them twice.')
-        overview_data = db.execute(CHECK[example], json=True)
-        st.table(overview_data)
+        for query in CHECK[example]:
+            overview_data = db.execute(query, json=True)
+            st.table(overview_data)
 
     st.sidebar.markdown('### API options')
     
@@ -461,9 +466,41 @@ def example_page(db: HydenvDatabase):
     
     elif example == 'osm':
         # action
-        action = st.sidebar.selectbox('Action', options=['city-districts', 'energiewende', 'node', 'way'])
-
+        action = st.sidebar.selectbox('Action', options=['city-districts', 'counties', 'energiewende', 'nodes', 'way'])
         args = {'action': action}
+
+        if action not in ('nodes', 'way'):
+            use_predefined = st.sidebar.checkbox('Use predefined geometry settings', value=True)
+        
+        if action == 'city-districts':
+            if use_predefined:
+                city = st.sidebar.selectbox('PREDEFINED CITY', options=list(CITIES.keys()), format_func=lambda k: CITIES[k])
+                args['city'] = city
+            else:
+                args['city'] = st.sidebar.text_input('CITY', 'Karlsruhe')
+        
+        elif action == 'counties':
+            if use_predefined:
+                args['state'] = st.sidebar.selectbox('FEDERAL STATE', options=FEDERAL_STATES)
+            else:
+                args['state'] = st.sidebar.text_input('FEDERAL STATE', 'Baden-Württemberg')
+        
+        elif action == 'energiewende':
+            st.markdown("""### Description\nThis API endpoint is a special endpoint, which calls the `counties` and `node` endpoints several times. Only useful for the Data-Challenge *Energiewende*.""")
+            if use_predefined:
+                BOUNDS = {**CITIES, **{s: s for s in FEDERAL_STATES}}
+                args['boundary'] = st.sidebar.selectbox('BOUNDARY', options=list(BOUNDS.keys()), format_func=lambda k: BOUNDS.get(k))
+            else:
+                args['boundary'] = st.sidebar.text_input('BOUNDARY', 'Karlsruhe', help="Make sure that this is a valid OSM amenity tag.")
+
+        elif action == 'nodes' or action == 'way':
+            args['boundary'] = st.sidebar.text_input('BOUNDARY', 'Baden-Württemberg' if action == 'nodes' else 'Karlsruhe', help="Make sure that this is a valid OSM amenity tag.")
+            args['attribute'] = st.sidebar.text_input('OSM Tag Attribute', 'generator:source' if action == 'nodes' else 'leisure', help=f"The OSM Tag, which has to exist on the {action}")
+            args['value'] = st.sidebar.text_input('OSM Tag Value', 'wind' if action == 'nodes' else 'playground', help=f"Filters for this value on {action} with tag {args['attribute']}")
+            st.sidebar.info('You can rename the tag')
+            alias = st.sidebar.text_input('TYPE ALIAS', 'wind turbine' if action == 'nodes' else 'playground')
+            if alias.strip() != "":
+                args['type_alias'] = alias
 
     else:
         is_defnied = False
