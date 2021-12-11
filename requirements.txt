@@ -7,7 +7,7 @@ fire
 tabulate
 progressbar2
 overpy
-shapely
+shapely>=1.8.0
 requests
 beautifulsoup4
 lxml
