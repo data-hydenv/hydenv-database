@@ -627,6 +627,28 @@ def home_page(db: HydenvDatabase):
         if osm_open:
             st.session_state.page_name = 'example_osm'
             st.experimental_rerun()
+    
+    # earthquake
+    with st.expander('EARTHQUAKES', expanded=False):
+        st.markdown('The earthquake dataset can be used for the exercises. It can upload the raw dataset, or add a normalized version of it.')
+
+        # raw command
+        eel1, eer1 = st.columns((9, 1))
+        eel1.code('# Upload raw earthquake data\npython -m hydenv examples earthquake', language='bash')
+        run_raw = eer1.button('RUN HERE', key='run_raw')
+        if run_raw:
+            api = HydenvExamples(connection=db.unsafe_get_connection)
+            api.earthquake(normalize=False)
+            st.success('Successfully uploaded raw earthquake data.')
+        
+        # normalized command
+        eel2, eer2 = st.columns((9, 1))
+        eel2.code('# Upload normalized earthquake data\npython -m hydenv examples earthquake --normalize', language='bash')
+        run_norm = eer2.button('RUN HERE', key='run_norm')
+        if run_norm:
+            api = HydenvExamples(connection=db.unsafe_get_connection)
+            api.earthquake(normalize=True)
+            st.success('Successfully uploaded normalized earthquake data.')
 
     st.stop()
 
