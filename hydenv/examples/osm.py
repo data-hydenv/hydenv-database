@@ -55,9 +55,9 @@ class HydenvOSMExamples:
     def _build_query(self, geometry, boundary, attribute, value=None):
         # build the filter
         if isinstance(attribute, str):
-            filt = '[%s%s]' % (attribute, '~%s' % value if value is not None else '')
+            filt = '[\"%s\"%s]' % (attribute, '~%s' % value if value is not None else '')
         elif isinstance(attribute, dict):
-            filt = ''.join(['[%s%s]' % (attr, '~%s' % val if val is not None else '') for attr, val in attribute.items()])
+            filt = ''.join(['["%s"%s]' % (attr, '~%s' % val if val is not None else '') for attr, val in attribute.items()])
         
         # build the query
         query = BY_AREA.format(obj=geometry, boundary_name=boundary, filter=filt)
@@ -128,7 +128,11 @@ class HydenvOSMExamples:
                 merged = linemerge([LineString([(p.lon, p.lat) for p in w]) for w in ways])
                 parts = list(polygonize(unary_union(merged)))
                 poly = parts[0] if len(parts) == 1 else MultiPolygon(parts)
-                wkt = 'SRID=4326;%s' % poly.to_wkt() 
+                try:
+                    # with shapely > 1.8 this does not work anymore
+                    wkt = 'SRID=4326;%s' % poly.to_wkt() 
+                except AttributeError:
+                    wkt = f"SRID=4326;{poly.wkt}"
 
                 node = node[0]      # the relation itself
             
@@ -189,11 +193,16 @@ class HydenvOSMExamples:
         
 
     def energiewende(self, boundary="Baden-Württemberg", quiet=True):
-        # run for 
+        # check if this is a predefined city
+        if boundary in CITIES:
+            boundary = CITIES[boundary]
+        
+        # Get the gas stations 
         if not quiet:
             print('Loading all Gas stations in %s' % boundary)
         self.run('node', boundary, 'amenity', 'fuel', quiet=quiet)
 
+        # get the charging stations
         if not quiet:
             print('Loading all charging stations in %s' % boundary)
         self.run('node', boundary, 'amenity', 'charging_station', quiet=quiet)
@@ -223,4 +232,4 @@ class HydenvOSMExamples:
     def counties(self, state="Baden-Württemberg", save=None, quiet=True):
         if not quiet:
             print('Loading all counties in the state %s' % state)
-        self.run('relation', state, attribute=dict(boundary='administrative', admin_level='6'), type_alias='county', quiet=quiet)
+        self.run('relation', state, attribute=dict(boundary='administrative', admin_level='6'), save=save, type_alias='county', quiet=quiet)

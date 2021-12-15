@@ -1,0 +1,212 @@
+[
+  {
+    "id": "St6jnvfg5nyvqffclheq",
+    "name": "Available HOBOs",
+    "body": {
+      "content": "<p>To get he HOBO exercises started, you should verify, that enough HOBO records were loaded to the database. Count all rows and alias the result as <strong>HOBOs</strong>.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT count(*) AS \"HOBOs\" FROM metadata",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Wuxpm3nyfauzlazsuyfg",
+    "name": "Available data",
+    "body": {
+      "content": "<p>Beside the metadata, we will need some raw data recorded and some processed quality checked data. Select each <strong>meta_id</strong> along with two flags: <strong>raw_data_available, data_available</strong>, that indicate wheter related data records are available.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT \n\tid AS meta_id,\n\t(SELECT CASE WHEN count(*) > 0 THEN TRUE ELSE FALSE END FROM raw_data WHERE meta_id=m.id) AS raw_data_available,\n\t(SELECT CASE WHEN count(*) > 0 THEN TRUE ELSE FALSE END FROM data WHERE meta_id=m.id) AS data_available\nFROM metadata m",
+      "type": "sql"
+    },
+    "hint": "<p>You will need two sub-queries for this. A <i>flag</i> is typically a boolean value.</p>"
+  },
+  {
+    "id": "Mmprw5o9mdirjbh8zrfj",
+    "name": "Available years",
+    "body": {
+      "content": "<p>Beside data and metadata, we need data originating from two different terms. All terms except the winter term 2020/2021 is spanning measured data across year borders. Therefore we need a lookup table to group metadata by terms. <code>JOIN</code> the <strong>terms</strong> table to the available metadata and reduce the dataset to all terms with available metadata and select the count of HOBOs as <storng>\"HOBOs\"</strong> along with all available information from the <strong>terms</strong> table. Run you query with <code>'explain'</code> enabled.</p>"
+    },
+    "solution": {
+      "content": "SELECT * FROM\n(\n\tSELECT term_id, count(*) AS \"HOBOs\" FROM metadata \n\tGROUP BY term_id\n) AS m\nJOIN terms ON m.term_id=terms.id",
+      "type": "sql"
+    },
+    "hint": "<p>There are at least two possible solutions: Join-then-group or Reduce-then-join. Run your soultion with explain enabled and compare to the other solution.</p>"
+  },
+  {
+    "id": "Hnxrrcmlzgsl1czbet38",
+    "name": "Raw data bias",
+    "body": {
+      "content": "<p>For each of the terms that have raw data as well as quality checked data, we can run a simple, yet powerful analysis. Calculate for each term the average temperature, across all sensors and locations for the raw data and the checked data separately. The difference between the two distributions' location can reveal a systematic bias for any analysis that we would run on the raw data, instead of the quality data.</p><p>Select the terms' <strong>full_name</strong> and join the <code>avg</code> of the related records in the <strong>raw_data</strong> and <strong>data</strong> table, aliased as <strong>avg_raw, avg_data</strong></p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT raw.full_name, avg_raw, avg_data FROM (\n\tSELECT t.full_name, avg(value) AS avg_raw  FROM raw_data\n\tJOIN metadata m ON m.id=raw_data.meta_id\n\tJOIN terms t ON t.id=m.term_id\n\tWHERE variable_id=1\n\tGROUP BY t.full_name\n) AS raw\nLEFT OUTER JOIN (\n\tSELECT t.full_name, avg(value) AS avg_data  FROM data\n\tJOIN metadata m ON m.id=data.meta_id\n\tJOIN terms t ON t.id=m.term_id\n\tGROUP BY t.full_name\n) AS data ON raw.full_name=data.full_name",
+      "type": "sql",
+      "prefill": "SELECT raw.full_name, avg_raw, avg_data FROM (\n\t-- PUT YOUR raw_data query HERE\n) AS raw\nLEFT OUTER JOIN (\n\t-- PUT YOUR data query HERE\n) AS data ON raw.full_name=data.full_name"
+    },
+    "hint": "<p>Decompose this into two separated queries in the console and run each of them separatedly.</p>"
+  },
+  {
+    "id": "Yz5bi1yr4atm4ruppw8v",
+    "name": "Extra information",
+    "body": {
+      "content": "<p>While modeling the HOBO metadata, we chose an approach to store any information that is neither common to all generations nor an absolute core information, without which the metadata does not make any sense, into a separated structure. This table is called <strong>details</strong> and it can store arbitraty key-value pairs. This way we can store any additional information and the metadata between two different HOBOs does not have to match. This makes our data model more flexible.</p><p>However, we will need a join to bring the information back to the main table. Further, we need to know about the expected values, or use some more sophisticated SQL and Postgres techniques to organize this data model back into a tabular format. To get started, select all records from <strong>details</strong> with <strong>key='influence'</strong>. This will load all details about radiation influence on the HOBOs' location.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM details WHERE key='influence'",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Ugdgbyu3rfofqf72pllv",
+    "name": "Rebuilding Metadata",
+    "body": {
+      "content": "<p>Bring the extra information from the <strong>details</strong> table back to the main <strong>metadata</strong> table. Their many-to-many relationship is stored in the <strong>nm_metadata_details</strong> table. Select all information from metadata and join a new attribute called <strong>radiation_influence</strong> containing the value from <strong>details</strong> of <code>key='influence'</code>. Limit the result to 10.</p>",
+      "type": "sql"
+    },
+    "solution": {
+      "content": "SELECT\n\td.str_value AS radiation_influence,\n\tm.*\nFROM metadata m\nJOIN nm_metadata_details nm ON nm.meta_id=m.id\nJOIN details d ON d.id=nm.detail_id\nWHERE key='influence'\nLIMIT 10",
+      "type": "sql"
+    },
+    "hint": "<p></p>"
+  },
+  {
+    "id": "Irwftjll7r30qw4sflat",
+    "name": "Radiation influence bias",
+    "body": {
+      "content": "<p>A major question to ask with radiation influence metadata in the database is:</p><p><i>Does the radiation influence impose a bias on the <strong>raw</strong> data?</i></p><p>This question is harder to answer as you might expect, as the radiation influence is expected to affect the measurements in a very different way, depending on the radiation itself. But as a first number, we can calculate the <strong>average</strong> temperature across all HOBO sensors for each term, grouped by the infulence.<br>Select the <strong>full_name</strong> of the term, <strong>radiation_influence</strong> and <strong>t_avg</strong></p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\tt.full_name,\n\trad.radiation_influence,\n\tavg(value) as t_avg\nFROM raw_data r\nJOIN metadata m ON r.meta_id=m.id\nJOIN terms t ON t.id=m.term_id\nJOIN (\n\tSELECT m.id, d.str_value as radiation_influence\n\tFROM metadata m\n\tJOIN nm_metadata_details nm ON nm.meta_id=m.id\n\tJOIN details d ON nm.detail_id=d.id\n\tWHERE key='influence'\n) AS rad ON rad.id=m.id\nWHERE variable_id=1\nGROUP BY t.full_name, rad.radiation_influence",
+      "type": "sql",
+      "prefill": "SELECT\n\td.str_value AS radiation_influence,\n\tm.*\nFROM metadata m\nJOIN nm_metadata_details nm ON nm.meta_id=m.id\nJOIN details d ON d.id=nm.detail_id\nWHERE key='influence'\nLIMIT 10"
+    },
+    "hint": "<p>First, implement the aggreation without a grouping for radiation influence, just group by term. Then, join a subquery to the command, which basically implements the solution of the last exercise, but without limit. Finally, add the newly created radiation_influence attribute to the group statement.</p>"
+  },
+  {
+    "id": "Fb6synubpvv1y0dfv5rv",
+    "name": "Radiation influence bias #2",
+    "body": {
+      "content": "<p>We ask the same question as in the last exercise</p><p><i>Does the radiation influence impose a bias on the data?</i></p><p>Now, run the same query as for the last exercise again, but replace <i>raw_data</i> with the quality checked <strong>data</strong>. Finally, turn both queries into two subberies and select from their join on <strong>full_name</strong> and <strong>radiation_influence</strong>. Rename <i>t_avg</i> to <i>t_avg_raw</i> and <i>t_avg_data</i>. This is a nice overview, if and how the the quality correction procedures affect the more influenced HOBOs more, than the protected ones. For ease of interpreting, add a <storng>third</strong> attribute called <strong>difference</strong>, which is <code>t_avg_raw - t_avg_data</code>.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT\n\traw.full_name,\n\traw.radiation_influence,\n\traw.t_avg AS t_avg_raw,\n\tqual.t_avg AS t_avg_data,\n\traw.t_avg - qual.t_avg AS difference\nFROM\n(\n\tSELECT\n\t\tt.full_name,\n\t\trad.radiation_influence,\n\t\tavg(value) as t_avg\n\tFROM raw_data r\n\tJOIN metadata m ON r.meta_id=m.id\n\tJOIN terms t ON t.id=m.term_id\nJOIN (\n\t\tSELECT m.id, d.str_value as radiation_influence\n\t\tFROM metadata m\n\t\tJOIN nm_metadata_details nm ON nm.meta_id=m.id\n\t\tJOIN details d ON nm.detail_id=d.id\n\t\tWHERE key='influence'\n\t) AS rad ON rad.id=m.id\n\tWHERE variable_id=1\n\tGROUP BY t.full_name, rad.radiation_influence\n\t) raw\nJOIN\n(\n\tSELECT\n\t\tt.full_name,\n\t\trad.radiation_influence,\n\t\tavg(value) as t_avg\n\tFROM data r\n\tJOIN metadata m ON r.meta_id=m.id\n\tJOIN terms t ON t.id=m.term_id\n\tJOIN (\n\t\tSELECT m.id, d.str_value as radiation_influence\n\t\tFROM metadata m\n\t\tJOIN nm_metadata_details nm ON nm.meta_id=m.id\n\t\tJOIN details d ON nm.detail_id=d.id\n\t\tWHERE key='influence'\n\t) AS rad ON rad.id=m.id\n\tWHERE variable_id=1\n\tGROUP BY t.full_name, rad.radiation_influence\n) qual\nON raw.full_name=qual.full_name AND raw.radiation_influence=qual.radiation_influence",
+      "type": "sql",
+      "prefill": "SELECT\n\tt.full_name,\n\trad.radiation_influence,\n\tavg(value) as t_avg\nFROM raw_data r\nJOIN metadata m ON r.meta_id=m.id\nJOIN terms t ON t.id=m.term_id\nJOIN (\n\tSELECT m.id, d.str_value as radiation_influence\n\tFROM metadata m\n\tJOIN nm_metadata_details nm ON nm.meta_id=m.id\n\tJOIN details d ON nm.detail_id=d.id\n\tWHERE key='influence'\n) AS rad ON rad.id=m.id\nWHERE variable_id=1\nGROUP BY t.full_name, rad.radiation_influence"
+    },
+    "hint": "<p>This exercise is neither complicated nor difficult. You have the solution already there. It is just a lot of typing. Use the solution if you run into too many typing errors.<br>A analysis like this should already be split into different views.</p>"
+  },
+  {
+    "id": "Urb9gy4fbw7atn1rbdan",
+    "name": "Available districts",
+    "body": {
+      "content": "<p>Make sure that the city districts have been loaded to the database. You will find the table <strong>osm_nodes</strong>. The hydenv CLI populated the attribute <strong>node_type</strong> while transforming the data. The CLI endpoint <code>city-districts</code> will use the value <code>'district'</code> here.</p><p>Select all districts from the database</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * from osm_nodes WHERE node_type='district'",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Khetns9jgxmd3yesadbs",
+    "name": "Metadata overview",
+    "body": {
+      "content": "<p>Before we start with spatial operations, let's get a quick overview on the available metadata. Select the first <strong>10</strong> records.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM metadata LIMIT 10",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "P5hqio7uqibvcguwh0hk",
+    "name": "Enahanced Metadata overview",
+    "body": {
+      "content": "<p>We will work on some enhanced metadata overview for the next execerises. Therefore we will create an enhanced metadata <code>VIEW</code>. Then, we don't have to run the same <code>JOIN</code> statements all the time.</p><p>Create a view on <strong>metadata</strong> called <strong>metadata_full</strong> joining <strong>terms, sensors</strong> and <strong>details</strong>. Include the following attributes:</p><ul><li>metadata: id, device_id, description, location</li><li>terms: full_name as term</li><li>sensors: name as sensor_name</li><li>details: value as influence where <code>key='influnece'</code></li></ul><p>Finally, select the full table</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "SELECT * FROM metadata_full;",
+      "code": "CREATE OR REPLACE VIEW metadata_full AS\nSELECT\n\tm.id, m.device_id, m.location, m.description,\n\tt.full_name AS term,\n\ts.name AS sensor_name,\n\td.str_value as influence\nFROM metadata m\nJOIN terms t ON t.id=m.term_id\nJOIN sensors s ON s.id=m.sensor_id\nJOIN nm_metadata_details nm ON nm.meta_id=m.id\nJOIN details d ON nm.detail_id=d.id\n\tWHERE d.key='influence';\nSELECT * FROM metadata_full;",
+      "type": "sql"
+    },
+    "disableSafeMode": true
+  },
+  {
+    "id": "Zflfh20cuwj3d6zctv9i",
+    "name": "HOBOs per district",
+    "body": {
+      "content": "<p>How many HOBOs are within each of the city districts in Freiburg?</p><p>Select the <strong>name</strong> and <strong>count</strong>.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "WITH freiburg AS (\n\tSELECT * FROM osm_nodes WHERE node_type='district'\n)\nSELECT freiburg.name, count(metadata.*)\nFROM metadata\nJOIN freiburg ON ST_WITHIN(metadata.location, freiburg.geom)\nGROUP BY freiburg.name",
+      "type": "sql"
+    }
+  },
+  {
+    "id": "Tuqylrly69neajzr9zeh",
+    "name": "Districts with enough HOBOs",
+    "body": {
+      "content": "<p>Reuse the example from the last exercise. Add another level of aggregation to aggregate the overview of districts twice. How many districts have more than <strong>3</strong> HOBOs, how many have only 3 or less?</p><p>Select twice from the statement used in the last exercise and <code>UNION</code> the two results together. Select two attributes: <strong>description</strong> and <strong>count</strong>. Use the two literal descriptions: <code>'HOBO <= 3'</code> and <code>'HOBO > 3'</code>.</p>"
+    },
+    "solution": {
+      "prefill": "WITH freiburg AS (\n\tSELECT * FROM osm_nodes WHERE node_type='district'\n)\nSELECT freiburg.name, count(metadata.*)\nFROM metadata\nJOIN freiburg ON ST_WITHIN(metadata.location, freiburg.geom)\nGROUP BY freiburg.name",
+      "content": "WITH overview AS\n(\n\tWITH freiburg AS (\n\t\tSELECT * FROM osm_nodes WHERE node_type='district'\n\t)\n\tSELECT freiburg.name, count(metadata.*)\n\tFROM metadata\n\tJOIN freiburg ON ST_WITHIN(metadata.location, freiburg.geom)\n\tGROUP BY freiburg.name\n)\nSELECT 'HOBOs > 3' as description, count(*)\nFROM overview WHERE count > 3\nUNION\nSELECT 'HOBO <= 3' as description, count(*)\nFROM overview WHERE count <= 3",
+      "type": "sql"
+    },
+    "disableSafeMode": true
+  },
+  {
+    "id": "Gddypdbca810nzkau2on",
+    "name": "De-normalizing Overview",
+    "body": {
+      "content": "<p><strong>This exercise is more complicated.</strong></p><p>As a next step, we need the new <code>metadata_full</code> view. The given SQL command in the Editor can be used for that.</p><p>Aggregate the given command, to count the HOBO sensors per district in each available term (2019, 2020, 2021) individually and transpose the result into new attributes using the <code>metadatafull.term</code> value along with the <strong>name</strong> and <strong>geom</strong> from the <code>freiburg</code> sub-query. Finally, use the WKT representation of the district geometries to view them in the application.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "prefill": "WITH\nfreiburg AS (\n\t\tSELECT * FROM osm_nodes WHERE node_type='district'\n),\noverview AS (\n\tSELECT\n\t\tfreiburg.geom,\n\t\tfreiburg.name,\n\t\tmetadata_full.*\n\tFROM metadata_full\n\tJOIN freiburg ON ST_WITHIN(metadata_full.location, freiburg.geom)\n)\nSELECT * FROM overview",
+      "content": "WITH\nfreiburg AS (\n\t\tSELECT * FROM osm_nodes WHERE node_type='district'\n),\noverview AS (\n\tSELECT\n\t\tfreiburg.geom,\n\t\tfreiburg.name,\n\t\tmetadata_full.*\n\tFROM metadata_full\n\tJOIN freiburg ON ST_WITHIN(metadata_full.location, freiburg.geom),\nper_term AS (\n\tSELECT\n\t\to.name, o.geom, count(*) as \"WT19\", 0 as \"WT20\", 0 as \"WT21\"\n\tFROM overview o WHERE term='Winterterm 2019/2020' group by o.name, o.geom\n\tUNION\n\tSELECT\n\t\to.name, o.geom, 0 as \"WT19\", count(*) as \"WT20\", 0 as \"WT21\"\n\tFROM overview o WHERE term='Winterterm 2020/2021' group by o.name, o.geom\n\tUNION\n\tSELECT\n\t\to.name, o.geom, 0 as \"WT19\", 0 as \"WT20\", count(*) as \"WT21\"\n\tFROM overview o WHERE term='Winterterm 2021/2022' group by o.name, o.geom\n\t)\nSELECT\n\tname, ST_AsEWKT(geom) AS \"WKT\",\n\tsum(\"WT19\") AS \"Winterterm 2019/2020\",\n\tsum(\"WT20\") AS \"Winterterm 2020/2021\",\n\tsum(\"WT21\") AS \"Winterterm 2021/2022\"\nFROM per_term GROUP BY name, geom",
+      "type": "sql"
+    },
+    "hint": "<p>Do not change the <code>WITH</code> statement. You can make your adaptions entirely in the main <code>SELECT</code> statement. It is also possible to implement this with sub-queries only.</p>",
+    "disableSafeMode": true
+  },
+  {
+    "id": "Tyhsjv1nmyvikypqw3eo",
+    "name": "HOBO overall coverage",
+    "body": {
+      "content": "<p>There have been a lot of temperature measurements throughout the last years and it's very likely, that no two HOBOs were placed at excatly the same location. Yet, it's also very unlikely, that HOBOs are distributed randomly over the area of Freiburg. They will be located within, or very close to buildings. There are also city districts, where students tend to live more often.</p><p>For this exercise, we will assume, that one HOBO measurement is representative for an area of 250m around itself (although this will most likely not hold...). How much of the <strong>area</strong> of Freiburg is covered by a Hobo? Express the result as ratio <code>[0, 1]</code> with two three places and call the attribute <strong>coverage</strong>.</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "WITH\nfreiburg AS (\n\tSELECT\n\t\tst_transform(st_union(geom), 25832) as geom\n\tFROM osm_nodes WHERE node_type='district'\n),\nhobos AS (\n\tSELECT\n\t\tst_union(st_buffer(st_transform(m.location, 25832), 250)) as geom\n\tFROM metadata m\n)\nSELECT\n\tround((st_area(st_intersection(freiburg.geom, hobos.geom)) / st_area(freiburg.geom))::numeric, 3) AS coverage\nFROM freiburg, hobos",
+      "prefill": "WITH\nfreiburg AS (\n\t-- Get Freiburgs area as one geometry here\n),\nhobos AS (\n\t-- Get the hobo covered area as one geometry here\n)\nSELECT\n\t-- Do some magic here\nFROM freiburg, hobos",
+      "type": "sql"
+    },
+    "hint": "<p>If your query seems to be correct, but the numbers don't match, make sureyou transformed the coordinates to UTM Zone 3 (EPSG: 25832). Make also sure, that you included the intersection as shown in the solution, because there are HOBOs outside of the city districts.</p>"
+  },
+  {
+    "id": "Kzer5exf3y6agsvfomfk",
+    "name": "District coverage",
+    "body": {
+      "content": "<p>With the last exercise, we processed some very valuable information. If processed in a database in realtime whenever new data comes in, we can utilize this information to change or optimize measuring networks. Especially with mobile devices that collect data.</p><p>In this exercise, repeat the same analysis, but for every district individually. The overview table should contain the district <strong>name</strong> and the <strong>coverage</strong>. As the numbers get smaller, select them as percent (multiply by 100 and round to only 1 decimal place).</p>",
+      "type": "html"
+    },
+    "solution": {
+      "content": "WITH\nfreiburg AS (\n\tSELECT\n\t\tname,\n\t\tst_transform(geom, 25832) as geom\n\tFROM osm_nodes WHERE node_type='district'\n),\nhobos AS (\n\tSELECT \n\t\tst_buffer(st_transform(m.location, 25832), 250) as geom\n\tFROM metadata m\n)\nSELECT\n\tname,\n\tround((st_area(st_union(hobos.geom)) / st_area(freiburg.geom))::numeric * 100, 1) AS coverage\n\tFROM hobos \n\tINNER JOIN freiburg ON ST_WITHIN(hobos.geom, freiburg.geom)\n\tGROUP BY name, freiburg.geom",
+      "prefill": "WITH\nfreiburg AS (\n\tSELECT\n\t\tst_transform(st_union(geom), 25832) as geom\n\tFROM osm_nodes WHERE node_type='district'\n),\nhobos AS (\n\tSELECT\n\t\tst_union(st_buffer(st_transform(m.location, 25832), 250)) as geom\n\tFROM metadata m\n)\nSELECT\n\tround((st_area(st_intersection(freiburg.geom, hobos.geom)) / st_area(freiburg.geom))::numeric, 3) AS coverage\nFROM freiburg, hobos",
+      "type": "sql"
+    },
+    "hint": "<p>Be sure to remove the cross join from the prefilled code and replace it by a <code>INNER  JOIN</code>.</p>"
+  }
+]

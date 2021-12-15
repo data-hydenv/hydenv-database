@@ -52,7 +52,7 @@ class HydenvDatabase:
 
     @property
     def unsafe_get_connection(self):
-        self.__connection
+        return self.__connection
 
     def save(self, user='hydenv', password='hydenv', host='localhost', port='5432', dbname='hydenv'):
         """

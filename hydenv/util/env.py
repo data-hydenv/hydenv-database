@@ -41,6 +41,10 @@ def expose(**kwargs):
 
 
 def build_connection(connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}") -> str:
+    # check if we need to substitute at all
+    if '{' not in connection and '}' not in connection:
+        return connection
+
     # check for replacements
     fargs = read_file()
     args = dict()
@@ -59,7 +63,6 @@ def build_connection(connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"
             pw = getpass('PostgreSQL user %s password: ' % curr_user)
         args['pw'] = pw
 
-        
     # substitute and return
     return connection.format(**args)
 
