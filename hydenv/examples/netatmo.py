@@ -173,7 +173,13 @@ class HydenvNetatmoExample:
                 response.raise_for_status()
                 
                 # check if data was actually returned
-                if len(response.json()['body'].get('value')) == 0:
+                body = response.json()['body']
+                if len(body) == 0:
+                    print(f"No body for {device_id}/{module_id}")
+                    continue
+                elif len(body) > 1:
+                    print(f'Weird! Body of {device_id}/{module_id} too large!')
+                if len(body[0].get('value')) == 0:
                     print(f"No data found for {device_id}/{module_id}")
                     continue
 
@@ -233,7 +239,9 @@ class HydenvNetatmoExample:
         
         CITIES = {
             'fr': [48.037, 7.89841, 47.9569, 7.72333],
-            'freiburg': [48.037, 7.89841, 47.9569, 7.72333]
+            'freiburg': [48.037, 7.89841, 47.9569, 7.72333],
+            'ka': [49.06023452689163, 8.541590419576641,48.97413213170277, 8.294625101041413],
+            'karlsruhe':  [49.06023452689163, 8.541590419576641,48.97413213170277, 8.294625101041413]
         }
         
         # check for predefined city

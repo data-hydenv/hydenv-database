@@ -430,7 +430,8 @@ def example_page(db: HydenvDatabase):
     }
     CMD = {
         'hobo': 'python -m hydenv examples hobo',
-        'osm': 'python -m hydenv examples osm'
+        'osm': 'python -m hydenv examples osm',
+        'netatmo': 'python -m hydenv examples netatmo'
     }
     cmd = CMD[example]
 
@@ -502,16 +503,43 @@ def example_page(db: HydenvDatabase):
             if alias.strip() != "":
                 args['type_alias'] = alias
 
+    elif example == 'netatmo':
+        st.info('The Netatmo API interface is highly experimental. Database upload is not yet implemented.')
+        args['action'] = st.sidebar.selectbox('Action', options=['get-data', 'metadata', 'parse'])
+        if args['action'] != 'parse':
+            args['password'] = st.sidebar.text_input('Passphrase', '', help='The passphrase can be obtained from mirko@hydrocode.de')
+            if args['password'] == '':
+                st.sidebar.warning('This field can\'t be empty. Please enter a passphrase.')
+                st.stop()
+            if args['action'] == 'get-data':
+                start_date = st.date_input('Load data from', dt.now().date() - td(days=7), help="You can only request 1024 data points of given temporal scling (usually 30min).")
+                args['start'] = start_date.strftime('%Y%m%d')
+            cc_opts = st.sidebar.radio('Set boundary', options=['city', 'bbox'])
+            if cc_opts == 'city':
+                args['city'] = st.sidebar.selectbox('City', options=['karlsruhe', 'freiburg'], format_func=lambda c: c.capitalize())
+            else:
+                args['bbox'] = "[%s]" % st.sidebar.text_input('Bounding box', '49.060234,8.541590,48.974132,8.294625', help='The bounding box has to be in the format: lat_ne,lon_ne,lat_sw,lon_sw')
+            args['required-data'] = st.sidebar.multiselect('Required data variables', options=['temperature', 'humidity', 'pressure'], default=['temperature'],  help="Omit Netatmo stations, which do not include these variables")
+        else:
+            uploaded_file = st.sidebar.file_uploader('Load dump file', type='json', help="Load the Netatmo API dump file here.")
+            if uploaded_file is not None:
+                args['load'] = uploaded_file.name
+            args['use_type'] = st.sidebar.selectbox('Use variable type', options=['temperature', 'humidity', 'pressure'])
+            args['fmt'] = st.sidebar.selectbox('Output format', options=['latex','markdown','html','json','csv'])
     else:
         is_defnied = False
     
     # build args
     for k, v in args.items():
-        cmd += f' --{k}={v}'
+        cmd += f" --{k.replace('_', '-')}={v}"
 
     # ARGS are build now - build the API
     api = HydenvExamples(connection=db.unsafe_get_connection, quiet=False)
     runner = getattr(api, example)
+
+    with st.expander('DOCUMENTATION', expanded=False):
+        st.markdown('This is what I found in the code:')
+        st.help(runner)
 
     # show the command
     st.markdown('### CLI command\nThe command below is the corresponding CLI command for the specified API call.')
@@ -544,6 +572,11 @@ def example_page(db: HydenvDatabase):
             orginial_stdout = sys.stdout
             sys.stdout = Console()
             with st.spinner('Executing API call...'):
+                if example == 'netatmo':
+                    output = runner(**args)
+                else:
+                    output = None
+                    runner(**args)
                 runner(**args)
         except Exception as e:
             st.warning('Something went wrong: {}'.format(e))
@@ -552,6 +585,14 @@ def example_page(db: HydenvDatabase):
             # restore original StdOut
             sys.stdout = orginial_stdout
         
+        if output is not None:
+            st.markdown('## CLI output')
+            if 'fmt' not in args or args['fmt'] == 'json':
+                st.json(output)
+            elif args['fmt'] == 'markdown':
+                st.markdown(output)
+            else:
+                st.code(output, language=args['fmt'])
         st.success('Finished')
     st.stop()
 
@@ -649,12 +690,19 @@ def home_page(db: HydenvDatabase):
             api = HydenvExamples(connection=db.unsafe_get_connection)
             api.earthquake(normalize=True)
             st.success('Successfully uploaded normalized earthquake data.')
-    # owm
-    with st.expander('OpenWeatherMap', expanded=False):
-        st.markdown('Hydenv includes a API to download a raw data dump of OpenWeatherMap.com collected in the hydenv/data repository on a daily basis.')
+    
+    # Netatmo
+    with st.expander('Netatmo', expanded=False):
+        st.markdown('Hydenv includes a API to download Netatmo weather data. You don\'t need a Netatmo account to use the API. A passphrase will be distributed in course, to use the hydrocode account internally.')
         st.warning('The API only allows the download into a file. Database upload is not yet implemented')
 
-        owml, owmr = st.columns((9, 1))
+        netl, netr = st.columns((9, 1))
+        netl.code('# Download Netatmo data dump into local file\npython -m hydenv examples netatmo get-data --password=<password> --bbox=[49.042909,8.486009,48.985286,8.309699] >> ./ka_dump.json', language='bash')
+        netl.code('# Parse the dump created above\npython -m hydenv examples netatmo parse --load=./ka_dump.json --use_type=temperature --fmt=markdown >> temperature.md', language='bash')
+        run_netatmo = netr.button('OPEN IN GUI', key='run_netatmo')
+        if run_netatmo:
+            st.session_state.page_name = 'example_netatmo'
+            st.experimental_rerun()
 
     st.stop()
 
@@ -697,6 +745,10 @@ def pageview():
 def main_app(connection=None, measurementId="G-RLF2LDRQSR", debug=False):
     st.set_page_config(page_title="Excercises by hydrocode", layout="wide")
     
+    # hydrocode branding
+    l, r = st.sidebar.columns((1,4))
+    l.image('https://firebasestorage.googleapis.com/v0/b/hydrocode-website.appspot.com/o/public%2Flogo.png?alt=media&token=8dda885c-0a7d-4d66-b5f6-072ddabf3b02', use_column_width=True)
+    r.title('hydrocode powered')
     # set the measurementId
     if 'measurementId' not in st.session_state:
         st.session_state.measurementId = measurementId
