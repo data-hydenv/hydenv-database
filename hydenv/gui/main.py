@@ -649,6 +649,12 @@ def home_page(db: HydenvDatabase):
             api = HydenvExamples(connection=db.unsafe_get_connection)
             api.earthquake(normalize=True)
             st.success('Successfully uploaded normalized earthquake data.')
+    # owm
+    with st.expander('OpenWeatherMap', expanded=False):
+        st.markdown('Hydenv includes a API to download a raw data dump of OpenWeatherMap.com collected in the hydenv/data repository on a daily basis.')
+        st.warning('The API only allows the download into a file. Database upload is not yet implemented')
+
+        owml, owmr = st.columns((9, 1))
 
     st.stop()
 
