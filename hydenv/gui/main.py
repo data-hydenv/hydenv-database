@@ -171,7 +171,8 @@ def exercise_page(tracks, db: HydenvDatabase):
 
     # main container
     #main = st.container()
-    layout = st.sidebar.radio('LAYOUT', options=['split', 'column'])
+    editor = st.sidebar.expander('EDITOR', expanded=True)
+    layout = editor.radio('LAYOUT', options=['split', 'column'])
     if layout == 'split':
         main, right = st.columns(2)
     else:
@@ -196,7 +197,7 @@ def exercise_page(tracks, db: HydenvDatabase):
     with main.form('SQL input'):
         # check if there is prefill
         prefill = st.session_state.get(f"{exercise['id']}_prefill", exercise['body'].get('prefill', ''))
-        editor = st.sidebar.expander('EDITOR', expanded=True)
+        
         code_theme = editor.selectbox('Editor theme', options=THEMES, index=2)
         size = editor.selectbox('Editor Size', options=['sm', 'md', 'lg'])
         sql_code = st_ace(
@@ -619,6 +620,26 @@ def home_page(db: HydenvDatabase):
         if ir2_run:
             db.init(clean=True)
             il2.success('Successfully cleaned and re-initialized the database.')
+
+        # TABLE COMMAND
+        tl, tr = st.columns((9, 1))
+        tl.code('# show all tables\npython -m hydenv database table --list', language='bash')
+        tl.code('# inspect a single table\npython -m hydenv database table --name=osm_nodes --fmt=markdown', language='bash')
+        topen = tr.button('TABLE TREE', key='open_table')
+        if topen:
+            table_names = db.table(list=True, fmt='json')
+            tree = {}
+            bar = st.progress(0)
+            
+            # load all tables
+            for i, table in enumerate(table_names):
+                cols = db.table(table['name'], fmt='json')
+                tree[table['name']] ={'TYPE': table['type'], 'ATTRIBUTES': cols}
+
+                bar.progress((i + 1) / len(table_names))
+
+            st.session_state.table_tree = tree
+            st.experimental_rerun()
     
     # exercises
     with st.expander('EXERCISES', expanded=True):
@@ -773,6 +794,11 @@ def main_app(connection=None, measurementId="G-RLF2LDRQSR", debug=False):
         if back:
             st.session_state.page_name = 'home'
             st.experimental_rerun()
+    
+    # check if a table tree was loaded
+    if 'table_tree' in st.session_state:
+        st.sidebar.markdown('### DATABASE TABLES')
+        st.sidebar.json(st.session_state.table_tree)
 
     if page_name == 'home':
         home_page(db)
