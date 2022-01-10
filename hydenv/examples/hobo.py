@@ -49,14 +49,16 @@ class HydenvHoboExamples:
             'WT18': "#gid=1500046150",
             'WT19': '#gid=651397949',
             'WT20': "#gid=0",
-            'WT21': "#gid=878625339"
+            'WT21': "#gid=878625339",
+            'WT22': "#gid=2042487505"
         }
         self.__hobo_data_map = {
             'WT17': 'hobo/2017/',
             'WT18': 'hobo/2018/',
             'WT19': 'hobo/2019/',
             'WT20': 'hobo/2020/',
-            'WT21': 'hobo/2021/'
+            'WT21': 'hobo/2021/',
+            'WT22': 'hobo/2022/'
         }
     
     def run(self, terms='all', data_path='download', only=None, quiet=True, dry=False):
@@ -105,7 +107,7 @@ class HydenvHoboExamples:
     def _upload_hobo(self, terms='all', quiet=True, dry=False):
         # if all years, are requested, build the list
         if terms == 'all':
-            terms = ['WT17', 'WT18', 'WT19', 'WT20', 'WT21']
+            terms = ['WT17', 'WT18', 'WT19', 'WT20', 'WT21', 'WT22']
         if not isinstance(terms, list):
             terms = [terms]
 
@@ -141,7 +143,7 @@ class HydenvHoboExamples:
     def _upload_data(self, path,  terms='all', data='all', quiet=True):
         # if all years, are requested, build the list
         if terms == 'all':
-            terms = ['WT17', 'WT18', 'WT19', 'WT20', 'WT21']
+            terms = ['WT17', 'WT18', 'WT19', 'WT20', 'WT21', 'WT22']
         if not isinstance(terms, list):
             terms = [terms]
 
