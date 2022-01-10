@@ -40,6 +40,17 @@ There are many different dataset that can be loaded. Possibly, not all of the ex
 yet be run in the GUI.
 """
 
+CONNECT_INTRO = """To use the hydenv GUI, you need to connect a PostgreSQL database.
+The easiest way is to install it locally and create a new instance here, using a superuser.
+That is a one-time setup to create a new user and all needed tables, populated with some example data.
+
+If the instance is already initialized, you can choose the 'connect existing db' option and set the connection information
+of the newly created user.
+
+It is also possible to connect one of the remote databases, which are hosted by hydrocode. In these cases, you will have received
+the connection information already.
+"""
+
 def get_base_data():
     # get the tracks
     with open(os.path.join(BASEPATH, "maintain/tracks.json")) as f:
@@ -318,7 +329,7 @@ def install_page():
     
     # there is nothing to try - could use a cookie here
     st.markdown('## Connect hydenv database')
-    st.markdown('long text')
+    st.markdown(CONNECT_INTRO)
             
     # check if there was a error message
     if 'error_msg' in st.session_state:
@@ -597,6 +608,7 @@ def example_page(db: HydenvDatabase):
         st.success('Finished')
     st.stop()
 
+
 def home_page(db: HydenvDatabase):
     st.title('Hydenv CLI overview')
     st.markdown('All Hydenv CLI endpoints which are implemented are available here. You find a short explanation with the call signature and a link to the GUI, if available.')
@@ -726,6 +738,7 @@ def home_page(db: HydenvDatabase):
             st.experimental_rerun()
 
     st.stop()
+
 
 def event(event_name: str, *args, **kwargs):
     # ger the measurementId
