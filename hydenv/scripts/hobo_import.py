@@ -54,6 +54,9 @@ def read_hourly_file(fname):
 		# read the file
 		df = pd.read_csv(fname, sep=r'\s+')
 
+		# since 2020 'date' is renamed to 'dttm'
+		df.rename(columns={'dttm': 'date'}, inplace=True)
+
 		# create the hourly datetime index
 		conv = lambda r: dt.strptime(r[0], '%Y-%m-%d') + td(hours=int(r[1]))
 		idx = df.apply(conv, axis=1)
@@ -70,7 +73,7 @@ def read_hourly_file(fname):
 
 		# rename the columns
 		df.columns = [s.lower() for s in df.columns]
-		df.rename(columns={'th': 'value', 'date': 'tstamp'}, inplace=True)
+		df.rename(columns={'th': 'value', 'date': 'tstamp', 'dttm': 'tstamp', 'temp': 'value'}, inplace=True)
 
 		# convert datetime
 		df['tstamp'] = [dt.strptime(_, '%Y-%m-%d %H:%M:%S') for _ in df.tstamp]
@@ -335,11 +338,14 @@ class HydenvHoboImporter:
 			if meta is None:
 				print('File %s references HOBO ID=%s, which is not found.' % (fname, device_id))
 			else:
-				# upload
-				if is_quality:
-					self.upload_q_data(filename=fname, meta_id=meta.id)
-				else:
-					self.upload_raw_data(filename=fname, meta_id=meta.id)
+				try:
+					# upload
+					if is_quality:
+						self.upload_q_data(filename=fname, meta_id=meta.id)
+					else:
+						self.upload_raw_data(filename=fname, meta_id=meta.id)
+				except Exception as e:
+					print(f"[ERROR]: File: {fname} errored. Message: {str(e)}")
 			if not quiet:
 				bar.update(i + 1)			
 
