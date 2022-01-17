@@ -14,7 +14,6 @@ lxml
 python-dateutil
 pandas
 stdiomask
-simple_term_menu
 streamlit
 streamlit_ace
 extra-streamlit-components
