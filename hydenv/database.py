@@ -120,9 +120,10 @@ class HydenvDatabase:
         hyd_usr =  input('[Hydenv] username     (hydenv): ') or 'hydenv'
         hyd_pw = getpass('[Hydenv] password: ')
 
-        smenu = TerminalMenu(['yes [Recommended]', 'no [experts]'])
-        print('Do you want to initialize the database?')
-        ans = smenu.show()
+        ans = ''
+        while ans.lower() not in ('y', 'n', 'yes', 'no'):
+            print("Do you want to initialize the database?\n[y]    Yes - Recommended\n[n]    No")
+            ans = input("Select [y,n]: ")
         skip_init = ans == 1
         
         self.install_silent(db_name=hyd_db, user=hyd_usr, password=hyd_pw, skip_init=skip_init)
