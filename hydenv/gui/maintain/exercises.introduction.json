@@ -54,7 +54,7 @@
     "id" : "Yxj4xswvtly8qmxokqlu",
     "name": "Spaceports",
     "body": {
-      "content": "<p>From how many different spaceports were space missions started?</p><p>Count the number of <strong>different</strong> spaceports and name the result <code>spaceports</code></p>",
+      "content": "<p>From how many different spaceports were space missions started?</p><p>Count the number of <strong>different</strong> spaceports and name the result <code>space_ports</code></p>",
       "type": "html"
     },
     "solution": {

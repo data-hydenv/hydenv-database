@@ -67,6 +67,11 @@ class HydenvOSMExamples:
         # first build the query
 #        value = '~%s' % value if value is not None else ''
 #        query = BY_AREA.format(obj=geometry, boundary_name=boundary, attribute=attribute, value=value)
+        
+        # check if boudary was pre-defined
+        if boundary in CITIES.keys():
+            boundary = CITIES[boundary]
+        
         query = self._build_query(geometry, boundary, attribute, value=value)
 
         # if dry run, do not reach out to the Overpass server
