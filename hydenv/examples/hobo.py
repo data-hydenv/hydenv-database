@@ -86,9 +86,9 @@ class HydenvHoboExamples:
                     print('Start uploading. You can grab a coffee...')
                 
                 # check data to be uploaded
-                if only == 'raw-data' or only == 'raw':
+                if only == 'raw-data' or only == 'raw' or only == 'r':
                     data_f = 'raw'
-                elif only == 'quality-data' or only=='quality':
+                elif only == 'quality-data' or only=='quality' or only == 'q':
                     data_f = 'quality'
                 else:
                     data_f = 'all'

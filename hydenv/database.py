@@ -100,14 +100,15 @@ class HydenvDatabase:
         else:
             self.install_silent(db_name=db_name, user=user, password=password, skip_init=skip_init)
 
-    def install_interactive(self):
-        from simple_term_menu import TerminalMenu
-        menu = TerminalMenu(['use default settings [localhost:5432]', 'changed settings'])
-        print('Interactive installer.\n-----------\nDid you change the defaults during PostgreSQL installation?')
-        ans = menu.show()
-        if ans == 0:
+    def install_interactive(self):        
+        ans = ''
+        while ans.lower() not in ('y', 'n', 'yes', 'no'):
+            print("Use the default PostgreSQL server settings?\n[y]    Yes (localhost:5432)\n[n]    No (changed settings)")
+            ans = input("Select [y,n]: ")
+        
+        if ans == 'y' or ans == 'yes':
             self.__connection = 'postgresql://postgres:{pw}@localhost:5432/postgres'
-        elif ans == 1:
+        elif ans == 'n' or ans == 'no':
             print('Please enter the settings you changed during installation (defaults):')
             host = input('[Postgres] host         (localhost): ') or 'localhost'
             port = input('[Postgres] port              (5432): ') or '5432'
@@ -119,9 +120,10 @@ class HydenvDatabase:
         hyd_usr =  input('[Hydenv] username     (hydenv): ') or 'hydenv'
         hyd_pw = getpass('[Hydenv] password: ')
 
-        smenu = TerminalMenu(['yes [Recommended]', 'no [experts]'])
-        print('Do you want to initialize the database?')
-        ans = smenu.show()
+        ans = ''
+        while ans.lower() not in ('y', 'n', 'yes', 'no'):
+            print("Do you want to initialize the database?\n[y]    Yes - Recommended\n[n]    No")
+            ans = input("Select [y,n]: ")
         skip_init = ans == 1
         
         self.install_silent(db_name=hyd_db, user=hyd_usr, password=hyd_pw, skip_init=skip_init)

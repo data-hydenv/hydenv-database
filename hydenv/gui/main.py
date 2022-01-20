@@ -388,7 +388,7 @@ def install_page():
                 try:
                     db = HydenvDatabase(connection=con)
                     with st.spinner('Creating database...'):
-                        db.install_silent(db_name=db_name, user=user, password=userpw, skipt_init=False)
+                        db.install_silent(db_name=db_name, user=user, password=userpw, skip_init=False)
 
                     # finished
                     st.session_state.raw_connection = db.unsafe_get_connection
