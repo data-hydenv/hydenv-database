@@ -119,9 +119,9 @@ class HydenvExamples:
         """
         Import OpenWeatherMap example data.\n
         This high level script downloads data from the OpenWeatherMap database and 
-        exports the data to the given save path. Currently, the direct upload to the 
-        database is not yet supported.
-        :param save: The path to save the data to.
+        exports the data to the given save path. If you do not specify a save path (default),
+        the data will be uploaded to the database.
+        :param save: The path to save the data to. If empty, the data will be loaded to the database
         :param fmt: The format of the data. Currently, only json and csv is supported.
         :param variable: The variable to download. Defaults temperature and humidity.
         :param if_exists: Specifies the action if the data already exists. Can be 'replace', 'raise' or 'ignore'.
