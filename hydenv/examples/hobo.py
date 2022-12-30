@@ -46,7 +46,7 @@ class HydenvHoboExamples:
 
         # set some URLs
         self._hobo_table_google_url = "https://docs.google.com/spreadsheets/d/1uvI1a_OOnCcFjUbHAO1N5nEWejnI5y5vCNt6eueHrOc/edit"
-        self._hobo_table_bw_url = ""
+        self._hobo_table_bw_url = "https://bwsyncandshare.kit.edu/s/pXD9LwEp6q3bZPn/download/HOBO_Meta.xlsx"
         self._hobo_data_url = "https://github.com/data-hydenv/data/archive/master.zip"
         # TODO: this can be done better
         self.__all_terms = ['WT17', 'WT18', 'WT19', 'WT20', 'WT21', 'WT22', 'WT23']

@@ -123,17 +123,20 @@ class HydenvHoboImporter:
 
 			# download and make a copy
 			df = pd.read_csv(url, skiprows=1)
-			orig = df.copy()
+		
+		# bwsyncandshare
 		elif 'bwsyncandshare' in url:
-			raise NotImplementedError
+			df = pd.read_excel(url, skiprows=1, sheet_name=sheet_suffix)
 		
 		# check for local path
 		elif os.path.exists(url):
 			df = pd.read_excel(url, skiprows=1, sheet_name=sheet_suffix)
-			orig = df.copy()
 		
 		else:
 			raise ValueError("The given url is not of known format.")
+		
+		# make a copy of the downloaded/loaded source
+		orig = df.copy()
 
 		# remove clear names
 		if 'name' in df.columns:
