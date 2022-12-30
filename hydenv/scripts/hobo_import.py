@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import ntpath
 import re
+import warnings
 from string import ascii_lowercase
 from random import choice
 from sqlalchemy import create_engine
@@ -97,27 +98,42 @@ class HydenvHoboImporter:
 		Session = sessionmaker(bind=self.engine)
 		self.session = Session()
 
-	def metadata(self, url: str, term: str = None, if_exists='append', quiet=True, dry=False):
+	def metadata(self, url: str, sheet_suffix: str, term: str = None, if_exists='append', quiet=True, dry=False):
 		"""
 		Copy metadata from google tables.\n
 		Make sure that the URL format is correct. Open the correct sheet and copy the url,
 		then change the last parameter from 'edit#gid=...' to '/export?gid=...'
 		:param url: URL to the table
+		:param sheet_suffix: Suffix to identify the correct sheet in the respective source
 		:param term: the short name of the term, like WS17
 		:param if_exists: How to handle existing table. Can be one of:
 			- append (default) - append data to the table
 			- fail - raise an error and exit
 			- replace - drop the table and recreate
 		"""
-		# use correct URL
-		if 'edit#gid=' in url:
-			url = url.replace('edit#', 'export?')
-		if not 'format=csv' in url:
-			url += '&format=csv'
+		# switch the type of URL given:
+		if 'google.com' in url:
+			warnings.warn("Using the google docs is deprecated and only supported until WT22. Please use the BWSync&Share doc.", category=DeprecationWarning)
+			url += sheet_suffix
+			# use correct URL
+			if 'edit#gid=' in url:
+				url = url.replace('edit#', 'export?')
+			if not 'format=csv' in url:
+				url += '&format=csv'
 
-		# download and make a copy
-		df = pd.read_csv(url, skiprows=1)
-		orig = df.copy()
+			# download and make a copy
+			df = pd.read_csv(url, skiprows=1)
+			orig = df.copy()
+		elif 'bwsyncandshare' in url:
+			raise NotImplementedError
+		
+		# check for local path
+		elif os.path.exists(url):
+			df = pd.read_excel(url, skiprows=1, sheet_name=sheet_suffix)
+			orig = df.copy()
+		
+		else:
+			raise ValueError("The given url is not of known format.")
 
 		# remove clear names
 		if 'name' in df.columns:

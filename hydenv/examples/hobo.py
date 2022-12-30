@@ -37,13 +37,19 @@ class HydenvHoboExamples:
     :param connection: The database URI following syntax:\n
         postgresql://<user>:<password>@<host>:<port>/<database>
     """
-    def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}"):
+    def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}", metadata_source: str = 'google'):
         # substitute and save
         self.__connection = env.build_connection(connection=connection)
 
+        # set the source
+        self._metadata_source = metadata_source
+
         # set some URLs
-        self._hobo_table_url = "https://docs.google.com/spreadsheets/d/1uvI1a_OOnCcFjUbHAO1N5nEWejnI5y5vCNt6eueHrOc/edit"
+        self._hobo_table_google_url = "https://docs.google.com/spreadsheets/d/1uvI1a_OOnCcFjUbHAO1N5nEWejnI5y5vCNt6eueHrOc/edit"
+        self._hobo_table_bw_url = ""
         self._hobo_data_url = "https://github.com/data-hydenv/data/archive/master.zip"
+        # TODO: this can be done better
+        self.__all_terms = ['WT17', 'WT18', 'WT19', 'WT20', 'WT21', 'WT22', 'WT23']
         self.__hobo_gid_map = {
             'WT17': "#gid=1594319231",
             'WT18': "#gid=1500046150",
@@ -51,6 +57,15 @@ class HydenvHoboExamples:
             'WT20': "#gid=0",
             'WT21': "#gid=878625339",
             'WT22': "#gid=2042487505"
+        }
+        self.__hobo_sheet_map = {
+            'WT17': "Metadata 2017",
+            'WT18': "Metadata 2018",
+            'WT19': 'Metadata 2019',
+            'WT20': "Metadata 2020",
+            'WT21': "Metadata 2021",
+            'WT22': "Metadata 2022",
+            'WT23': "Metadata 2023"
         }
         self.__hobo_data_map = {
             'WT17': 'hobo/2017/',
@@ -107,7 +122,7 @@ class HydenvHoboExamples:
     def _upload_hobo(self, terms='all', quiet=True, dry=False):
         # if all years, are requested, build the list
         if terms == 'all':
-            terms = ['WT17', 'WT18', 'WT19', 'WT20', 'WT21', 'WT22']
+            terms = self.__all_terms
         if not isinstance(terms, list):
             terms = [terms]
 
@@ -118,17 +133,32 @@ class HydenvHoboExamples:
         if not quiet:
             bar = progressbar.ProgressBar(max_value=len(terms), redirect_stdout=True)
         
+        # get the supported term key
+        supported_term_keys = list(self.__hobo_gid_map.keys()) if self._metadata_source.lower() == 'google' else list(self.__hobo_sheet_map.keys())
+        
+
         # upload Metadata
         for i, term in enumerate(terms):
-            if not term in self.__hobo_gid_map.keys():
-                print('Term %d has no mapped table in %s' % (term, self._hobo_table_url))
+            # get the supported term keys
+            if not term in supported_term_keys:
+                print('Term %d has no mapped table in source %s' % (term, self._metadata_source))
                 continue
 
             # build the url
-            url = self._hobo_table_url + self.__hobo_gid_map[term]
+            # set the base url
+            if self._metadata_source.lower() == 'google':
+                url = self._hobo_table_google_url
+                suffix = self.__hobo_gid_map[term]
+            elif self._metadata_source.lower() == 'bwsyncandshare':
+                url = self._hobo_table_bw_url
+                suffix = self.__hobo_sheet_map[term]
+            else:
+                # assume local
+                url = self._metadata_source
+                suffix = self.__hobo_sheet_map[term]
 
             # upload
-            cli.metadata(url=url, term=term, quiet=quiet, dry=dry)
+            cli.metadata(url=url, sheet_suffix=suffix, term=term, quiet=quiet, dry=dry)
             if not quiet:
                 bar.update(i + 1)
 
@@ -143,7 +173,7 @@ class HydenvHoboExamples:
     def _upload_data(self, path,  terms='all', data='all', quiet=True):
         # if all years, are requested, build the list
         if terms == 'all':
-            terms = ['WT17', 'WT18', 'WT19', 'WT20', 'WT21', 'WT22']
+            terms = self.__all_terms
         if not isinstance(terms, list):
             terms = [terms]
 
