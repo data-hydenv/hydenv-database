@@ -1,2 +1,2 @@
-__version__ = '0.10.0'
+from .__version__ import __version__
 __author__ = 'Mirko Mälicke'

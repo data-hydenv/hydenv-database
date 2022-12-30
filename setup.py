@@ -1,8 +1,10 @@
 from setuptools import setup, find_packages
 
 def version():
-    with open('VERSION') as f:
-        return f.read().strip()
+    with open('hydenv/__version__.py', 'r') as f:
+        loc = dict()
+        exec(f.read(), loc, loc)
+        return loc['__version__']
 
 
 def readme():
