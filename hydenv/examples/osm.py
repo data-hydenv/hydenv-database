@@ -183,7 +183,7 @@ class HydenvOSMExamples:
                         print('[%d]: %s' % (osm.id, str(e)))
                     continue
             else:
-                json_objects = osm.to_dict(stringify=True)
+                json_objects.append(osm.to_dict(stringify=True))
                     
             if not quiet:
                 bar.update(i + 1)
