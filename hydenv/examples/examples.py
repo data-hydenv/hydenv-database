@@ -30,7 +30,7 @@ class HydenvExamples:
         self.__connection = connection
         self.quiet = quiet
 
-    def hobo(self, terms='all', only=None, data_path='download'):
+    def hobo(self, terms='all', only=None, data_path='download', metadata_source='google'):
         """
         Import HOBO data.\n
         This high level script downloads all neccessary resources for the HOBO 
@@ -41,7 +41,7 @@ class HydenvExamples:
         :param data_path: Either 'download' (default) or a local path to the data
         :param only: If set, only the given entities will be uploaded.
         """
-        cli = HydenvHoboExamples(connection=self.__connection)
+        cli = HydenvHoboExamples(connection=self.__connection, metadata_source=metadata_source)
         return cli.run(terms=terms, data_path=data_path, only=only, quiet=self.quiet)
 
     def space(self, normalize=False):
