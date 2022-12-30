@@ -37,13 +37,14 @@ class HydenvHoboExamples:
     :param connection: The database URI following syntax:\n
         postgresql://<user>:<password>@<host>:<port>/<database>
     """
-    def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}", metadata_source: str = 'google'):
+    def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}", metadata_source: str = 'bwsyncandshare'):
         """Hydenv-HOBO CLI\n
         Use this cli to load HOBO metadata and data to the database.
         You can connect local or remote PostgreSQL/PostGIS databases, if the install/init
         command was issued before, to create the tables.
         With metadata_source, the shared metadata document can be loaded from google tables,
         BWSync&Share excel file or from a local excel file.
+        :param metadata_source: Can be either 'google', 'bwsyncandshare' for remote or a path for local.
         """
         # substitute and save
         self.__connection = env.build_connection(connection=connection)
