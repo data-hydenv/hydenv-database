@@ -38,6 +38,13 @@ class HydenvHoboExamples:
         postgresql://<user>:<password>@<host>:<port>/<database>
     """
     def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}", metadata_source: str = 'google'):
+        """Hydenv-HOBO CLI\n
+        Use this cli to load HOBO metadata and data to the database.
+        You can connect local or remote PostgreSQL/PostGIS databases, if the install/init
+        command was issued before, to create the tables.
+        With metadata_source, the shared metadata document can be loaded from google tables,
+        BWSync&Share excel file or from a local excel file.
+        """
         # substitute and save
         self.__connection = env.build_connection(connection=connection)
 
@@ -73,7 +80,8 @@ class HydenvHoboExamples:
             'WT19': 'hobo/2019/',
             'WT20': 'hobo/2020/',
             'WT21': 'hobo/2021/',
-            'WT22': 'hobo/2022/'
+            'WT22': 'hobo/2022/',
+            'WT23': 'hobo/2023/'
         }
     
     def run(self, terms='all', data_path='download', only=None, quiet=True, dry=False):
