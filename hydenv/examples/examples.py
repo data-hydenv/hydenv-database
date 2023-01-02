@@ -11,8 +11,9 @@ from hydenv.examples.gpx import HydenvGPXExample
 from hydenv.examples.raspi_logger import HydenvRaspiLoggerExample
 from hydenv.examples.owm import HydenvOWMExample
 from hydenv.examples.netatmo import HydenvNetatmoExample
+from hydenv.examples.camels_de import HydenvCamelsDeExample
 
-CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvOSMExamples, HydenvEarthquakeExamples, HydenvWorldBorderExample, HydenvGPXExample, HydenvRaspiLoggerExample, HydenvOWMExample, HydenvNetatmoExample]
+CLIs = [HydenvHoboExamples, HydenvSpaceExamples, HydenvOSMExamples, HydenvEarthquakeExamples, HydenvWorldBorderExample, HydenvGPXExample, HydenvRaspiLoggerExample, HydenvOWMExample, HydenvNetatmoExample, HydenvCamelsDeExample]
 
 class HydenvExamples:
     r"""
@@ -231,6 +232,31 @@ class HydenvExamples:
         if not self.quiet:
             print('All done.')
     
+    def camels_de(self, source_dir: str = None, nuts_filter: str = None, only: str = None, drop: bool = False):
+        """
+        CAMELS-DE example.\n
+        Loads the CAMELS-DE dataset to the database. Currently, only the state API is used,
+        as the CAMELS-DE dataset is not yet published. If you want to add data along with
+        the metadata (through state API), you need a local copy of the data and set the
+        source_dir parameter.
+        :param source_dir: string - Path to the CAMELS-DE output_data directory
+        :param nuts_filter: string - Filter by federal state using the NUTS level 2 id, like DE1, DE2 ... DEG
+        :param only: string - If set, upload only 'metadata' or 'data'
+        :param drop: bool - If set, all other parameters are ignored and the CAMELS-DE data is dropped. 
+        """
+        # initialize the CLI
+        cli = HydenvCamelsDeExample(self.__connection, source_dir=source_dir, quiet=self.quiet)
+        
+        # first check if the tables should be dropped
+        if drop:
+            if not self.quiet:
+                print('Cleaning CAMELS-DE tables...', end='')
+            cli.drop() 
+            if not self.quiet:
+                print('done.')
+        else:
+            # otherwise run the CLI
+            cli.run(only=only, nuts_filter=nuts_filter)
 
     def clean(self): 
         """
