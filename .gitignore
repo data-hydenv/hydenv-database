@@ -133,3 +133,4 @@ node_modules
 firebase-admin.json
 .vscode
 netatmo.secret
+.DS_Store
