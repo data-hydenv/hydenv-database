@@ -6,6 +6,7 @@ flask-cors
 fire
 tabulate
 progressbar2
+tqdm
 overpy
 shapely>=1.8.0,<2.0
 requests
