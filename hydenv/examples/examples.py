@@ -108,6 +108,8 @@ class HydenvExamples:
             return cli.city_districts(quiet=self.quiet, **kwargs)
         elif action.lower() == 'counties':
             return cli.counties(quiet=self.quiet, **kwargs)
+        elif action.lower() == 'river' or action.lower() == 'rivers':
+            return cli.rivers(quiet=self.quiet, **kwargs)
         elif action.lower() == 'node' or action.lower() == 'nodes':
             return cli.run('node', *args, quiet=self.quiet, **kwargs)
         elif action.lower() == 'way' or action.lower() == 'ways':
