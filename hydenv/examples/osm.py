@@ -1,15 +1,17 @@
+from typing import Union, List
 import json
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from overpy import Overpass
 from overpy.exception import DataIncomplete, OverpassTooManyRequests, OverpassBadRequest
-from progressbar import ProgressBar
-from shapely.geometry import LineString, Polygon, MultiPolygon
+from shapely.geometry import LineString, MultiPolygon
 from shapely.ops import linemerge, polygonize, unary_union
+from tqdm import tqdm
 
 from hydenv.util import env
 from hydenv import models
+
 
 # set some helpful overpass API queries
 BY_AREA = """
@@ -53,11 +55,20 @@ class HydenvOSMExamples:
         self.api = Overpass(url=overpass_url)
 
     def _build_query(self, geometry, boundary, attribute, value=None):
+        # handle multiple values
+        def regex(value: Union[str, List[str]]):
+            if value is None:
+                return ''
+            if isinstance(value, str):
+                return f'~"{value}"'
+            if isinstance(value, list):
+                return f'~"^({"|".join(value)})"'
+    
         # build the filter
         if isinstance(attribute, str):
-            filt = '[\"%s\"%s]' % (attribute, '~%s' % value if value is not None else '')
+            filt = '[\"%s\"%s]' % (attribute, regex(value))
         elif isinstance(attribute, dict):
-            filt = ''.join(['["%s"%s]' % (attr, '~%s' % val if val is not None else '') for attr, val in attribute.items()])
+            filt = ''.join(['["%s"%s]' % (attr, regex(val)) for attr, val in attribute.items()])
         
         # build the query
         query = BY_AREA.format(obj=geometry, boundary_name=boundary, filter=filt)
@@ -118,11 +129,13 @@ class HydenvOSMExamples:
         # inform and create the progressbar
         if not quiet:
             print('Uploading...')
-            bar = ProgressBar(max_value=len(nodes), redirect_stdout=True)
+            _iter = tqdm(enumerate(nodes), total=len(nodes))
+        else:
+            _iter = enumerate(nodes)
         
         if save is not None:
             json_objects = []
-        for i, node in enumerate(nodes):
+        for i, node in _iter:
             # Point nodes
             if geometry == 'nodes' or geometry == 'node':
                 wkt = 'SRID=4326;POINT (%f %f)' % (float(node.lon), float(node.lat))
@@ -183,10 +196,7 @@ class HydenvOSMExamples:
                         print('[%d]: %s' % (osm.id, str(e)))
                     continue
             else:
-                json_objects = osm.to_dict(stringify=True)
-                    
-            if not quiet:
-                bar.update(i + 1)
+                json_objects.append(osm.to_dict(stringify=True))
         
         # save if we are in save mode
         if save is not None:
@@ -194,7 +204,7 @@ class HydenvOSMExamples:
                 json.dump(json_objects, f, indent=4)
 
         if not quiet:
-            print('Done')
+            print('\nDone.')
         
 
     def energiewende(self, boundary="Baden-Württemberg", quiet=True):
@@ -238,3 +248,8 @@ class HydenvOSMExamples:
         if not quiet:
             print('Loading all counties in the state %s' % state)
         self.run('relation', state, attribute=dict(boundary='administrative', admin_level='6'), save=save, type_alias='county', quiet=quiet)
+    
+    def rivers(self, state="Baden-Württemberg", waterway=['river', 'stream'], save=None, quiet=True):
+        if not quiet:
+            print(f'Loading all waterways using OSM:waterway:{",".join(waterway)} in {state}...')
+        self.run('way', state, attribute='waterway', value=waterway, type_alias='waterway', save=save, quiet=quiet)
