@@ -1,5 +1,5 @@
+from tqdm import tqdm
 import pandas as pd 
-import progressbar
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -114,7 +114,6 @@ class HydenvSpaceExamples:
 
         if not quiet:
             print('Uploading Space Missions example data...')
-            bar = progressbar.ProgressBar(max_value=len(df), redirect_stdout=True)
         else:
             df.to_sql('space_raw', self.engine, if_exists='replace')
 
@@ -125,7 +124,7 @@ class HydenvSpaceExamples:
 
         errors = 0
         # upload missions
-        for i, space in df.iterrows():
+        for i, space in tqdm(df.iterrows()):
             mission = SpaceRaw(id=i, **space)
 
             # add
@@ -137,9 +136,6 @@ class HydenvSpaceExamples:
                 errors += 1
                 if not quiet:
                     print('[%d] %s' % (i, str(e)))
-            
-            if not quiet:
-                bar.update(i + 1)
 
         if errors > 10:
             if not quiet:
