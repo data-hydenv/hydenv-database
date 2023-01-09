@@ -1,11 +1,11 @@
-from functools import reduce
+from typing import List, Union
 import os
 import json
 from datetime import datetime as dt
 from datetime import timedelta as td
-from typing import List, Union
+from tqdm import tqdm
+
 import requests
-import progressbar
 import pandas as pd
 from dateutil.parser import parse as date_parse
 
@@ -208,17 +208,16 @@ class HydenvNetatmoExample:
 
         if not self.quiet:
             print(f"Found {len(metadata)} stations.")
-            bar = progressbar.ProgressBar(max_value=len(metadata), redirect_stdout=True)
+            _iter = tqdm(enumerate(metadata))
+        else:
+            _iter = enumerate(metadata)
 
         stations = []
 
         # load the data for each stations
-        for i, meta in enumerate(metadata):
+        for i, meta in _iter:
             station = self.load_station_data(meta, **kwargs)
             stations.append(station)
-
-            if not self.quiet:
-                bar.update(i + 1)
         
         if not self.quiet:
             print("Done.")
