@@ -1,9 +1,8 @@
 from typing import List
-from progressbar import ProgressBar
+from tqdm import tqdm
 
 from hydenv.examples.hobo import HydenvHoboExamples
 from hydenv.examples.space import HydenvSpaceExamples
-# from hydenv.examples.customers import HydenvCustomerExamples
 from hydenv.examples.osm import HydenvOSMExamples
 from hydenv.examples.earthquakes import HydenvEarthquakeExamples
 from hydenv.examples.wbd import HydenvWorldBorderExample
@@ -270,16 +269,15 @@ class HydenvExamples:
         manual invocation is not needed
         """
         if not self.quiet:
-            bar = ProgressBar(max_value=len(CLIs), redirect_stdout=True)
+            _iter = tqdm(enumerate(CLIs))
+        else:
+            _iter = enumerate(CLIs)
         
         # drop all extra tables
-        for i, CLI in enumerate(CLIs):
+        for i, CLI in _iter:
             if hasattr(CLI, 'drop'):
                 cli = CLI(connection=self.__connection)
                 cli.drop()
-
-                if not self.quiet:
-                    bar.update(i + 1)
 
 
 if __name__=='__main__':
