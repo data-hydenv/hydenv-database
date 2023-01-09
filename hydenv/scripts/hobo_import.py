@@ -9,7 +9,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime as dt
 from datetime import timedelta as td
-from progressbar import ProgressBar
+from tqdm import tqdm
 
 from hydenv.util import env
 from hydenv.measurements import HydenvMeasurements
@@ -339,10 +339,12 @@ class HydenvHoboImporter:
 
 		# build a progressbar
 		if not quiet:
-			bar = ProgressBar(max_value=len(flist), redirect_stdout=True)
+			_iter = tqdm(flist)
+		else:
+			_iter = flist
 		
 		# load all files
-		for i, fname in enumerate(flist):
+		for fname in _iter:
 			try:
 				if is_quality:
 					device_id = ntpath.split(fname)[-1].split('.')[0].strip('_-Tht')
@@ -364,9 +366,7 @@ class HydenvHoboImporter:
 					else:
 						self.upload_raw_data(filename=fname, meta_id=meta.id)
 				except Exception as e:
-					print(f"[ERROR]: File: {fname} errored. Message: {str(e)}")
-			if not quiet:
-				bar.update(i + 1)			
+					print(f"[ERROR]: File: {fname} errored. Message: {str(e)}")	
 
 
 class HydenvHoboImporterCli(HydenvHoboImporter):
