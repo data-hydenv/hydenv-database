@@ -4,11 +4,9 @@ import glob
 import geopandas as gpd
 import pandas as pd
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from tqdm import tqdm
 
 from hydenv.util import env
-from hydenv import models
 
 
 class HydenvCamelsDeExample:

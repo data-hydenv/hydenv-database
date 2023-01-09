@@ -15,12 +15,12 @@ Do that by hand or use the two CLI commands:
     python -m hydenv database init --clean --connection=postgresql://hydenv:hydenv@localhost:5432/hydenv
 
 """
-import progressbar
 import os
 import shutil
 import zipfile
 import requests
 import io
+from tqdm import tqdm
 
 from hydenv.util import env
 from hydenv.scripts.hobo_import import HydenvHoboImporter
@@ -138,16 +138,17 @@ class HydenvHoboExamples:
         # build the cli
         cli = HydenvHoboImporter(connection=self.__connection)
         
-        # build the upload bar
-        if not quiet:
-            bar = progressbar.ProgressBar(max_value=len(terms), redirect_stdout=True)
-        
         # get the supported term key
         supported_term_keys = list(self.__hobo_gid_map.keys()) if self._metadata_source.lower() == 'google' else list(self.__hobo_sheet_map.keys())
         
+        # build the upload bar
+        if not quiet:
+            _iter = tqdm(enumerate(terms))
+        else:
+            _iter = enumerate(terms)
 
         # upload Metadata
-        for i, term in enumerate(terms):
+        for i, term in _iter:
             # get the supported term keys
             if not term in supported_term_keys:
                 print('Term %d has no mapped table in source %s' % (term, self._metadata_source))
@@ -168,8 +169,6 @@ class HydenvHoboExamples:
 
             # upload
             cli.metadata(url=url, sheet_suffix=suffix, term=term, quiet=quiet, dry=dry)
-            if not quiet:
-                bar.update(i + 1)
 
     def _download_data(self):
         # download the zip into memory

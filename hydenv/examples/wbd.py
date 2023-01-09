@@ -4,7 +4,7 @@ import requests
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from shapely.geometry import shape
-from progressbar import ProgressBar
+from tqdm import tqdm
 
 from hydenv.util import env
 from hydenv import models
@@ -66,9 +66,11 @@ class HydenvWorldBorderExample:
         
         # build a dataframe
         if not quiet:
-            bar = ProgressBar(max_value=len(features), redirect_stdout=True)
+            _iter = tqdm(enumerate(features))
+        else:
+            _iter = enumerate(features)
         
-        for i, feature in enumerate(features):
+        for i, feature in _iter:
             mod = models.WorldBorder(**self._get_record(feature=feature))
 
             try:
@@ -78,9 +80,6 @@ class HydenvWorldBorderExample:
                 self.session.rollback()
                 if not quiet:
                     print('[%d] errrored: %s' % (i + 1, str(e)))
-            
-            if not quiet:
-                bar.update(i + 1)
         
         if not quiet:
             print('\nDone.')

@@ -5,7 +5,7 @@ import json
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from dateutil.parser import parse
-from progressbar import ProgressBar
+from tqdm import tqdm
 
 from hydenv.util import env
 from hydenv import models
@@ -59,10 +59,12 @@ class HydenvRaspiLoggerExample:
 
         if not self.quiet:
             print('done.')
-            bar = ProgressBar(max_value=l, redirect_stdout=True)
+            _iter = tqdm(meta.items())
+        else:
+            _iter = meta.items()
         
         i = 0
-        for _id, m in meta.items():
+        for _id, m in _iter:
             # get some lookups
             var_t = self.__check_variable(m)
             term_id = self.__get_term(m['data'])
@@ -86,8 +88,6 @@ class HydenvRaspiLoggerExample:
                 ))
                 # verbosity
                 i += 1
-                if not self.quiet:
-                    bar.update(i + 1)
             
             # upload
             try:
