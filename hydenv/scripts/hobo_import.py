@@ -141,6 +141,8 @@ class HydenvHoboImporter:
 		# remove clear names
 		if 'name' in df.columns:
 			df.drop('name', axis=1, inplace=True)
+		if 'github_name' in df.columns:
+			df.drop('github_name', axis=1, inplace=True)
 		
 		# remove anything without device id
 		df.rename({'hobo_id': 'device_id'}, axis=1, inplace=True)
@@ -201,7 +203,7 @@ class HydenvHoboImporter:
 		with self.engine.connect() as con:
 			available_ids = [_[0] for _ in con.execute(check_sql)]
 			# filter df
-			df = df.where(~df.device_id.isin(available_ids)).dropna()
+			df = df.where(~df.device_id.isin(available_ids)).dropna(how='all')
 			if df.empty:
 				print('[Warning]: All HOBO ids are already in the database. Remove them first for re-uploading.')
 				return
