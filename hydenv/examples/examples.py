@@ -30,7 +30,7 @@ class HydenvExamples:
         self.__connection = connection
         self.quiet = quiet
 
-    def hobo(self, terms='all', only=None, data_path='download', metadata_source='bwsyncandshare'):
+    def hobo(self, terms='all', only=None, data_path='download', metadata_source='bwsyncandshare', remove_term: bool = False):
         """
         Import HOBO data.\n
         This high level script downloads all neccessary resources for the HOBO 
@@ -40,9 +40,16 @@ class HydenvExamples:
         :param terms: Either 'all' (default) or a specific term short name (like WT18) to use
         :param data_path: Either 'download' (default) or a local path to the data
         :param only: If set, only the given entities will be uploaded.
+        :param remove-term: If True, the term specified will be removed from the database. All other flags are ignored
         """
+        # get a CLI
         cli = HydenvHoboExamples(connection=self.__connection, metadata_source=metadata_source)
-        return cli.run(terms=terms, data_path=data_path, only=only, quiet=self.quiet)
+
+        # check the command
+        if remove_term:
+            return cli.remove_term(term=terms, quiet=self.quiet)
+        else:
+            return cli.run(terms=terms, data_path=data_path, only=only, quiet=self.quiet)
 
     def space(self, normalize=False):
         """

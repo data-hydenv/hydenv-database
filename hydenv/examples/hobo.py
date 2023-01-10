@@ -199,3 +199,38 @@ class HydenvHoboExamples:
                 # quality checked data
                 p = os.path.join(path, self.__hobo_data_map[term], 'hourly')
                 cli.folder(path=p, match=r'[0-9]+_Th\.(tsv|csv)', is_quality=True, term=term, quiet=quiet)
+
+    def remove_term(self, term: str, quiet=True):
+        """"""
+        # create a cli instance
+        cli = HydenvHoboImporter(connection=self.__connection)
+
+        # first get the term
+        term = cli.session.query(models.Term).filter(models.Term.short==term).one()
+
+        if term is None:
+            raise AttributeError(f"Term {term} is not found in the database")
+        if not quiet:
+            print(f"Removing all data for {term.full_name}...", end="")
+        
+        # get all affected meta_id
+        meta_ids = [id for id, in cli.session.query(models.Metadata.id).filter(models.Metadata.term_id==term.id)]
+
+        try:
+            # delete the details association
+            cli.session.execute(f"DELETE FROM nm_metadata_details WHERE meta_id in ({','.join([str(_) for _ in meta_ids])});")
+            cli.session.execute(f"DELETE FROM raw_data WHERE meta_id in  ({','.join([str(_) for _ in meta_ids])});")
+            cli.session.execute(f"DELETE FROM data WHERE meta_id in  ({','.join([str(_) for _ in meta_ids])});")
+            cli.session.execute(f"DELETE FROM metadata WHERE term_id={term.id};COMMIT;")
+        except Exception as e:
+            cli.session.rollback()
+            if not quiet:
+                print(f"\nError occured. Rolled back database session.\n{str(e)}")
+            else:
+                raise e
+        
+        # done
+        if not quiet:
+            print('done.')
+        
+        
