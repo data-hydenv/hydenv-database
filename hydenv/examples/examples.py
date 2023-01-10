@@ -30,7 +30,7 @@ class HydenvExamples:
         self.__connection = connection
         self.quiet = quiet
 
-    def hobo(self, terms='all', only=None, data_path='download', metadata_source='google'):
+    def hobo(self, terms='all', only=None, data_path='download', metadata_source='bwsyncandshare'):
         """
         Import HOBO data.\n
         This high level script downloads all neccessary resources for the HOBO 
