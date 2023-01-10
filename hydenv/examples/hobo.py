@@ -23,6 +23,7 @@ import io
 from tqdm import tqdm
 
 from hydenv.util import env
+from hydenv import models
 from hydenv.scripts.hobo_import import HydenvHoboImporter
 
 
@@ -151,7 +152,7 @@ class HydenvHoboExamples:
         for i, term in _iter:
             # get the supported term keys
             if not term in supported_term_keys:
-                print('Term %d has no mapped table in source %s' % (term, self._metadata_source))
+                print('Term %s has no mapped table in source %s' % (term, self._metadata_source))
                 continue
 
             # build the url
@@ -198,4 +199,3 @@ class HydenvHoboExamples:
                 # quality checked data
                 p = os.path.join(path, self.__hobo_data_map[term], 'hourly')
                 cli.folder(path=p, match=r'[0-9]+_Th\.(tsv|csv)', is_quality=True, term=term, quiet=quiet)
-            
