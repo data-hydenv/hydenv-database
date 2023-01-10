@@ -126,11 +126,11 @@ class HydenvHoboImporter:
 		
 		# bwsyncandshare
 		elif 'bwsyncandshare' in url:
-			df = pd.read_excel(url, skiprows=1, sheet_name=sheet_suffix)
+			df = pd.read_excel(url, skiprows=1, sheet_name=sheet_suffix, decimal=',')
 		
 		# check for local path
 		elif os.path.exists(url):
-			df = pd.read_excel(url, skiprows=1, sheet_name=sheet_suffix)
+			df = pd.read_excel(url, skiprows=1, sheet_name=sheet_suffix, decimal=',')
 		
 		else:
 			raise ValueError("The given url is not of known format.")
@@ -145,12 +145,25 @@ class HydenvHoboImporter:
 		# remove anything without device id
 		df.rename({'hobo_id': 'device_id'}, axis=1, inplace=True)
 		df = df.where(~df.device_id.isnull()).dropna(how='all')
-		# df['device_id'] = df.device_id.astype(int)
-		df['device_id'] = ['%d' % int(_) for _ in df.device_id]
+		
+		# convert device id
+		try:
+			df['device_id'] = df.device_id.astype(int)
+		except Exception:
+			df['device_id'] = ['%d' % int(_) for _ in df.device_id]
 
 		# convert lon lat
+		try:
+			df['longitude'] = df.longitude.astype(float)
+			df['latitude'] = df.latitude.astype(float)
+		except Exception:
+			pass
+
+		# remove lines without location
 		df = df.where(~df.longitude.isnull()).dropna(how='all')
 		df = df.where(~df.latitude.isnull()).dropna(how='all')
+
+		# build WKT
 		df['location'] = df[['longitude', 'latitude']].apply(lambda r: 'SRID=4326;POINT (%s %s)' % (r[0], r[1]), axis=1)
 		df.drop(['longitude', 'latitude'], axis=1, inplace=True)
 		
