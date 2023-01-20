@@ -59,8 +59,14 @@ def read_hourly_file(fname):
 		df.rename(columns={'dttm': 'date'}, inplace=True)
 
 		# create the hourly datetime index
-		conv = lambda r: dt.strptime(r[0], '%Y-%m-%d') + td(hours=int(r[1]))
-		idx = df.apply(conv, axis=1)
+		# since 2023 the ddtm format has changed
+		def date_formatter(r):
+			if '.' in r[0]:
+				return dt.strptime(r[0], '%Y.%m.%d') + td(hours=int(r[1]))
+			else:
+				return dt.strptime(r[0], '%Y-%m-%d') + td(hours=int(r[1]))
+		
+		idx = df.apply(date_formatter, axis=1)
 
 		# set index
 		df['tstamp'] = idx
@@ -68,6 +74,7 @@ def read_hourly_file(fname):
 		# drop old index
 		df.drop(['date', 'hour'], axis=1, inplace=True)
 		df.columns = ['value', 'origin', 'tstamp']
+
 	elif fname.endswith('.csv'):
 		# read the file
 		df = pd.read_csv(fname)
@@ -77,7 +84,11 @@ def read_hourly_file(fname):
 		df.rename(columns={'th': 'value', 'date': 'tstamp', 'dttm': 'tstamp', 'temp': 'value'}, inplace=True)
 
 		# convert datetime
-		df['tstamp'] = [dt.strptime(_, '%Y-%m-%d %H:%M:%S') for _ in df.tstamp]
+		# dttm format has changed 2023
+		if '.' in df.tstamp[0]:
+			df['tstamp'] = [dt.strptime(_, '%Y.%m.%d %H:%M:%S') for _ in df.tstamp]
+		else:
+			df['tstamp'] = [dt.strptime(_, '%Y-%m-%d %H:%M:%S') for _ in df.tstamp]
 	else:
 		raise AttributeError('The file format is not yet supported.')
 	return df
