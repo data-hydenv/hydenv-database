@@ -23,20 +23,20 @@ BASEPATH = os.path.dirname(os.path.abspath(__file__))
 WELCOME = """
 This application offers a GUI to some parts of the hydenv CLI. The whole software was developed by hydrocode.
 The software is open source, but is able to connect resources, content and data, that are technically not part
-of the software. They can be used free of charge for educational purposes. 
-Remote database connection and cloud saving of exercises are excluded from these terms and might need registration and/or 
+of the software. They can be used free of charge for educational purposes.
+Remote database connection and cloud saving of exercises are excluded from these terms and might need registration and/or
 subscription in the future.
 
 The application tracks some general user behavior using Google analytics. The IP adress is anonymized and can not be tracked
 back to you. The data collected is: Your OS version, browser version and solving attempts of exercises. Following Art. 6 par. 1
-GDPR we have a legitimate interest to verify technical integrety of the application. The duration of saving is 2 months and 
+GDPR we have a legitimate interest to verify technical integrety of the application. The duration of saving is 2 months and
 the location is within Europe. By using this application, you consent to these terms.
 """
 
 EXAMPLE_INTRO ="""
 The hydenv CLI can automatically download, merge, prepare and filter remote datasets for you.
 It also includes database models and can upload the data samples into the connected database.
-There are many different dataset that can be loaded. Possibly, not all of the examples can 
+There are many different dataset that can be loaded. Possibly, not all of the examples can
 yet be run in the GUI.
 """
 
@@ -55,14 +55,14 @@ def get_base_data():
     # get the tracks
     with open(os.path.join(BASEPATH, "maintain/tracks.json")) as f:
         tracks_ = json.load(f)
-    
+
     # get the exercises
     exercises_ = list()
     files = glob.glob(os.path.join(BASEPATH, "maintain", "exercises*.json"))
     for file_ in files:
         with open(file_, 'r') as f:
             exercises_.extend(json.load(f))
-    
+
     tracks = []
     # merge the lists
     for track in tracks_:
@@ -73,14 +73,14 @@ def get_base_data():
                 # find the exercise
                 ex_data = [e for e in exercises_ if e.get('id') == exercise.get('id')].pop()
                 exercise.update({k: v for k, v in ex_data.items() if k!='id'})
-                
+
                 # add
                 exercises.append(exercise)
             session_.update({'exercises': exercises})
             sessions.append(session_)
         track.update({'sessions': sessions})
-        tracks.append(track)    
-    
+        tracks.append(track)
+
     return tracks
 
 
@@ -105,7 +105,7 @@ def manage_session(tracks) -> dict:
         if save:
             st.session_state.track_id = track_id
             st.session_state.session_id = session_id
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.stop()
 
@@ -129,7 +129,7 @@ def get_session(tracks, track_id, session_id=None):
     track = [t for t in tracks if t['id'] == track_id].pop()
     if session_id is None:
         return track
-    
+
     # get the session
     session = [s for s in track.get('sessions', []) if s['name'] == session_id].pop()
     return session
@@ -168,9 +168,9 @@ def change_exercise(tracks, direction='next'):
             idx += 1
     else:
         idx = idx - 1 if idx > 1 else 0
-    
+
     st.session_state.exercise = exercises[idx]
-    st.experimental_rerun()
+    st.rerun()
 
 
 def exercise_page(tracks, db: HydenvDatabase):
@@ -178,7 +178,7 @@ def exercise_page(tracks, db: HydenvDatabase):
     reset = st.sidebar.button("Change Track & Session")
     if reset:
         reset_track()
-        st.experimental_rerun()
+        st.rerun()
 
     # main container
     #main = st.container()
@@ -192,7 +192,7 @@ def exercise_page(tracks, db: HydenvDatabase):
 
     # get the exercise
     exercise = st.session_state['exercise']
-    
+
     # build the page
     main.title(exercise['name'])
     body = main.expander('BODY', expanded=True)
@@ -208,15 +208,15 @@ def exercise_page(tracks, db: HydenvDatabase):
     with main.form('SQL input'):
         # check if there is prefill
         prefill = st.session_state.get(f"{exercise['id']}_prefill", exercise['body'].get('prefill', ''))
-        
+
         code_theme = editor.selectbox('Editor theme', options=THEMES, index=2)
         size = editor.selectbox('Editor Size', options=['sm', 'md', 'lg'])
         sql_code = st_ace(
             value=prefill,
-            placeholder='Put your SQL here', 
+            placeholder='Put your SQL here',
             height=600 if size == 'lg' else 450 if size == 'md' else 200,
-            language='sql', 
-            theme=code_theme, 
+            language='sql',
+            theme=code_theme,
             auto_update=True
         )
         # compare mode
@@ -227,11 +227,11 @@ def exercise_page(tracks, db: HydenvDatabase):
         if do_run:
             # save the query
             st.session_state[f"{exercise['id']}_prefill"] = sql_code
-            
+
             # run
             result = db.execute(sql_code, json=True)
             solution = db.execute(exercise['solution']['content'], json=True)
-            
+
             # save
             st.session_state.last_run = dict(exercise_id=exercise['id'], result=result)
 
@@ -239,16 +239,16 @@ def exercise_page(tracks, db: HydenvDatabase):
             res_hash = hashlib.sha256(str(result).encode()).hexdigest()
             sol_hash = hashlib.sha256(str(solution).encode()).hexdigest()
             main.code(f'Your hash:\t{res_hash}\nSolution hash:\t{sol_hash}')
-            
+
             if res_hash == sol_hash:
                 event('event', category='exercise_attempt', label=exercise['id'], exercise_id=exercise['id'], solved=True)
                 right.success("**Great!** Your soultion was correct.")
-                
+
                 # TODO do more
                 solved = st.session_state.get('solved_exercises', [])
                 if exercise['id'] not in solved:
                     solved.append(exercise['id'])
-                    
+
                     # update session state
                     st.session_state.solved_exercises = solved
                     cookie_manager = stx.CookieManager()
@@ -257,13 +257,13 @@ def exercise_page(tracks, db: HydenvDatabase):
             else:
                 event('event', category='exercise_attempt', label=exercise['id'], exercise_id=exercise['id'], solved=False)
                 right.error(f"Argh!. Not yet.")
-    
+
     # indicate if this exercise has been solved before
     if exercise['id'] in st.session_state.solved_exercises:
         right.success('This task has already been solved')
     else:
         right.info('This task was not yet solved.')
-    
+
     # right column
     run = st.session_state.get('last_run', {})
     if run.get('exercise_id', '-99') == exercise['id']:
@@ -273,7 +273,7 @@ def exercise_page(tracks, db: HydenvDatabase):
     # solution
     solution_exp = main.expander('SOLUTION', expanded=False)
     solution_exp.code(exercise['solution'].get('content', ''), language='sql')
-    
+
     # navigate buttons
     l, _, r = st.columns((1, 3, 1))
     go_prev = l.button('PREVIOUS EXCERCISE')
@@ -295,7 +295,7 @@ def get_db_con(connection: str = None) -> HydenvDatabase:
     if db:
         # if that worked, set the connection
         st.session_state.connection = db.unsafe_get_connection
-        st.experimental_rerun()
+        st.rerun()
     else:
         # force the install page
         install_page()
@@ -323,29 +323,29 @@ def install_page():
         got_it = st.button('Continue')
         if got_it:
             st.session_state.consent = True
-            st.experimental_rerun()
+            st.rerun()
         else:
             st.stop()
-    
+
     # there is nothing to try - could use a cookie here
     st.markdown('## Connect hydenv database')
     st.markdown(CONNECT_INTRO)
-            
+
     # check if there was a error message
     if 'error_msg' in st.session_state:
         st.error(st.session_state.error_msg)
         del st.session_state.error_msg
-    
+
     if 'success_msg' in st.session_state:
         st.success(st.session_state.success_msg)
         del st.session_state.success_msg
 
     if not st.session_state.get('config_connection', False):
-        # build the 
+        # build the
         left, right, _ = st.columns((1, 1, 4))
         install_new = left.button('CREATE NEW HYDENV INSTANCE')
         connect_existing = right.button('CONNECT EXISTING HYDENV DB')
-        
+
         if install_new:
             st.session_state.config_connection = 'install_new'
         elif connect_existing:
@@ -362,11 +362,11 @@ def install_page():
             msg.write("You will be redirected in {} seconds".format(5 - i))
             bar.progress((i + 1) *20)
             time.sleep(1)
-        
+
         st.session_state.connection = st.session_state.raw_connection
         del st.session_state.raw_connection
         st.session_state.page_name = 'home'
-        st.experimental_rerun()
+        st.rerun()
 
     # build the menu
     with st.form('SETUP CONNECTION'):
@@ -379,11 +379,11 @@ def install_page():
         db_name = st.text_input('DATABASE NAME', 'hydenv')
         submit = st.form_submit_button()
 
-        # check 
+        # check
         if submit:
             if st.session_state.config_connection == 'install_new':
                 con = f"postgresql://postgres:{pg_pass}@{host}:{port}/postgres"
-                
+
                 # do the stuff
                 try:
                     db = HydenvDatabase(connection=con)
@@ -394,19 +394,19 @@ def install_page():
                     st.session_state.raw_connection = db.unsafe_get_connection
                     st.session_state.config_connection = 'finished'
                     st.session_state.success_msg = 'Successfully created database. You will be redirected to the main page.'
-                    st.experimental_rerun()
+                    st.rerun()
                 except Exception as e:
                     st.session_state.error_msg = str(e)
-                    st.experimental_rerun()
+                    st.rerun()
             elif st.session_state.config_connection == 'connect_existing':
                 con = f"postgresql://{user}:{userpw}@{host}:{port}/{db_name}"
-                
+
                 # check if it works with tables
                 if _check_connection(connection=con):
                     st.session_state.raw_connection = con
                     st.session_state.config_connection = 'finished'
-                    st.experimental_rerun()
-                
+                    st.rerun()
+
                 # if not try to install the tables or fail
                 else:
                     try:
@@ -417,10 +417,10 @@ def install_page():
                         st.session_state.raw_connection = db.unsafe_get_connection
                         st.session_state.config_connection = 'finished'
                         st.session_state.success_msg = 'Successfully connected to database. You will be redirected to the main page.'
-                        st.experimental_rerun()
+                        st.rerun()
                     except Exception as e:
                         st.session_state.error_msg = str(e)
-                        st.experimental_rerun()
+                        st.rerun()
             else:
                 st.error('Something went wrong')
                 st.json(st.session_state)
@@ -449,7 +449,7 @@ def example_page(db: HydenvDatabase):
 
     # show the title
     st.title('Example {}'.format(example.upper()))
-    
+
     # show the tables
     if example in CHECK:
         st.markdown('### Existing tables\n Please make sure that the examples data is not listed below. Most example APIs will create dublicates if you run them twice.')
@@ -458,7 +458,7 @@ def example_page(db: HydenvDatabase):
             st.table(overview_data)
 
     st.sidebar.markdown('### API options')
-    
+
     # example-specific code
     is_defnied = True
     args = {}
@@ -469,14 +469,14 @@ def example_page(db: HydenvDatabase):
             st.warning('It is recommended to explicitly select the terms. Otherwise all terms will be selected.')
         else:
             args = {'terms': terms}
-        
+
         # handle only flag
         ONLYS = {'all':'Import all at once', 'metadata': 'HOBO Metadata', 'raw-data': 'HOBO raw data', 'quality-data': 'HOBO quality checked data'}
         only = st.sidebar.radio('Import only', options=list(ONLYS.keys()), index=0, format_func=lambda k: ONLYS[k])
 
         if only != 'all':
             args['only'] = only
-    
+
     elif example == 'osm':
         # action
         action = st.sidebar.selectbox('Action', options=['city-districts', 'counties', 'energiewende', 'nodes', 'way'])
@@ -484,20 +484,20 @@ def example_page(db: HydenvDatabase):
 
         if action not in ('nodes', 'way'):
             use_predefined = st.sidebar.checkbox('Use predefined geometry settings', value=True)
-        
+
         if action == 'city-districts':
             if use_predefined:
                 city = st.sidebar.selectbox('PREDEFINED CITY', options=list(CITIES.keys()), format_func=lambda k: CITIES[k])
                 args['city'] = city
             else:
                 args['city'] = st.sidebar.text_input('CITY', 'Karlsruhe')
-        
+
         elif action == 'counties':
             if use_predefined:
                 args['state'] = st.sidebar.selectbox('FEDERAL STATE', options=FEDERAL_STATES)
             else:
                 args['state'] = st.sidebar.text_input('FEDERAL STATE', 'Baden-Württemberg')
-        
+
         elif action == 'energiewende':
             st.markdown("""### Description\nThis API endpoint is a special endpoint, which calls the `counties` and `node` endpoints several times. Only useful for the Data-Challenge *Energiewende*.""")
             if use_predefined:
@@ -540,7 +540,7 @@ def example_page(db: HydenvDatabase):
             args['fmt'] = st.sidebar.selectbox('Output format', options=['latex','markdown','html','json','csv'])
     else:
         is_defnied = False
-    
+
     # build args
     for k, v in args.items():
         cmd += f" --{k.replace('_', '-')}={v}"
@@ -571,14 +571,14 @@ def example_page(db: HydenvDatabase):
         console_output = st.empty()
         def callback(output):
             console_output.code(output, language='bash')
-        
+
         class Console(StringIO):
             backlog = ""
             def write(self, s):
                 self.backlog += s
                 super(Console, self).write(s)
                 callback(self.backlog)
-        
+
         # handle StdOut
         try:
             orginial_stdout = sys.stdout
@@ -596,7 +596,7 @@ def example_page(db: HydenvDatabase):
         finally:
             # restore original StdOut
             sys.stdout = orginial_stdout
-        
+
         if output is not None:
             st.markdown('## CLI output')
             if 'fmt' not in args or args['fmt'] == 'json':
@@ -622,8 +622,8 @@ def home_page(db: HydenvDatabase):
         iopen = ir.button('OPEN IN GUI', key='open_install')
         if iopen:
             st.session_state.page_name = 'install'
-            st.experimental_rerun()
-        
+            st.rerun()
+
         # INIT COMMAND
         st.warning('This will delete all data in the database!')
         il2, ir2 = st.columns((9, 1))
@@ -642,7 +642,7 @@ def home_page(db: HydenvDatabase):
             table_names = db.table(list=True, fmt='json')
             tree = {}
             bar = st.progress(0)
-            
+
             # load all tables
             for i, table in enumerate(table_names):
                 cols = db.table(table['name'], fmt='json')
@@ -651,8 +651,8 @@ def home_page(db: HydenvDatabase):
                 bar.progress((i + 1) / len(table_names))
 
             st.session_state.table_tree = tree
-            st.experimental_rerun()
-    
+            st.rerun()
+
     # exercises
     with st.expander('EXERCISES', expanded=True):
         st.markdown('One of the main feature of hydenv-database. You can interactively start SQL exercises, which are tested with your **own database copy** and give you feedback.')
@@ -661,15 +661,15 @@ def home_page(db: HydenvDatabase):
         eopen = er.button('OPEN IN GUI', key='open_exercises')
         if eopen:
             st.session_state.page_name = 'exercise'
-            st.experimental_rerun()
-        
+            st.rerun()
+
         st.markdown('There is also a full-featured web-application, that is currently not developed any further. But it is still available')
         st.code('python -m hydenv exercises gui --legacy', language='bash')
-    
+
     # examples
     st.markdown('## Examples')
     st.markdown(EXAMPLE_INTRO)
-    
+
     # space
     with st.expander('SPACE MISSIONS', expanded=False):
         st.markdown('The space example set is pre-installed with the package. You don\' need to run this manually.')
@@ -688,7 +688,7 @@ def home_page(db: HydenvDatabase):
         hobo_open = exhr.button('OPEN IN GUI', key='open_hobo')
         if hobo_open:
             st.session_state.page_name = 'example_hobo'
-            st.experimental_rerun()
+            st.rerun()
 
     # osm
     with st.expander('OpenStreetMap', expanded=False):
@@ -700,8 +700,8 @@ def home_page(db: HydenvDatabase):
         osm_open = osml.button('OPEN IN GUI', key='open_osm')
         if osm_open:
             st.session_state.page_name = 'example_osm'
-            st.experimental_rerun()
-    
+            st.rerun()
+
     # earthquake
     with st.expander('EARTHQUAKES', expanded=False):
         st.markdown('The earthquake dataset can be used for the exercises. It can upload the raw dataset, or add a normalized version of it.')
@@ -714,7 +714,7 @@ def home_page(db: HydenvDatabase):
             api = HydenvExamples(connection=db.unsafe_get_connection)
             api.earthquake(normalize=False)
             st.success('Successfully uploaded raw earthquake data.')
-        
+
         # normalized command
         eel2, eer2 = st.columns((9, 1))
         eel2.code('# Upload normalized earthquake data\npython -m hydenv examples earthquake --normalize', language='bash')
@@ -723,7 +723,7 @@ def home_page(db: HydenvDatabase):
             api = HydenvExamples(connection=db.unsafe_get_connection)
             api.earthquake(normalize=True)
             st.success('Successfully uploaded normalized earthquake data.')
-    
+
     # Netatmo
     with st.expander('Netatmo', expanded=False):
         st.markdown('Hydenv includes a API to download Netatmo weather data. You don\'t need a Netatmo account to use the API. A passphrase will be distributed in course, to use the hydrocode account internally.')
@@ -735,7 +735,7 @@ def home_page(db: HydenvDatabase):
         run_netatmo = netr.button('OPEN IN GUI', key='run_netatmo')
         if run_netatmo:
             st.session_state.page_name = 'example_netatmo'
-            st.experimental_rerun()
+            st.rerun()
 
     st.stop()
 
@@ -753,7 +753,7 @@ def event(event_name: str, *args, **kwargs):
     if clientId is None:
         clientId = ''.join(choice(ascii_letters) for _ in range(16))
         st.session_state.clientId = clientId
-    
+
     # do the request
     with HTTPRequest() as http:
         tracker = Tracker(measurementId, http)
@@ -765,7 +765,7 @@ def event(event_name: str, *args, **kwargs):
 def pageview():
     if'last_page' not in st.session_state:
         st.session_state.last_page = 'none'
-    
+
     # get the current and the last page
     current_page = st.session_state.page_name
     last_page = st.session_state.last_page
@@ -778,7 +778,7 @@ def pageview():
 
 def main_app(connection=None, measurementId="G-RLF2LDRQSR", debug=False):
     st.set_page_config(page_title="Excercises by hydrocode", layout="wide")
-    
+
     # hydrocode branding
     l, r = st.sidebar.columns((1,4))
     l.image('https://firebasestorage.googleapis.com/v0/b/hydrocode-website.appspot.com/o/public%2Flogo.png?alt=media&token=8dda885c-0a7d-4d66-b5f6-072ddabf3b02', use_column_width=True)
@@ -786,7 +786,7 @@ def main_app(connection=None, measurementId="G-RLF2LDRQSR", debug=False):
     # set the measurementId
     if 'measurementId' not in st.session_state:
         st.session_state.measurementId = measurementId
-    
+
     if 'debug' not in st.session_state:
         st.session_state.debug = debug
 
@@ -806,8 +806,8 @@ def main_app(connection=None, measurementId="G-RLF2LDRQSR", debug=False):
         back = st.sidebar.button('Back GUI overview')
         if back:
             st.session_state.page_name = 'home'
-            st.experimental_rerun()
-    
+            st.rerun()
+
     # check if a table tree was loaded
     if 'table_tree' in st.session_state:
         st.sidebar.markdown('### DATABASE TABLES')
@@ -818,7 +818,7 @@ def main_app(connection=None, measurementId="G-RLF2LDRQSR", debug=False):
     elif page_name == 'exercise':
         # load the list of solved exercises
         load_solved_list()
-        
+
         # get the tracks and select the exercise
         tracks = get_base_data()
         exercise = manage_session(tracks)
@@ -826,7 +826,7 @@ def main_app(connection=None, measurementId="G-RLF2LDRQSR", debug=False):
         exercise_page(tracks, db)
     elif page_name == 'install':
         install_page()
-    
+
     elif page_name.startswith('example_'):
         example_page(db)
 
