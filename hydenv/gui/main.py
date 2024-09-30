@@ -9,6 +9,7 @@ from datetime import datetime as dt
 from datetime import timedelta as td
 from random import choice
 from string import ascii_letters
+from sqlalchemy import text as sql_text
 
 import streamlit as st
 import extra_streamlit_components as stx
@@ -229,8 +230,8 @@ def exercise_page(tracks, db: HydenvDatabase):
             st.session_state[f"{exercise['id']}_prefill"] = sql_code
 
             # run
-            result = db.execute(sql_code, json=True)
-            solution = db.execute(exercise['solution']['content'], json=True)
+            result = db.execute(sql_text(sql_code), json=True)
+            solution = db.execute(sql_text(exercise['solution']['content']), json=True)
 
             # save
             st.session_state.last_run = dict(exercise_id=exercise['id'], result=result)
@@ -305,9 +306,9 @@ def _check_connection(connection: str = None, with_tables: bool = True):
     try:
         db = HydenvDatabase(connection=connection)
         if with_tables:
-            res = db.execute('SELECT * FROM space_raw LIMIT 1;')
+            res = db.execute(sql_text('SELECT * FROM space_raw LIMIT 1;'))
         else:
-            res = db.execute('SELECT * FROM information_schema.tables LIMIT 1;')
+            res = db.execute(sql_text('SELECT * FROM information_schema.tables LIMIT 1;'))
         return db
     except Exception:
         return False
@@ -454,7 +455,7 @@ def example_page(db: HydenvDatabase):
     if example in CHECK:
         st.markdown('### Existing tables\n Please make sure that the examples data is not listed below. Most example APIs will create dublicates if you run them twice.')
         for query in CHECK[example]:
-            overview_data = db.execute(query, json=True)
+            overview_data = db.execute(sql_text(query), json=True)
             st.table(overview_data)
 
     st.sidebar.markdown('### API options')
