@@ -167,6 +167,7 @@ class HydenvDatabase:
             con.execute(sql_text('commit;'))
             # grant all on the database
             con.execute(sql_text(f'GRANT ALL PRIVILEGES ON DATABASE "{db_name}" TO {user};'))
+            con.commit()
 
         # build the connection to the new database
         chunks = self.__connection.split('/')
@@ -176,19 +177,19 @@ class HydenvDatabase:
         # since postgres 15, we need to grant to public as well
         with engine.connect() as con:
             con.execute(sql_text(f'GRANT ALL ON SCHEMA public TO {user};'))
-            con.execute(sql_text('commit;'))
+            con.commit()
 
         # connect and install postgis
         with engine.connect() as con:
             con.execute(sql_text('CREATE EXTENSION postgis;'))
             res = con.execute(sql_text('Select PostGis_Full_Version();')).scalar()
+            con.commit()
 
         # rebuild the connection
         host_port = self.__connection.split('@')[1].split('/')[0]
         host, port = host_port.split(':')
-        self.__init__('postgresql://{usr}:{pw}@{host}:{port}/{db}'.format(
-            usr=user, pw=password, host=host,port=port, db=db_name
-        ))
+        self.__init__(
+            f'postgresql://{user}:{password}@{host}:{port}/{db_name}')
         # expose conn if
         self.__expose_con('file', usr=user, pw=password, host=host, port=port, dbname=db_name)
 
