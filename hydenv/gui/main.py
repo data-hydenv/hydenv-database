@@ -373,9 +373,9 @@ def install_page():
         host = st.text_input('DATABASE HOST', 'localhost')
         port = st.text_input('PORT', '5432')
         if st.session_state.config_connection == 'install_new':
-            pg_pass = st.text_input('POSTGRES SUPER PASSWORD')
+            pg_pass = st.text_input('POSTGRES SUPER PASSWORD', type='password')
         user = st.text_input('HYDENV USER', 'hydenv')
-        userpw = st.text_input('HYDENV PASSWORD', 'hydenv')
+        userpw = st.text_input('HYDENV PASSWORD', 'hydenv', type='password')
         db_name = st.text_input('DATABASE NAME', 'hydenv')
         submit = st.form_submit_button()
 
