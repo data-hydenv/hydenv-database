@@ -25,7 +25,7 @@ class HydenvExercises:
 
         # backend settings
         self.backend_use_debug = False
-        self.allow_external = False     
+        self.allow_external = False
         self._backend_proc = None
         self._backend_thread = None
         self.port = port
@@ -44,9 +44,9 @@ class HydenvExercises:
     def start(self, no_browser=False):
         """
         Start the Exercises Application.\n
-        This runs a backend server to solve SQL exercises in the 
-        connected database. It will automatically start a browser and 
-        navigate to the application. If the browser does not open, you can 
+        This runs a backend server to solve SQL exercises in the
+        connected database. It will automatically start a browser and
+        navigate to the application. If the browser does not open, you can
         find the app at: http://localhost:5000
         :param connection: The database URI following syntax:\n
             postgresql://<user>:<password>@<host>:<port>/<database>
@@ -64,11 +64,11 @@ class HydenvExercises:
 
     def _run_backend_server(self, no_browser=False):
         """
-        On local machines, we need to start the functions-framework in a 
+        On local machines, we need to start the functions-framework in a
         subprocess.
         """
         print('Starting backend server: %s' % self.backend)
-        
+
         # add the database connection to evironment variables
 
         # build command
@@ -78,14 +78,14 @@ class HydenvExercises:
         if self.allow_external:
             cmds.extend(['--host', '0.0.0.0'])
 #            subprocess.call(['iptables', '-t', 'nat', '-A', 'PREROUTING', '-p', 'tcp', '--dport', '80', '-j', 'REDIRECT', '--to-port', '8080'])
-        
+
         # execute
         print('Backend is running.')
         if not no_browser:
             t = Timer(0.8, webbrowser.open_new_tab, args=[self.backend + 'index.html'])
             t.start()
         self._backend_proc = subprocess.call(cmds)
-        
+
 
     def run_sql(self, sql: str, safe=True):
         """
@@ -96,7 +96,7 @@ class HydenvExercises:
         if safe and not sql.lower().startswith('select'):
             print('The SQL statement is not allowed.')
             return
-        
+
         res = requests.get(self.backend + 'run', params={'sql': sql})
         if res.status_code == 200:
             return res.json()

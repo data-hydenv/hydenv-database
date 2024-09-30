@@ -19,6 +19,7 @@ from universal_analytics import Tracker, HTTPRequest
 from hydenv.database import HydenvDatabase
 from hydenv.examples.examples import HydenvExamples
 from hydenv.examples.osm import CITIES, FEDERAL_STATES
+from hydenv.util import env
 
 BASEPATH = os.path.dirname(os.path.abspath(__file__))
 WELCOME = """
@@ -371,13 +372,14 @@ def install_page():
 
     # build the menu
     with st.form('SETUP CONNECTION'):
-        host = st.text_input('DATABASE HOST', 'localhost')
-        port = st.text_input('PORT', '5432')
+        env.read_file()
+        host = st.text_input('DATABASE HOST', env.get('host', 'localhost'))
+        port = st.text_input('PORT', env.get('port', '5432'))
         if st.session_state.config_connection == 'install_new':
             pg_pass = st.text_input('POSTGRES SUPER PASSWORD', type='password')
-        user = st.text_input('HYDENV USER', 'hydenv')
-        userpw = st.text_input('HYDENV PASSWORD', 'hydenv', type='password')
-        db_name = st.text_input('DATABASE NAME', 'hydenv')
+        user = st.text_input('HYDENV USER', env.get('usr', 'hydenv'))
+        userpw = st.text_input('HYDENV PASSWORD', env.get('pw', 'hydenv'), type='password')
+        db_name = st.text_input('DATABASE NAME', env.get('dbname', 'hydenv'))
         submit = st.form_submit_button()
 
         # check
@@ -683,8 +685,8 @@ def home_page(db: HydenvDatabase):
         st.markdown('One of the main features. The CLI can upload your HOBO measurements, metadata and quality controlled data into your database. Data is available from winter Term 2018 on, quality checked data from term 2019.')
 
         exhl, exhr = st.columns((9, 1))
-        exhl.code('# Upload all from 3 terms\npython -m hydenv examples hobo --terms=[WT,19,WT20,WT21]', language='bash')
-        exhl.code('# Upload only metadata\n python -m examples hobo --terms=WT20 --only=metadata')
+        exhl.code('# Upload all from 3 terms\npython -m hydenv examples hobo --terms=[WT19,WT20,WT21]', language='bash')
+        exhl.code('# Upload only metadata\npython -m hydenv examples hobo --terms=WT20 --only=metadata')
 
         hobo_open = exhr.button('OPEN IN GUI', key='open_hobo')
         if hobo_open:

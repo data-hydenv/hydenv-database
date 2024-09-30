@@ -1,11 +1,9 @@
 import os
 import sys
-import json
 from datetime import datetime as dt
 
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
-from sqlalchemy import create_engine
 from sqlalchemy.exc import ResourceClosedError
 
 from hydenv.util.json import sqlencoder
@@ -64,7 +62,7 @@ def execute():
         return jsonify({'message': 'No SQL query given.'}), 404
     else:
         sql = sql.replace('%', '%%')
-    
+
     # build the CLI
     cli = HydenvDatabase(connection=app.config['DB_URI'])
 
@@ -92,14 +90,14 @@ def execute():
         result_data = [dict(message="Error parsing the result data.\n%s" % str(e))]
 
     t3 = dt.now()
-    
+
     # build response object
     response = {
         'message': 'Run successful',
         'params': data,
         'data': result_data,
         'perf': dict(
-            backendTime=(t3 - t2).total_seconds(), 
+            backendTime=(t3 - t2).total_seconds(),
             executionTime=(t3 - t1).total_seconds(),
             startupTime=(t2 - t1).total_seconds(),
         )
@@ -117,7 +115,7 @@ def execute():
         except Exception as e:
             exp_text = str(e)
         response['explain'] = exp_text
-    
+
     # return
     return jsonify(response)
 
@@ -133,7 +131,7 @@ def explain():
     sql = data.get('sql')
     if sql is None:
         return jsonify({'message': 'No SQL query given.'}), 404
-    
+
     # run the CLI
     cli = HydenvDatabase(connection=app.config['DB_URI'])
     exp = cli.explain(sql=sql, fmt=fmt, full=full)
@@ -150,9 +148,9 @@ def explain():
 def run(db_uri, debug=False, port=5000, host='localhost'):
     """
     Hydenv Exercise backend server\n
-    For local execution of exercises. Usually, the exercise 
-    CLI starts the backend and you don't need to start it 
-    manually. However, you have more control over the server, but 
+    For local execution of exercises. Usually, the exercise
+    CLI starts the backend and you don't need to start it
+    manually. However, you have more control over the server, but
     you need to start it before you start the exercises.
     """
     app.config['DB_URI'] = db_uri

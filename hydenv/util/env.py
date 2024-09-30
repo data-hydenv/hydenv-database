@@ -12,6 +12,7 @@ NAME_MAP = dict(
     port='POSTGRES_PORT',
     dbname='POSTGRES_DBNAME'
 )
+CONFIG = None
 
 
 def store_file(**kwargs):
@@ -20,7 +21,7 @@ def store_file(**kwargs):
     # update
     for k,v in kwargs.items():
         config[NAME_MAP[k]] = v
-    
+
     with open(fname, 'w') as f:
         json.dump(config, f)
 
@@ -32,6 +33,7 @@ def read_file() -> dict:
             config = json.load(f)
     else:
         config = dict()
+    CONFIG = config
     return config
 
 
@@ -74,3 +76,12 @@ def get_session(connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}") -> 
     SessionCls = sessionmaker(bind=engine)
 
     return SessionCls()
+
+def get(key, fallback=None):
+    if CONFIG is None:
+        config = read_file()
+    else:
+        config = CONFIG
+    key = NAME_MAP.get(key, key)
+    val = config.get(key, os.environ.get(key, fallback))
+    return val

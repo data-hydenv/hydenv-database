@@ -13,19 +13,19 @@ class HydenvGPXExample:
     """
     GPX Example Loader.\n
     Loads GPX example data from Github and load it into the
-    given database. The example data url can be overwritten to any 
-    remote or local .gpx file. Note, that the loader will only import 
+    given database. The example data url can be overwritten to any
+    remote or local .gpx file. Note, that the loader will only import
     *flat* GPX data, meaning only the first track will be imported.
-    The database has to be installed and initialized before. 
+    The database has to be installed and initialized before.
     Do that by hand or use the two CLI commands:
         python -m hydenv database install  --connection=postgresql://postgres:<adminpassword>@localhost:5432/postgres
         python -m hydenv database init --clean --connection=postgresql://hydenv:hydenv@localhost:5432/hydenv
     :param connection: The database URI following syntax:\n
         postgresql://<user>:<password>@<host>:<port>/<database>
-    :param overwrite_url: string - overwrite the default data url to load other data. 
+    :param overwrite_url: string - overwrite the default data url to load other data.
         Can be a remote or local path.
     :param quiet: bool - suppresses print output to stdout
-    
+
     """
 
     def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}", overwrite_url=None, quiet=True):
@@ -69,10 +69,10 @@ class HydenvGPXExample:
         # get the points
         for point in points:
             track.points.append(self.__parse_point(point))
-        
+
         if not self.quiet:
             print('done.\nUploading...', end='')
-        
+
         try:
             self.session.add(track)
             self.session.commit()
@@ -80,7 +80,7 @@ class HydenvGPXExample:
             self.session.rollback()
             if not self.quiet:
                 print('error.\n[ERROR]: %s' % str(e))
-        
+
         if not self.quiet:
             print('done.')
 
@@ -104,7 +104,7 @@ class HydenvGPXExample:
         else:
             if not self.quiet:
                 print('done.')
-        
+
         return response.content
 
     def __parse_point(self, p):
@@ -124,5 +124,5 @@ class HydenvGPXExample:
                 tag_name=ex.name[4:],
                 value=float(ex.decode_contents())
             ))
-        
+
         return gpx

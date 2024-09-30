@@ -1,7 +1,5 @@
-import os
 import types
 import inspect
-import json
 
 from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy import create_engine
@@ -42,18 +40,18 @@ class HydenvMeasurements:
             raise AttributeError('location has to be of shape Point')
 
         args = dict(device_id=device_id, location=geom, description=description, **kwargs)
-        
+
         return self.create('Metadata', skip_overrides=True, **args)
 
     @check_overrides
     def create(self, model_name, **kwargs):
         """
         Create a new record in the database\n
-        This is the most generic function, that does not handle 
+        This is the most generic function, that does not handle
         specific database entities.
         :param model_name: name of the model entity
         :param skip_overrides: If True, override functions will not be called
-        """        
+        """
         # get the model class
         Model = getattr(models, model_name)
         model = Model(**kwargs)
@@ -88,7 +86,7 @@ class HydenvMeasurements:
             if name in columns:
                 # exact match
                 query = query.filter(columns.get(name)==value)
-        
+
         # return
         if return_query:
             return query
@@ -106,11 +104,11 @@ class HydenvMeasurements:
         # this will raise an exception if not exactly one instance is found
         instance = HydenvMeasurements.read(self, model_name, return_query=True, id=id).one()
         print(instance)
-        
+
         # update
         for name, value in kwargs.items():
             setattr(instance, name, value)
-        
+
         try:
             self.session.add(instance)
             self.session.commit()
@@ -124,9 +122,9 @@ class HydenvMeasurements:
     def delete(self, model_name, id=None, **kwargs):
         """
         Delete an existing record.\n
-        You can either delete by id, to exactly control which records 
+        You can either delete by id, to exactly control which records
         are deleted, or you can pass in any kind of filter statement
-        to delete all matching instances. In this case you have to 
+        to delete all matching instances. In this case you have to
         omit the id parameter.
         Caution: if you omit the id, but do not pass a filter condition,
         **all** records will be deleted.
@@ -140,7 +138,7 @@ class HydenvMeasurements:
             instances = [instance.one()]
         else:
             instances = HydenvMeasurements.read(self, model_name, **kwargs)
-        
+
         # delete
         try:
             for inst in instances:

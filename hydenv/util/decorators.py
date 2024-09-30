@@ -17,7 +17,7 @@ def check_overrides(func):
                 print(kwargs)
                 ov_func = getattr(self, override_name)
                 return ov_func(**{k:v for k,v in kwargs.items() if k != 'skip_overrides'})
-        
+
         # if it hasn't return, run the core func
         return func(*args, **{k:v for k,v in kwargs.items() if k != 'skip_overrides'})
     return wrapper
@@ -31,7 +31,7 @@ def stringify_output(func):
             fmt = self.fmt
         else:
             fmt = 'json'
-        
+
         # run the function
         output = func(*args, **kwargs)
 
@@ -48,7 +48,7 @@ def stringify_output(func):
                 out.append(d)
             else:
                 out.append(str(o))
-        
+
         if fmt == 'print':
             return tabulate(out, headers='keys', tablefmt='psql')
         elif fmt == 'json':
