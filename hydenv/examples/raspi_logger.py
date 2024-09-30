@@ -1,4 +1,4 @@
-import os 
+import os
 import requests
 import json
 
@@ -14,19 +14,19 @@ class HydenvRaspiLoggerExample:
     """
     Raspi-Logger Example Loader.\n
     Loads raspi-logger raw JSON dump example data from Github and load it into the
-    given database. The example data url can be overwritten to any 
-    remote or local .dump.json file. Note, that the loader will only import 
+    given database. The example data url can be overwritten to any
+    remote or local .dump.json file. Note, that the loader will only import
     the DS18b20 raw temperature sensor data into the database.
-    The database has to be installed and initialized before. 
+    The database has to be installed and initialized before.
     Do that by hand or use the two CLI commands:
         python -m hydenv database install  --connection=postgresql://postgres:<adminpassword>@localhost:5432/postgres
         python -m hydenv database init --clean --connection=postgresql://hydenv:hydenv@localhost:5432/hydenv
     :param connection: The database URI following syntax:\n
         postgresql://<user>:<password>@<host>:<port>/<database>
-    :param overwrite_url: string - overwrite the default data url to load other data. 
+    :param overwrite_url: string - overwrite the default data url to load other data.
         Can be a remote or local path.
     :param quiet: bool - suppresses print output to stdout
-    
+
     """
 
     def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}", overwrite_url=None, quiet=True):
@@ -51,7 +51,7 @@ class HydenvRaspiLoggerExample:
         else:
             content = self.__from_download(fname)
 
-        # parse the content    
+        # parse the content
         if not self.quiet:
             print('Parsing raw dump...', end='')
 
@@ -62,23 +62,23 @@ class HydenvRaspiLoggerExample:
             _iter = tqdm(meta.items())
         else:
             _iter = meta.items()
-        
+
         i = 0
         for _id, m in _iter:
             # get some lookups
             var_t = self.__check_variable(m)
             term_id = self.__get_term(m['data'])
             sensor_id = self.__get_sensor(m)
-            
+
             # get the Metadata object
             metadata = self.session.query(models.Metadata).filter(models.Metadata.device_id==_id).first()
             if metadata is None:
                 metadata = models.Metadata(**m['meta'])
-            
+
             # update these settings
             metadata.sensor_id = sensor_id
             metadata.term_id = term_id
-            
+
             # Append data
             for p in m['data']:
                 metadata.raw_data.append(models.RawData(
@@ -88,7 +88,7 @@ class HydenvRaspiLoggerExample:
                 ))
                 # verbosity
                 i += 1
-            
+
             # upload
             try:
                 self.session.add(metadata)
@@ -103,11 +103,11 @@ class HydenvRaspiLoggerExample:
         # done.
         if not self.quiet:
             print('\nDone')
-            
+
     def __get_term(self, data):
         mind = min([_['tstamp'] for _ in data])
         term = self.session.query(models.Term).filter(models.Term.start_date>=mind).filter(models.Term.end_date<=mind).first()
-        
+
         return term.id if hasattr(term, 'id') else None
 
     def __check_variable(self, meta):
@@ -135,7 +135,7 @@ class HydenvRaspiLoggerExample:
             sensor = models.Sensor(name=sename)
             self.session.add(sensor)
             self.session.commit()
-        
+
         return sensor.id
 
     def __parse_content(self, content):
@@ -175,7 +175,7 @@ class HydenvRaspiLoggerExample:
                         value=d['value']
                     )
                 )
-        
+
         return metadata, len(clist)
 
 
@@ -199,6 +199,5 @@ class HydenvRaspiLoggerExample:
         else:
             if not self.quiet:
                 print('done.')
-        
+
         return response.content
-    

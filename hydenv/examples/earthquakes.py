@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+from sqlalchemy import text as sql_text
 import pandas as pd
 
 from hydenv.util import env
@@ -7,22 +8,22 @@ from hydenv.util import env
 NORMALIZE_SQL = """
 -- Earthquake types
 drop table if exists earthquake_types CASCADE;
-create table earthquake_types as 
-select row_number() OVER (ORDER BY name) as type_id, name from 
+create table earthquake_types as
+select row_number() OVER (ORDER BY name) as type_id, name from
 (select distinct "Type" as name from earthquakes_raw) t;
 alter table earthquake_types add constraint pkey_earthquake_types primary key (type_id);
 -- magnitude types
 drop table if exists magnitude_types CASCADE;
-create table magnitude_types as 
-select row_number() OVER (ORDER BY name) as type_id, name from 
+create table magnitude_types as
+select row_number() OVER (ORDER BY name) as type_id, name from
 (select distinct "Magnitude Type" as name from earthquakes_raw) t;
 alter table magnitude_types add constraint pkey_magnitude_types primary key (type_id);
 -- sources
 drop table if exists earthquake_sources CASCADE;
 create table earthquake_sources as
-select 
+select
 	row_number() over (order by name) as source_id,
-	name 
+	name
 from (
 select distinct name from (
 	select distinct "Source" as name from earthquakes_raw
@@ -34,19 +35,19 @@ alter table earthquake_sources add constraint pkey_earthquake_sources primary ke
 -- earthquakes
 drop table if exists earthquakes CASCADE;
 CREATE TABLE earthquakes AS
-select 
+select
 	"ID" as id,
 	to_timestamp("Date" || ' ' || "Time", 'MM/DD/YYYY HH24:MI') as datum,
 	st_geomfromewkt('SRID=4326;POINT (' || "Longitude" || ' ' || "Latitude" || ')') as geom,
 	t.type_id,
 	"Magnitude" as magnitude, m.type_id as magnitude_type_id, "Magnitude Error" as magnitude_error,
-	"Magnitude Seismic Stations" as magnitude_seismic_stations, 
+	"Magnitude Seismic Stations" as magnitude_seismic_stations,
 	"Depth" as depth, "Depth Error" as depth_error, "Depth Seismic Stations" as depth_seismic_statsions,
-	"Azimuthal Gap" as azimuthal_gap, "Horizontal Distance" as horizontal_distance, 
-	"Horizontal Error" as horizontal_error, "Root Mean Square" as rms, 
+	"Azimuthal Gap" as azimuthal_gap, "Horizontal Distance" as horizontal_distance,
+	"Horizontal Error" as horizontal_error, "Root Mean Square" as rms,
 	es.source_id, esl.source_id as location_source_id, esm.source_id as magnitude_source_id,
 	case when "Status"='Reviewed' THEN true ELSE false END as is_reviewed
-from earthquakes_raw r 
+from earthquakes_raw r
 left outer join earthquake_types t on t.name=r."Type"
 left outer join magnitude_types m on m.name=r."Magnitude Type"
 left outer join earthquake_sources es on es.name=r."Source"
@@ -75,7 +76,7 @@ class HydenvEarthquakeExamples:
     """
     Eaarthquake Example Loader.\n
     Loads earthquake example data from Github (or other sources) and loads them into the
-    given database. The database has to be installed and initialized before. 
+    given database. The database has to be installed and initialized before.
     Do that by hand or use the two CLI commands:
         python -m hydenv database install  --connection=postgresql://postgres:<adminpassword>@localhost:5432/postgres
         python -m hydenv database init --clean --connection=postgresql://hydenv:hydenv@localhost:5432/hydenv
@@ -98,19 +99,19 @@ class HydenvEarthquakeExamples:
         """
         if not self.quiet:
             print("Earthquake example.\nDonwloading data dump...", end='')
-        
+
         # Download data
         df = pd.read_csv(self._github_url)
-        
+
         if not self.quiet:
             print('done.\nUploading...', end='')
-        
+
         # Upload
         df.to_sql('earthquakes_raw', self.engine, index=None, if_exists='replace')
 
         if not self.quiet:
             print('done.')
-        
+
         if normalize:
             self.__normalize()
 
@@ -119,17 +120,17 @@ class HydenvEarthquakeExamples:
             print('Normalizing...', end='')
 
         with self.engine.connect() as con:
-            con.execute(NORMALIZE_SQL)
-        
+            con.execute(sql_text(NORMALIZE_SQL))
+
         if not self.quiet:
             print('done.')
 
     def drop(self):
         if not self.quiet:
             print('Cleaning earthquake example...', end='')
-        
+
         with self.engine.connect() as con:
-            con.execute(DROP_SQL)
-        
+            con.execute(sql_text(DROP_SQL))
+
         if not self.quiet:
             print('done.')

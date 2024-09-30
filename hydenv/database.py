@@ -6,6 +6,7 @@ from tabulate import tabulate
 from stdiomask import getpass
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text as sql_text
 
 from sqlalchemy.schema import DropTable
 from sqlalchemy.ext.compiler import compiles
@@ -26,7 +27,7 @@ class HydenvDatabase:
     Hydenv database tool\n
     You can use this tool to install and populate new instances of
     the hydenv database. Works for local, remote and cloud instances.
-    This is the admin tool that needs database creation privileges and 
+    This is the admin tool that needs database creation privileges and
     is usually only run once.
     :param connection: The database URI following syntax:\n
         postgresql://<user>:<password>@<host>:<port>/<database>
@@ -47,7 +48,7 @@ class HydenvDatabase:
     def session(self):
         if self._session is None:
             Session = sessionmaker(self.engine)
-            self._session = Session()   
+            self._session = Session()
         return self._session
 
     @property
@@ -68,7 +69,7 @@ class HydenvDatabase:
 
     def connections(self):
         """
-        Shows the stored connection information on this machine. 
+        Shows the stored connection information on this machine.
         Note, this will contain the cleartext password if set.
         """
         return env.read_file()
@@ -79,11 +80,11 @@ class HydenvDatabase:
         You can run the installation interactively by just passing the -i
         flag, **this will ignore all other flags**.
         The connection passed needs to have granted privileges to create
-        new database instances. Please note that the Postgis library 
+        new database instances. Please note that the Postgis library
         has to be installed.\n
-        The tool will export the connection info to the current command line 
+        The tool will export the connection info to the current command line
         session. This behavior can be overwritten.
-        This behavior 
+        This behavior
         :param i: Interactive installation - this ignores all other parameter
         :param db_name: database name
         :param role: The user for the new database instance
@@ -100,12 +101,12 @@ class HydenvDatabase:
         else:
             self.install_silent(db_name=db_name, user=user, password=password, skip_init=skip_init)
 
-    def install_interactive(self):        
+    def install_interactive(self):
         ans = ''
         while ans.lower() not in ('y', 'n', 'yes', 'no'):
             print("Use the default PostgreSQL server settings?\n[y]    Yes (localhost:5432)\n[n]    No (changed settings)")
             ans = input("Select [y,n]: ")
-        
+
         if ans == 'y' or ans == 'yes':
             self.__connection = 'postgresql://postgres:{pw}@localhost:5432/postgres'
         elif ans == 'n' or ans == 'no':
@@ -125,18 +126,18 @@ class HydenvDatabase:
             print("Do you want to initialize the database?\n[y]    Yes - Recommended\n[n]    No")
             ans = input("Select [y,n]: ")
         skip_init = ans == 1
-        
+
         self.install_silent(db_name=hyd_db, user=hyd_usr, password=hyd_pw, skip_init=skip_init)
 
     def install_silent(self, db_name='hydenv', user='hydenv', password='hydenv', skip_init=False):
         """
         Install the database\n
         The connection passed needs to have granted privileges to create
-        new database instances. Please note that the Postgis library 
+        new database instances. Please note that the Postgis library
         has to be installed.\n
-        The tool will export the connection info to the current command line 
+        The tool will export the connection info to the current command line
         session. This behavior can be overwritten.
-        This behavior 
+        This behavior
         :param db_name: database name
         :param role: The user for the new database instance
         :param password: The users password, HAS TO BE SET
@@ -149,22 +150,23 @@ class HydenvDatabase:
         """
         # check if the user exists
         with self.engine.connect() as con:
-            res = con.execute("SELECT true FROM pg_roles WHERE rolname='{usr}'".format(usr=user)).scalar()
+            res = con.execute(sql_text(
+                f"SELECT true FROM pg_roles WHERE rolname='{user}'")).scalar()
             if res is not True:
                 if password == 'changeme':
                     raise AttributeError('Please specify a password like --password=pw')
-                con.execute("CREATE USER {usr} WITH PASSWORD '{pw}'".format(usr=user, pw=password))
-        
+                con.execute(sql_text(f"CREATE USER {user} WITH PASSWORD '{password}'"))
+
         # create the SQL and commit
         with self.engine.connect() as con:
-            con.execute('commit')
-            con.execute("CREATE DATABASE %s ENCODING 'UTF8' TEMPLATE 'template0';" % db_name)
+            con.execute(sql_text('commit'))
+            con.execute(sql_text(f"CREATE DATABASE {db_name} ENCODING 'UTF8' TEMPLATE 'template0';"))
 
-        # grant 
+        # grant
         with self.engine.connect() as con:
-            con.execute('commit;')
+            con.execute(sql_text('commit;'))
             # grant all on the database
-            con.execute('GRANT ALL PRIVILEGES ON DATABASE "{db}" TO {usr};'.format(db=db_name, usr=user))
+            con.execute(sql_text(f'GRANT ALL PRIVILEGES ON DATABASE "{db_name}" TO {user};'))
 
         # build the connection to the new database
         chunks = self.__connection.split('/')
@@ -173,23 +175,23 @@ class HydenvDatabase:
 
         # since postgres 15, we need to grant to public as well
         with engine.connect() as con:
-            con.execute(f'GRANT ALL ON SCHEMA public TO {user};')
-            con.execute('commit;')
-        
+            con.execute(sql_text(f'GRANT ALL ON SCHEMA public TO {user};'))
+            con.execute(sql_text('commit;'))
+
         # connect and install postgis
         with engine.connect() as con:
-            con.execute('CREATE EXTENSION postgis;')
-            res = con.execute('Select PostGis_Full_Version();').scalar()
-            
+            con.execute(sql_text('CREATE EXTENSION postgis;'))
+            res = con.execute(sql_text('Select PostGis_Full_Version();')).scalar()
+
         # rebuild the connection
         host_port = self.__connection.split('@')[1].split('/')[0]
         host, port = host_port.split(':')
         self.__init__('postgresql://{usr}:{pw}@{host}:{port}/{db}'.format(
             usr=user, pw=password, host=host,port=port, db=db_name
         ))
-        # expose conn if 
+        # expose conn if
         self.__expose_con('file', usr=user, pw=password, host=host, port=port, dbname=db_name)
-        
+
         if skip_init:
             return res
         else:
@@ -199,7 +201,7 @@ class HydenvDatabase:
     def init(self, clean=False):
         """
         Create all tables\n
-        It is highly recommended to run this command with a user connected 
+        It is highly recommended to run this command with a user connected
         who has less privileges than postgres.
         :param clean: If True, any existing table will be dropped
             before creating the tables.
@@ -213,7 +215,7 @@ class HydenvDatabase:
             cli = HydenvExamples(connection=self.__connection, quiet=True)
             cli.clean()
 
-        
+
         # creata tables
         Base.metadata.create_all(bind=self.engine)
 
@@ -225,7 +227,7 @@ class HydenvDatabase:
             Sensor.defaults(session=self.session)
             cli = HydenvSpaceExamples(connection=self.__connection)
             cli.run(quiet=True)
-        
+
         print('Done')
 
     def execute(self, sql: str, safe=True, json=False):
@@ -238,33 +240,33 @@ class HydenvDatabase:
         """
         # get rid of comments
         sql = '\n'.join([line for line in sql.split('\n') if not line.strip().startswith('--')])
-        
+
         if safe:
             if not sql.lower().strip().startswith('select') and not sql.lower().strip().startswith('with'):
                 raise AttributeError('[SAFE MODE] only SELECT queries are allowed.')
             sql = sql.split(';')[0]
-        
+
         with self.engine.connect() as con:
-            result = con.execute(sql)
-        
+            result = con.execute(sql_text(sql))
+
         if json:
             return [{k:v for k,v in row.items()} for row in result]
         else:
             return result.fetchall()
-        
+
     def explain(self, sql: str, path=None, fmt='json', full=False, suppress_rollback=False) -> dict:
         """
         Analyse an sql query.\n
         You can pass any SQL query to run a perf test on the query planner.
-        The output will be a dictionary containing the Planning and Execution 
-        time for the whole query. The key 'Short' will contain a nested 
+        The output will be a dictionary containing the Planning and Execution
+        time for the whole query. The key 'Short' will contain a nested
         brief summary of all steps' execution time and cost.
-        If full is set to True, The raw query Planner ANALYSE output will be 
+        If full is set to True, The raw query Planner ANALYSE output will be
         attached as 'Full' key to the dictionary.
         :param sql: SQL query to analyse.
         :param path: If a file path is given, the output will be saved to that file
         :param fmt: One of ['json', 'text', 'xml', 'yaml']. Text is only suitable for command
-            line output. XML and Yaml are suitable for file output. JSON can be used for 
+            line output. XML and Yaml are suitable for file output. JSON can be used for
             all outputs and is most sophisticated.
         :param full: If set to True, The plain ANALYSE output will be added to output.
             Only works with JSON output.
@@ -273,39 +275,39 @@ class HydenvDatabase:
         if os.path.exists(sql):
             with open(sql, 'r') as f:
                 sql = f.read()
-        
+
         # build analyse query
         if not sql.lower().startswith('explain'):
             sql = "EXPLAIN (ANALYSE, FORMAT %s) %s;" % (fmt, sql)
-        
-        
+
+
         # execute the query
         with self.engine.connect() as con:
             # begin transaction if needed
             if not suppress_rollback:
-                con.execute('BEGIN;')
-            
+                con.execute(sql_text('BEGIN;'))
+
             # run the query
-            result = con.execute(sql)
+            result = con.execute(sql_text(sql))
             d = result.fetchall()
 
             # rollback transaction if needed
             if not suppress_rollback:
-                con.execute('ROLLBACK;')
-                
+                con.execute(sql_text('ROLLBACK;'))
+
         # handle other output than JSON
         if fmt.lower() in ('xml', 'yaml'):
             return d[0][0]
         elif fmt.lower() == 'text':
             return '\n'.join([_[0] for _ in d])
-        
-        # extract info 
+
+        # extract info
         while not isinstance(d, dict) or len(d) == 1:
             d = d[0]
 
         # build the query plan object
         explain = dict(
-            Planning=d.get('Planning Time'), 
+            Planning=d.get('Planning Time'),
             Execution=d.get('Execution Time')
         )
         plan = d['Plan']
@@ -326,17 +328,17 @@ class HydenvDatabase:
                 return [parse_node(node) for node in nodes]
             else:
                 return nodes
-        
+
         # parse all nodes
         explain['Short'] = parse_node(plan)
         if full:
             explain['Full'] = plan
-        
+
         if path is None:
             return explain
         else:
             with open(path, 'w') as f:
-                json.dump(explain, f, indent=4)    
+                json.dump(explain, f, indent=4)
 
     def table(self, name: str = None, list: bool = False, fmt: str = 'github'):
         """
@@ -350,15 +352,15 @@ class HydenvDatabase:
         if name is None and not list:
             print('[ERROR] You need to specify a table name or use the --list flag.')
             return
-        
+
         # build the query
         if list:
             sql = "SELECT table_name as name, table_type as type FROM information_schema.tables WHERE table_schema = 'public';"
         else:
-            sql = f"SELECT column_name as name, data_type as type, is_nullable as nullable, column_default as default, ordinal_position FROM information_schema.columns WHERE table_name = '{name}' ORDER BY ordinal_position;"   
+            sql = f"SELECT column_name as name, data_type as type, is_nullable as nullable, column_default as default, ordinal_position FROM information_schema.columns WHERE table_name = '{name}' ORDER BY ordinal_position;"
 
         # reun
-        result = self.execute(sql, json=True)
+        result = self.execute(sql_text(sql), json=True)
 
         if fmt.lower() == 'json':
             return result

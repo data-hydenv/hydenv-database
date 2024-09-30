@@ -1,7 +1,8 @@
 from tqdm import tqdm
-import pandas as pd 
+import pandas as pd
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text as sql_text
 
 from hydenv.util import env
 from hydenv.models import SpaceRaw
@@ -36,11 +37,11 @@ ALTER TABLE locations ADD CONSTRAINT pkey_locations PRIMARY KEY (location_id);
 -- SPACE
 DROP TABLE IF EXISTS space CASCADE;
 CREATE TABLE space AS
-SELECT 
+SELECT
 	id, datum,
 	(SELECT company_id FROM companies WHERE company_name=space_raw.company_name) as company_id,
-	(SELECT location_id FROM locations WHERE 
-	 	identifier=split_part(location, ', ', 1) AND 
+	(SELECT location_id FROM locations WHERE
+	 	identifier=split_part(location, ', ', 1) AND
 	 	location_name=split_part(location, ', ', 2)
 	) as location_id,
 	(SELECT rocket_id FROM rockets WHERE rocket_name=split_part(detail, ' | ', 1)) as rocket_id,
@@ -65,7 +66,7 @@ class HydenvSpaceExamples:
     """
     Space Missions Example Loader.\n
     Loads Space Missions example data from Github and load it into the
-    given database. The database has to be installed and initialized before. 
+    given database. The database has to be installed and initialized before.
     Do that by hand or use the two CLI commands:
         python -m hydenv database install  --connection=postgresql://postgres:<adminpassword>@localhost:5432/postgres
         python -m hydenv database init --clean --connection=postgresql://hydenv:hydenv@localhost:5432/hydenv
@@ -99,16 +100,16 @@ class HydenvSpaceExamples:
         df.columns = [_.lower().replace(' ', '_')  for _ in df.columns]
         df.drop('_rocket', axis=1, inplace=True)
 
-        # convert datum to UTC 
+        # convert datum to UTC
         df['datum'] = pd.to_datetime(df.datum, utc=True)
 
         # rename index to 'id'
         df.index.name = 'id'
-        
+
         # truncate the table if it exists
         try:
             with self.engine.connect() as con:
-                con.execute('TRUNCATE TABLE space_raw;')
+                con.execute(sql_text('TRUNCATE TABLE space_raw;'))
         except:
             pass
 
@@ -119,7 +120,7 @@ class HydenvSpaceExamples:
 
             # add the primary key
             with self.engine.connect() as con:
-                con.execute('ALTER TABLE space_raw ADD CONSTRAINT pkey_space_raw PRIMARY KEY (id);')
+                con.execute(sql_text('ALTER TABLE space_raw ADD CONSTRAINT pkey_space_raw PRIMARY KEY (id);'))
             return
 
         errors = 0
@@ -143,23 +144,22 @@ class HydenvSpaceExamples:
                 return
             else:
                 raise e
-        
+
         # normalize if requested
         if normalize:
             self._normalize(quiet=quiet)
-        
+
         if not quiet:
             print('Done.')
 
     def _normalize(self, quiet=True):
         if not quiet:
             print('Normalizing space schema...')
-        
+
         # run the SQL
         with self.engine.connect() as con:
-            con.execute(NORMALIZE_SQL)
-    
+            con.execute(sql_text(NORMALIZE_SQL))
+
     def drop(self):
         with self.engine.connect() as con:
-            con.execute(DROP_SQL)
-        
+            con.execute(sql_text(DROP_SQL))

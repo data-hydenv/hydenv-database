@@ -13,6 +13,7 @@ from datetime import datetime as dt
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text as sql_text
 
 from hydenv.util import env
 from hydenv import models
@@ -22,8 +23,8 @@ class HydenvOWMExample:
     """
     OWM Example Loader.\n
     Loads OWM example data from Github (or other sources) and downloads them as
-    CSV files. These CSV files can then be loaded into the given database. 
-    The database has to be installed and initialized before. 
+    CSV files. These CSV files can then be loaded into the given database.
+    The database has to be installed and initialized before.
     Do that by hand or use the two CLI commands:
         python -m hydenv database install  --connection=postgresql://postgres:<adminpassword>@localhost:5432/postgres
         python -m hydenv database init --clean --connection=postgresql://hydenv:hydenv@localhost:5432/hydenv
@@ -37,7 +38,7 @@ class HydenvOWMExample:
 
         # set some urls
         self._data_url = "https://github.com/data-hydenv/data/archive/master.zip"
-        
+
     def _download_data(self):
         # download the zip into memory
         r = requests.get(self._data_url)
@@ -59,7 +60,7 @@ class HydenvOWMExample:
             # read the file
             with open(f, 'r') as f:
                 data = json.load(f)
-            
+
             # get the filename
             fname = os.path.basename(f.name).split('_raw_dump')[0]
             tstamp = dt.strptime(fname, '%Y_%m_%d')
@@ -74,21 +75,21 @@ class HydenvOWMExample:
             for p in pred:
                 p.update({'from_dt': int(tstamp.timestamp())})
                 forecast[p['dt']].append(p)
-            
+
             # update the meta
             meta.update({k: v for k, v in data.get('historic', {}).items() if k not in ('hourly', 'current')})
-        
+
         # return
         return meta, observ, forecast
 
     def _order_to_ts(self, observations: dict, forecast: dict) -> List[dict]:
-        # create the master ts 
+        # create the master ts
         index = list(observations.keys())
         #index.extend([ts for ts in forecast.keys() if ts not in index])
 
         # sort
         index.sort()
-        
+
         # create the data container
         data = []
 
@@ -96,9 +97,9 @@ class HydenvOWMExample:
             obs = observations[idx]
             obs['forecast'] = forecast.get(idx, [])
             data.append(obs)
-        
+
         return data
-    
+
     def _upload_to_database(self, df: pd.DataFrame, key='temp', meta: dict = {}, if_exists: str = 'replace') -> None:
         """
         """
@@ -107,7 +108,7 @@ class HydenvOWMExample:
             var_key = 'temperature'
         else:
             var_key = key
-        
+
         # create a database session
         Session = sessionmaker(bind=self.engine)
         session = Session()
@@ -153,10 +154,10 @@ class HydenvOWMExample:
             # add the data
             data = df[['time', KEYS[prod]]].copy()
             data.columns = ['tstamp', 'value']
-            
+
             data['meta_id'] = metadata.id
             data['variable_id'] = variable.id
-            
+
             # drop NA values
             data.dropna(how='any', inplace=True)
 
@@ -165,13 +166,13 @@ class HydenvOWMExample:
             if len(imp_data) != len(data):
                 print(f'\n[WARNING]: duplicated rows for {prod} of KEY {key}')
                 data = imp_data
-            
+
             # upload
             data.to_sql('raw_data', session.bind, index=None, if_exists='append')
-        
+
         # close the database session again
         session.close()
-    
+
     def _ordered_data_to_df(self, data: List[dict], key='temp') -> pd.DataFrame:
         # extract only the data we need
         # temp = [{'time': dt.fromtimestamp(d['dt']), key: d[key]} for d in data]
@@ -192,13 +193,13 @@ class HydenvOWMExample:
             # sort the deltas and values
             values = [v for _, v in sorted(zip(deltas, values))][:2]
             deltas = sorted(deltas)[:2]
-            
+
             # add to the main obj
             obj['forecast_1_value'] = values[0] if len(values) >= 1 else None
             obj['forecast_1_delta [hrs]'] = deltas[0] if len(deltas) >= 1 else None
             obj['forecast_2_value'] = values[1] if len(values) >= 2 else None
             obj['forecast_2_delta [hrs]'] = deltas[1] if len(deltas) >= 2 else None
-            
+
             # append
             temp.append(obj)
 
@@ -213,21 +214,21 @@ class HydenvOWMExample:
         VARIABLES = ['temp', 'feels_like', 'pressure', 'humidity', 'dew_point', 'wind_speed', 'wind_deg', 'clouds']
         if variable == 'all':
             variable = VARIABLES
-       
+
         # check if all variables are allowed
         if isinstance(variable, str):
             variable = [variable]
-        for v in variable:            
+        for v in variable:
             if v not in VARIABLES:
                 raise ValueError('The variable {} is not allowed'.format(v))
-        
+
         # first download the data
         if not quiet:
             print("Downloading data...", end="")
         self._download_data()
         if not quiet:
             print("done.")
-        
+
         # get the path inside the repo
         data_path = os.path.join('./data-master', repo_path)
 
@@ -248,11 +249,11 @@ class HydenvOWMExample:
             for v in variable:
                 if not quiet:
                     print(f'Uploading {v}...', end='')
-                
+
                 # handle upload
                 df = self._ordered_data_to_df(data=data, key=v)
                 self._upload_to_database(df=df, key=v, meta=meta, if_exists=if_exists)
-            
+
                 if not quiet:
                     print('done.')
             return
@@ -261,7 +262,7 @@ class HydenvOWMExample:
         if fmt == 'json':
             if dry:
                 return data
-        
+
             if not save.endswith('.json'):
                 save += '.json'
                 with open(save, 'w') as f:
@@ -272,7 +273,7 @@ class HydenvOWMExample:
             if not quiet:
                 print("Saved data to {}".format(save))
 
-        
+
         elif fmt == 'csv':
             # check how to return
             if dry:
@@ -281,7 +282,7 @@ class HydenvOWMExample:
                     return dfs[variable[0]]
                 else:
                     return dfs
-                
+
             # save
             for v in variable:
                 _save = save
@@ -289,7 +290,7 @@ class HydenvOWMExample:
                     _save = _save.replace('.csv', '_' + v + '.csv')
                 else:
                     _save = f'{_save}_{v}.csv'
-            
+
                 df = self._ordered_data_to_df(data, key=v)
                 df.to_csv(_save)
                 if not quiet:

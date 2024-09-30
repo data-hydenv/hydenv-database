@@ -4,6 +4,7 @@ import glob
 import geopandas as gpd
 import pandas as pd
 from sqlalchemy import create_engine
+from sqlalchemy import text as sql_text
 from tqdm import tqdm
 
 from hydenv.util import env
@@ -15,19 +16,19 @@ class HydenvCamelsDeExample:
     Loads the german CAMELS-DE dataset to the database. Please beaware, that the CAMELS-DE dataset
     is not yet published and you need a copy of the processing files on your drive, as this API does
     as of now only work with local files.
-    The database has to be installed and initialized before. 
+    The database has to be installed and initialized before.
     Do that by hand or use the two CLI commands:
         python -m hydenv database install  --connection=postgresql://postgres:<adminpassword>@localhost:5432/postgres
         python -m hydenv database init --clean --connection=postgresql://hydenv:hydenv@localhost:5432/hydenv
     :param connection: The database URI following syntax:\n
         postgresql://<user>:<password>@<host>:<port>/<database>
-    :param source_dir: string - overwrite the default data url to load other data. 
+    :param source_dir: string - overwrite the default data url to load other data.
     :param quiet: bool - suppresses print output to stdout
-    :param only: string - load --only=metadata for omitting the data upload. If not set, you need to specify the source_dir 
+    :param only: string - load --only=metadata for omitting the data upload. If not set, you need to specify the source_dir
     :param nuts-filter: Filter for only one or more federal state by using its NUTS lvl2 ID (ie. DE1); use 'all' to load all
 
     """
-    def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}", source_dir: str = None, quiet: bool = True): 
+    def __init__(self, connection="postgresql://{usr}:{pw}@{host}:{port}/{dbname}", source_dir: str = None, quiet: bool = True):
         # set the source param
         self.source_dir = source_dir
         self.quiet = quiet
@@ -50,11 +51,11 @@ class HydenvCamelsDeExample:
         # metadata
         if only is None or only == 'metadata':
             self._upload_metadata(nuts_filter=nuts_filter)
-        
+
         # data
         if only is None or only == 'data':
             self._upload_data(nuts_filter=nuts_filter)
-    
+
     def _upload_metadata(self, nuts_filter: str):
         # checkout the filter
         if nuts_filter == 'all' or nuts_filter is None:
@@ -76,22 +77,22 @@ class HydenvCamelsDeExample:
         gdf.to_postgis('camels_de_metadata', con=self.engine, if_exists='append')
         if not self.quiet:
             print('done.')
-    
+
     def _upload_data(self, nuts_filter: str):
         # Right now, complete uploads are not accepted
         if nuts_filter is None:
             raise NotImplementedError("As of now, you can't upload CAMELS-DE data without federal state filter. Add a filter or pass --only=metadata flag.")
-        
+
         # get the path
         base_path = os.path.join(self.source_dir, nuts_filter.upper())
         if not os.path.exists(base_path):
             raise OSError(f"The path {base_path} does not exist")
-        
+
         # get all files
         files = glob.glob(os.path.join(base_path, '*', '*_data.csv'))
         if not self.quiet:
             print(f'Found {len(files)} files. Start uploading...')
-        
+
         # upload
         for fname in tqdm(files, unit=' files'):
             # read the file
@@ -103,13 +104,13 @@ class HydenvCamelsDeExample:
 
             # upload
             df.to_sql('camels_de_data', self.engine, if_exists='append')
-        
+
         if not self.quiet:
             print('\nDone!')
 
     def drop(self):
         # drop the tables if they exist
         with self.engine.connect() as con:
-            con.execute("DROP TABLE IF EXISTS camels_de_metadata;")
-            con.execute("DROP TABLE IF EXISTS camels_de_data;")
-            con.execute("COMMIT;")
+            con.execute(sql_text("DROP TABLE IF EXISTS camels_de_metadata;"))
+            con.execute(sql_text("DROP TABLE IF EXISTS camels_de_data;"))
+            con.execute(sql_text("COMMIT;"))

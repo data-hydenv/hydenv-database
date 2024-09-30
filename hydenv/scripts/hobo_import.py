@@ -7,6 +7,7 @@ from string import ascii_lowercase
 from random import choice
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text as sql_text
 from datetime import datetime as dt
 from datetime import timedelta as td
 from tqdm import tqdm
@@ -46,7 +47,7 @@ def read_file(fname, txtfmt=False, dayfirst=False):
 
 	# drop na
 	df.dropna(how='any', axis=0, inplace=True)
-	
+
 	return df
 
 
@@ -65,7 +66,7 @@ def read_hourly_file(fname):
 				return dt.strptime(r[0], '%Y.%m.%d') + td(hours=int(r[1]))
 			else:
 				return dt.strptime(r[0], '%Y-%m-%d') + td(hours=int(r[1]))
-		
+
 		idx = df.apply(date_formatter, axis=1)
 
 		# set index
@@ -134,18 +135,18 @@ class HydenvHoboImporter:
 
 			# download and make a copy
 			df = pd.read_csv(url, skiprows=1)
-		
+
 		# bwsyncandshare
 		elif 'bwsyncandshare' in url:
 			df = pd.read_excel(url, skiprows=1, sheet_name=sheet_suffix, decimal=',')
-		
+
 		# check for local path
 		elif os.path.exists(url):
 			df = pd.read_excel(url, skiprows=1, sheet_name=sheet_suffix, decimal=',')
-		
+
 		else:
 			raise ValueError("The given url is not of known format.")
-		
+
 		# make a copy of the downloaded/loaded source
 		orig = df.copy()
 
@@ -154,11 +155,11 @@ class HydenvHoboImporter:
 			df.drop('name', axis=1, inplace=True)
 		if 'github_name' in df.columns:
 			df.drop('github_name', axis=1, inplace=True)
-		
+
 		# remove anything without device id
 		df.rename({'hobo_id': 'device_id'}, axis=1, inplace=True)
 		df = df.where(~df.device_id.isnull()).dropna(how='all')
-		
+
 		# convert device id
 		try:
 			df['device_id'] = df.device_id.astype(int)
@@ -179,10 +180,10 @@ class HydenvHoboImporter:
 		# build WKT
 		df['location'] = df[['longitude', 'latitude']].apply(lambda r: 'SRID=4326;POINT (%s %s)' % (r[0], r[1]), axis=1)
 		df.drop(['longitude', 'latitude'], axis=1, inplace=True)
-		
+
 		# drop any empty row
 		df.dropna(axis=1, how='all', inplace=True)
-		
+
 		# print the dropped entries
 		if not quiet:
 			if len(df) != len(orig):
@@ -194,15 +195,15 @@ class HydenvHoboImporter:
 		cli = HydenvMeasurements(self.__connection)
 		hobo = cli.read('Sensor', return_query=True, name='hobo').first()
 		semester = cli.read('Term', return_query=True, short=term).first()
-		
+
 		# if there is no HOBO, create one
 		if hobo is None:
 			hobo = cli.create('Sensor', name='hobo')
-		
+
 		# if semester is given, add
 		if semester is not None:
 			df['term_id'] = semester.id
-		
+
 		# add sensor info
 		df['sensor_id'] = hobo.id
 
@@ -212,7 +213,7 @@ class HydenvHoboImporter:
 			','.join(["'%s'" % str(_) for _ in df.device_id.values])
 			)
 		with self.engine.connect() as con:
-			available_ids = [_[0] for _ in con.execute(check_sql)]
+			available_ids = [_[0] for _ in con.execute(sql_text(check_sql))]
 			# filter df
 			df = df.where(~df.device_id.isin(available_ids)).dropna(how='all')
 			if df.empty:
@@ -225,7 +226,7 @@ class HydenvHoboImporter:
 				return df.to_markdown()
 			else:
 				return df
-		
+
 		# upload
 		for d in df.to_dict('records'):
 			try:
@@ -240,7 +241,7 @@ class HydenvHoboImporter:
 
 	def upload_raw_data(self, filename: str, meta_id: int, variable=None, dry=False):
 		"""
-		Upload an Hobo file to the database. 
+		Upload an Hobo file to the database.
 		:param filename: Path to the file for upload
 		:param meta_id: Database ID of your device
 		"""
@@ -249,7 +250,7 @@ class HydenvHoboImporter:
 			self.upload_raw_data(filename, meta_id, 'temperature')
 			self.upload_raw_data(filename, meta_id, 'light')
 			return
-		
+
 		# figure out the term
 		term_name = self.session.query(Term.short).join(Metadata).filter(Metadata.id==meta_id).scalar()
 		dayfirst = term_name in ('WT21', 'WT22')
@@ -278,7 +279,7 @@ class HydenvHoboImporter:
 
 		# create database engine
 		engine = create_engine(self.__connection)
-		
+
 		# create a temporary table name
 		name = ''.join([choice(ascii_lowercase) for _ in range(16)])
 
@@ -295,11 +296,11 @@ class HydenvHoboImporter:
 
 	def upload_q_data(self, filename: str, meta_id: int):
 		"""
-		Upload an Hobo file to the database. 
+		Upload an Hobo file to the database.
 		:param filename: Path to the file for upload
 		:param meta_id: Database ID of your device
 		"""
-		
+
 		# load the file
 		try:
 			data = read_hourly_file(filename)
@@ -324,7 +325,7 @@ class HydenvHoboImporter:
 
 		# create database engine
 		engine = create_engine(self.__connection)
-		
+
 		# create a temporary table name
 		name = ''.join([choice(ascii_lowercase) for _ in range(16)])
 
@@ -351,16 +352,16 @@ class HydenvHoboImporter:
 		:param term: If applicable, add the term for the data like: WS17
 		"""
 		flist = [os.path.join(path, f) for f in os.listdir(path) if re.match(match, f)]
-		
+
 		# load the term if any
 		cli = HydenvMeasurements(self.__connection)
 		if term is not None:
 			semester = cli.read('Term', return_query=True, short=term).first()
 			if semester is None:
 				raise AttributeError("Term '%s' not found." % term)
-			else: 
+			else:
 				term_id = semester.id
-		else: 
+		else:
 			term_id = None
 
 		# build a progressbar
@@ -368,7 +369,7 @@ class HydenvHoboImporter:
 			_iter = tqdm(flist)
 		else:
 			_iter = flist
-		
+
 		# load all files
 		for fname in _iter:
 			try:
@@ -380,7 +381,7 @@ class HydenvHoboImporter:
 			except:
 				print("File '%s' cannot be processed." % fname)
 				continue
-			
+
 			# if there is no metadata, skip
 			if meta is None:
 				print('File %s references HOBO ID=%s, which is not found.' % (fname, device_id))
@@ -392,7 +393,7 @@ class HydenvHoboImporter:
 					else:
 						self.upload_raw_data(filename=fname, meta_id=meta.id)
 				except Exception as e:
-					print(f"[ERROR]: File: {fname} errored. Message: {str(e)}")	
+					print(f"[ERROR]: File: {fname} errored. Message: {str(e)}")
 
 
 class HydenvHoboImporterCli(HydenvHoboImporter):
